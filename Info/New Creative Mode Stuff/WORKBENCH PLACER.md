@@ -1,4 +1,5 @@
 # Workbench Placer
+  Settings:
    * Bench Settings
       * Weapon Given
       * Treat as Wonder Weapon?
