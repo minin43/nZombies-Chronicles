@@ -1,4 +1,4 @@
-# Teleporter Settings
+# Teleporter 
    * Teleporter
       * Flag
       * Destination
