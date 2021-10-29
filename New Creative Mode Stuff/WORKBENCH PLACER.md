@@ -9,7 +9,7 @@
       * Max Allowed Crafts
       * Weapon Cooldown Seconds
          
-      * Mystery Box
-         * Add to Box? (After Max Crafts)
-         * Box Chance
+   * Mystery Box
+      * Add to Box? (After Max Crafts)
+      * Box Chance
       
