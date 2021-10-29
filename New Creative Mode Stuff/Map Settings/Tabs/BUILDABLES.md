@@ -1,4 +1,4 @@
-* Buildables tab
+# Buildables tab
    * Display Part Weapon Name?
    * Allow Dropping?
    * Force Respawn?
