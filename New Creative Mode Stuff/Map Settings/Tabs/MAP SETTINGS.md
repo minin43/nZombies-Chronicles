@@ -1,3 +1,3 @@
-* Map Settings tab
+# Map Settings tab
    * Custom Knife
    * Custom Grenade
