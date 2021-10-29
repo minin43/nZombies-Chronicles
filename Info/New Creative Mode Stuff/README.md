@@ -3,4 +3,3 @@
    * [Teleporter](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/TELEPORTER.md)
    * [Workbench Placer](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/WORKBENCH%20PLACER.md)
    * Part Placer
-      * Weapon this part is for
