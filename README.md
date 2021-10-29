@@ -13,6 +13,8 @@ The most dedicated nZombies Fix, 1 year of development and counting!
 * Bigger Creative Mode menu
 
 * [New Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/README.md) 
+* [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
+* [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/Traps/README.md)   
    
 ### New requirements to expect
-* Some new dependencies will be required (eg. Old TFA Base) for things to work right. 
+* Some new dependencies will be required (eg. Old TFA Base) for things to work right. This will both allow development to end and everything to work as intended for the foreseeable future. Due to Copyright uncertainty, these dependencies will *NOT* be hosted on the Steam Workshop nor here on GitHub.
