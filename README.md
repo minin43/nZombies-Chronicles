@@ -8,7 +8,7 @@ Not publicly downloadable yet, coming soon..
 ### What has been done so far
 * All issues and lua errors fixed, any feature that wasn't working before works now
 * Almost all missing COD functionality (WAW, BO1, BO2) has been integrated 
-* Any COD stuff added in regular nZombies works exactly as they did in the real CODs
+* Any COD stuff that existed in regular nZombies has been modified to work exactly as they did in Black Ops
 * Bigger Creative Mode menu
 
 * [New Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/README.md) 
