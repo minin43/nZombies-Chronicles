@@ -11,10 +11,10 @@ Not publicly downloadable yet, coming soon..
 * Any COD stuff that existed in original nZombies has been modified to work exactly as they did in Black Ops
 * Bigger Creative Mode menu
 
-* [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/README.md) 
-* [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
-* [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/Traps/README.md)   
-* [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/NEW%20ENEMIES.md)
+* [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/README.md) 
+* [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
+* [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
+* [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/NEW%20ENEMIES.md)
    
 ### New requirements to expect
 Some new dependencies will be required (eg. Old TFA Base) for things to work right. This will both allow development to end and everything to work as intended for the foreseeable future. 
