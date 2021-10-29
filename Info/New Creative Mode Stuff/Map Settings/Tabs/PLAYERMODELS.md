@@ -1,4 +1,6 @@
 # Playermodels tab 
    * Playermodel list with clickable model buttons
-   * Added Model list
    * Predefined Preset Dropdown
+   * Models Added List with configurable Bodygroups and Skin
+
+![Preview](https://i.imgur.com/VmaIRKz.png)
