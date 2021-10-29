@@ -22,3 +22,5 @@
           * Jingle
           * Open
           * Close
+
+![Preview](https://i.imgur.com/VZfwSMW.png)
