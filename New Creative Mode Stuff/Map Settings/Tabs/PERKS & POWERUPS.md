@@ -1,3 +1,3 @@
-       * Perks & Powerups tab
-          * Wunderfizz perks tab
-          * Powerups tab
+* Perks & Powerups tab
+   * Wunderfizz perks tab
+   * Powerups tab
