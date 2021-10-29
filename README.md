@@ -12,7 +12,7 @@ The most dedicated nZombies Fix, 1 year of development and counting!
 * Any COD stuff added in regular nZombies works exactly as they did in the real CODs
 * Bigger Creative Mode menu
 
-* [New Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md) 
+* [New Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/New%20Creative%20Mode%20Stuff/README.md) 
    
 ### New requirements to expect
 * Some new dependencies will be required (eg. Old TFA Base) for things to work right. 
