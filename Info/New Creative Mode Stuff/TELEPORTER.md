@@ -1,4 +1,5 @@
 # Teleporter 
+   Settings:
    * Teleporter
       * Flag
       * Destination
