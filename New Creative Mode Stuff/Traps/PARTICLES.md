@@ -1,4 +1,4 @@
-# Particles
+# Particles Trap
 ## Emits hazardous particles
 Settings:
    * Model
