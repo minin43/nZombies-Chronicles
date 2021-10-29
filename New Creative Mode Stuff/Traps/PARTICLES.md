@@ -1,5 +1,7 @@
-# Particle Trap Settings
-* Model
+# Particles
+## Emits hazardous particles
+Settings:
+   * Model
    * Particle Effect
    * Particle Sound
    * Particle Speed
