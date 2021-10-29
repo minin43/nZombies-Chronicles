@@ -1,5 +1,5 @@
 # nZombies-Chronicles
-Not publicly downloadable yet, coming soon..
+Not downloadable yet, coming soon..
 
 #### Play on the Dedicated servers
 * 147.135.124.18:27016
