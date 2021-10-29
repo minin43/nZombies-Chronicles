@@ -1,4 +1,6 @@
 # Visuals & Sounds tab
+![Preview](https://i.imgur.com/VZfwSMW.png)
+
    * Zombie Eye Color picker tab
    * Sound Effects tab
       * Main 
@@ -22,5 +24,3 @@
           * Jingle
           * Open
           * Close
-
-![Preview](https://i.imgur.com/VZfwSMW.png)
