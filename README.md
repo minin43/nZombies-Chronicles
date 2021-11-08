@@ -29,6 +29,6 @@ https://discord.gg/c2nD63r5tV
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
    
 ### New requirements to expect
-Some new dependencies will be required (eg. Round Bar, Old TFA Base, etc). This fills in the missing gaps (Why recreate the wheel?) and keeps everything working as intended after development ends. 
+Some new dependencies will be required (eg. Old TFA Base, Round Progress Bar, etc). This fills in the missing gaps (Why recreate the wheel?) and keeps everything working as intended after development ends. 
 <br></br>
 Due to Copyright uncertainty, these dependencies will *NOT* be hosted on the Steam Workshop nor here on GitHub. You'll be expected to unsubscribe from the Workshop versions.
