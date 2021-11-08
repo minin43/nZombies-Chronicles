@@ -13,6 +13,9 @@ ______
 * 147.135.124.18:27016
 * 135.148.30.13:27016
 
+#### Join the Discord
+https://discord.gg/c2nD63r5tV
+
 ### What has been done so far
 * All issues and lua errors fixed, any feature that wasn't working before works now
 * Almost all missing COD functionality (WAW, BO1, BO2) has been integrated and any previous existing COD stuff has been modified to work exactly as they did in the real games.
