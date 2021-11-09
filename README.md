@@ -27,7 +27,8 @@ https://discord.gg/c2nD63r5tV
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
 * [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
 * [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
-   
+* Over 300+ Compatible Weapon Configurations
+
 ### New requirements to expect
 Some new dependencies will be required (eg. Old TFA Base, Round Progress Bar, etc). This fills in the missing gaps (Why reinvent the wheel?) and keeps everything working as intended after development ends. 
 <br></br>
