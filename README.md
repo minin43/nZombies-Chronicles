@@ -25,13 +25,13 @@ https://discord.gg/c2nD63r5tV
 * Crash Saver
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
+* PaP Camo Chooser
 * [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/README.md) 
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
 * [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
 * [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
 * Over 300+ NZC Weapon Configs
 * Over 30+ NZC Map Configs 
-* Pack-a-punch Camo Chooser
 * Settings Menu
 
 ### New requirements to expect
