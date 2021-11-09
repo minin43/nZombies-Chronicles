@@ -22,6 +22,7 @@ https://discord.gg/c2nD63r5tV
 * Anti-Cheat
 * Bigger Creative Mode menu
 * [Better Collisions](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/BETTERCOLLISIONS.md) 
+* Client Settings Menu
 * Crash Saver
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
@@ -32,7 +33,6 @@ https://discord.gg/c2nD63r5tV
 * [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
 * Over 300+ NZC Weapon Configs
 * Over 30+ NZC Map Configs 
-* Client Settings Menu
 
 ### New requirements to expect
 Some new dependencies will be required (eg. Old TFA Base). This fills in the missing gaps (Why reinvent the wheel?) and keeps everything working as intended after development ends. 
