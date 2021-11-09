@@ -23,12 +23,16 @@ https://discord.gg/c2nD63r5tV
 * Bigger Creative Mode menu
 * [Better Collisions](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/BETTERCOLLISIONS.md) 
 * Crash Saver
+* HUD Perk Icon Chooser
+* HUD Gun Tile Chooser
 * [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/README.md) 
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
 * [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
 * [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
 * Over 300+ NZC Weapon Configs
 * Over 30+ NZC Map Configs 
+* Pack-a-punch Camo Chooser
+* Settings Menu
 
 ### New requirements to expect
 Some new dependencies will be required (eg. Old TFA Base, Round Progress Bar, etc). This fills in the missing gaps (Why reinvent the wheel?) and keeps everything working as intended after development ends. 
