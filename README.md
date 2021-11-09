@@ -27,7 +27,7 @@ https://discord.gg/c2nD63r5tV
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
 * [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
 * [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
-* Over 300+ NZC Weapon Configurations
+* Over 300+ NZC Weapon Configs
 * Over 30+ NZC Map Configs 
 
 ### New requirements to expect
