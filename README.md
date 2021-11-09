@@ -21,10 +21,7 @@ https://discord.gg/c2nD63r5tV
 * Almost all missing COD functionality (WAW, BO1, BO2) has been integrated and any previous existing COD stuff has been modified to work exactly as they did in the real games.
 * Anti-Cheat
 * Bigger Creative Mode menu
-* Better Collisions
-   * Bullets & projectiles go through invisible walls and wall blocks properly
-   * Projectiles hit zombies
-   * Players collide with zombies, but cannot stand on them
+* [Better Collisions](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/BETTERCOLLISIONS.md) 
 * Crash Saver
 * [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/README.md) 
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
