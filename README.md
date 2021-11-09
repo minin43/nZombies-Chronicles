@@ -21,7 +21,7 @@ https://discord.gg/c2nD63r5tV
 * Almost all missing COD functionality (WAW, BO1, BO2) has been integrated and any previous existing COD stuff has been modified to work exactly as they did in the real games.
 * Better Collisions
    * Projectiles hit zombies
-   * Players collide with zombies, but cannot cheat on them
+   * Players collide with zombies, but cannot stand on them
    * Bullets & projectiles go through invisible walls and wall blocks properly
 * Anti-Cheat
 * Crash Saver
