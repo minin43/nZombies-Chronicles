@@ -32,6 +32,6 @@ https://discord.gg/c2nD63r5tV
 * [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
    
 ### New requirements to expect
-Some new dependencies will be required (eg. Old TFA Base, Round Progress Bar, etc). This fills in the missing gaps (Why recreate the wheel?) and keeps everything working as intended after development ends. 
+Some new dependencies will be required (eg. Old TFA Base, Round Progress Bar, etc). This fills in the missing gaps (Why reinvent the wheel?) and keeps everything working as intended after development ends. 
 <br></br>
 Due to Copyright uncertainty, these dependencies will *NOT* be hosted on the Steam Workshop nor here on GitHub. You'll be expected to unsubscribe from the Workshop versions.
