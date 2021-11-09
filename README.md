@@ -2,7 +2,7 @@
 Not downloadable yet, coming soon..
 ______
 
-Chronicles is a perfected version of nZombies 1.0 (https://github.com/Zet0rz/nzombies) with everything fixed and many new features introduced.
+Chronicles is a high standards, quality over quantity, perfected version of nZombies 1.0 (https://github.com/Zet0rz/nzombies) with everything fixed and many new features introduced.
 <br></br>
 Getting the COD details right was important, and this was achieved after countless hours of COD Source code research (specifically BO1 and BO2) giving me a clear picture of the inner workings of the original games to accurately recreate them.
 <br></br>
