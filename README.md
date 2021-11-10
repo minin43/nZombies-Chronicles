@@ -1,8 +1,7 @@
-# nZombies-Chronicles
-### Not downloadable yet, coming soon..
-
+# nZombies-Chronicles 
 _The contents of [mit_licensed_code directory](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) has MIT licensed work with each directory containing a license file with copyright to their respective owners._
 
+### Not downloadable yet, coming soon..
 ______
 
 Chronicles is a high standards, quality over quantity, perfected version of nZombies 1.0 (https://github.com/Zet0rz/nzombies) with everything fixed and many new features introduced.
