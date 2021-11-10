@@ -1,5 +1,5 @@
 # nZombies-Chronicles 
-_The contents of the [mit_licensed_code](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) directory has MIT licensed work with each directory containing a license file with copyright to their respective owner(s)._
+_The contents of the [mit_licensed_code](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) directory has MIT licensed work with each directory containing a license file with copyrights to their respective owner(s)._
 
 ### Not downloadable yet, coming soon..
 ______
@@ -29,6 +29,7 @@ https://discord.gg/c2nD63r5tV
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
 * PaP Camo Chooser
+* Record System
 * [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/README.md) 
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
 * [More Map Settings](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Map%20Settings/README.md)
