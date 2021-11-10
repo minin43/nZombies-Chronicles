@@ -1,7 +1,7 @@
 GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
-The contents of the [mit_licensed_code directory](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) has MIT licensed work with each directory containing the license file.
+The contents of the [mit_licensed_code directory](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) has MIT licensed work with each directory containing a license file with copyright to the respective owners.
 <br></br>
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
