@@ -26,6 +26,7 @@ https://discord.gg/c2nD63r5tV
 * [Better Collisions](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/BETTERCOLLISIONS.md) 
 * Client Settings Menu
 * Crash Saver
+* Fixed nzombies.fgd mapping support
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
 * PaP Camo Chooser
