@@ -1,4 +1,4 @@
-# nZombies-Chronicles 
+# nZombies-Chronicles (Not downloadable yet)
 _The contents of the [mit_licensed_code](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) directory has MIT licensed work with each directory containing a license file with copyrights to their respective owner(s)._
 
 ### Not downloadable yet, coming soon..
