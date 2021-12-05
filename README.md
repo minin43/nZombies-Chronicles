@@ -1,5 +1,5 @@
 # What is this branch?
-It's **NOT** Chronicles, it's nZombies 1.0 intending to have Sandbox as its Creative Mode in the future.
+It's **NOT** Chronicles, it's [nZombies 1.0](https://github.com/Zet0rz/nzombies) which will have Sandbox as its Creative Mode.
 
 ## Why?
 I came up with an idea for making Creative Mode better, and this branch is my test to see if it can work. 
