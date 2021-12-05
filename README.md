@@ -6,4 +6,4 @@ I came up with an idea for making Creative Mode better, and this branch is my te
 If it turns out to be successful, it will be included in Chronicles.
 
 ## Should I download it?
-Are you helping me test it? If not then: **NO**, because it's not meant to be a standalone gamemode.
+If I asked for help testing, go for it! Please do. Otherwise, **NO**. It's not a standalone gamemode and therefore should not be played on.
