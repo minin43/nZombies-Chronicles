@@ -24,7 +24,7 @@ https://discord.gg/c2nD63r5tV
 * Anti-Cheat
 * Bigger Creative Mode menu
 * [Better Collisions](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/BETTERCOLLISIONS.md) 
-* Better Easter Egg song support
+* Better Easter Egg URL support
 * Client Settings Menu
 * Crash Saver
 * Fixed nzombies.fgd mapping support
