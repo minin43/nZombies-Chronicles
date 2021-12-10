@@ -1,12 +1,11 @@
 # nZombies-Chronicles (Not downloadable yet)
-___
+
 Chronicles is a high standards, quality over quantity, perfected version of [nZombies 1.0](https://github.com/Zet0rz/nzombies) with everything fixed and many new features introduced.
 <br></br>
 Getting the COD details right was important, and this was achieved after countless hours of COD Source code research (specifically BO1 and BO2) giving me a clear picture of the inner workings of the original games to accurately recreate them.
 <br></br>
 Getting the gamemode out of its broken and unmaintainable state was equally important, and this was also achieved with non-stop bug and exploit fixes, totalling up to 1 and a half years of hard dedicated work.
-
-
+<br></br>
 #### Play on the Dedicated servers
 * 147.135.124.18:27016
 * 135.148.30.13:27016
