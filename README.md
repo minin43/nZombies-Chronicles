@@ -41,4 +41,4 @@ _Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both l
 
 _The contents of the [mit_licensed_code](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) directory has MIT licensed work with each directory containing a license file with copyrights to their respective owner(s)._
 
-_The Map Vote in [mapvote/](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mapvote/) is licensed under Creative Commons Zero v1.0 Universal, created by [Willox](https://github.com/willox) and improved by the community._
+_The Map Vote in [mapvote/](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mapvote/) is licensed under Creative Commons Zero v1.0 Universal._
