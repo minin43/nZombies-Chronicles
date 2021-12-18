@@ -7,8 +7,8 @@ Getting the COD details right was important, and this was achieved after countle
 Getting the gamemode out of its broken and unmaintainable state was equally important, and this was also achieved with non-stop bug and exploit fixes, totalling up to 1 and a half years of hard dedicated work.
 <br></br>
 #### Play on the Dedicated servers
-* 147.135.124.18:27016
-* 135.148.30.13:27016
+* 147.135.124.18:27016 (US)
+* 51.75.165.115:27016 (UK)
 
 #### Join the Discord
 https://discord.gg/c2nD63r5tV
