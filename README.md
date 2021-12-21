@@ -23,6 +23,7 @@ ___
 * Better Easter Egg URL support
 * Client Settings Menu
 * Crash Saver
+* Free Roam Spectator view
 * Fixed nzombies.fgd mapping support
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
