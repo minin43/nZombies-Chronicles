@@ -27,6 +27,7 @@ ___
 * Fixed nzombies.fgd mapping support
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
+* [Improved Networking](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/IMPROVEDNETWORKING.md)
 * PaP Camo Chooser
 * Record System
 * [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/README.md) 
