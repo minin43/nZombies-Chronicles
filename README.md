@@ -21,6 +21,7 @@ ___
 * Bigger Creative Mode menu
 * [Better Collisions](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/BETTERCOLLISIONS.md) 
 * Better Easter Egg URL support
+* Better ragdoll system
 * Client Settings Menu
 * Crash Saver
 * Free Roam Spectator view
