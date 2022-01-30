@@ -5,3 +5,4 @@
    * Players collide with zombies, but cannot stand on them
    * Players no longer get stuck inside things from going down or being revived
    * Players can no longer move through barricades 
+   * Zombies don't collide with eachother
