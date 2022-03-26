@@ -1,1 +1,0 @@
-UnLitGeneric{  "$basetexture" "models/nz_der_riese_waw/mtl_zombie_teleporter_glow"  "$model" 1  "Proxies"  {		"TextureScroll"			{			"Texturescrollvar" "$Basetexturetransform"			"Texturescrollrate" "1"			"Texturescrollangle" "270"			}  }}
