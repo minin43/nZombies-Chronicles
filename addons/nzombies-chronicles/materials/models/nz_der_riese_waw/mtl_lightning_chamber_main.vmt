@@ -1,0 +1,1 @@
+VertexLitGeneric{  "$basetexture" "models/nz_der_riese_waw/mtl_lightning_chamber_main"  "$translucent" 1  "Proxies"  {		"TextureScroll"			{			"Texturescrollvar" "$Basetexturetransform"			"Texturescrollrate" "2"			"Texturescrollangle" "280"			}  }}

@@ -1,0 +1,1 @@
+VertexLitGeneric{  "$basetexture" "models/nz_der_riese_waw/mtl_zombie_teleporter_glow2"  "Proxies"  {		"TextureScroll"			{			"Texturescrollvar" "$Basetexturetransform"			"Texturescrollrate" "0.2"			"Texturescrollangle" "270"			}  }}

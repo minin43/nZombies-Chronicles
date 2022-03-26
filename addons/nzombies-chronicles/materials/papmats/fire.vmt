@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "papmats/fire"
+	"$selfillum" "1"
+	"$selfillummaskscale" "10"
+}

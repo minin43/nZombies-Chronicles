@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$baseTexture" "models\roach\bo1_overhaul\gchar_gen_gib_decals"
+	$alphatest 1
+}

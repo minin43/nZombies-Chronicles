@@ -1,0 +1,18 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/roach/codz_megapack/bo1/zombie/c_zom_zombie_barechest_body_c"
+	"$bumpmap" "models/roach/codz_megapack/bo1/zombie/c_zom_zombie_barechest_body_n"
+
+	"$color2"		"[0.87 0.87 0.87]"
+	
+	"$phong" "1"
+	"$phongfresnelranges"			"[0.3 0.7 1.5]"
+	$basemapalphaphongmask 1
+	
+	"$phongalbedotint" 0
+
+	"$detail" "models/roach/codz_megapack/bo1/global/skin_pore_detail_test"
+	$detailscale 1
+	$detailblendmode 7
+	$detailblendfactor 1
+}

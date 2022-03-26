@@ -1,0 +1,23 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models\codbo\other\AutoTurret\mtl_auto_turret_bipod"
+	"$bumpmap"     "models\codbo\other\normal"
+
+	"$phong" "1"
+	"$phongboost" "3.5"
+	"$phongexponent" "10"
+	"$phongfresnelranges" "[2 1.2 8]"
+	"$phongalbedotint" "1"
+	"$normalmapalphaenvmapmask" "1"
+
+
+	"$phongexponenttexture" "models\codbo\other\exponent"
+
+
+	"$cloakPassEnabled" 		"1"				
+	"$nocull" "1"
+
+
+
+
+}
