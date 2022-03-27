@@ -1652,7 +1652,7 @@ function ENT:StartBodyUpdateSequence(sequence_name, cb, playback_rate, priority,
 	return {["duration"] = time, ["endtime"] = time / playback_rate}
 end
 
-function ENT:StopBodyUpdateSequence(sequence_name) -- Custom stop sequency created by Ethorbit
+function ENT:StopBodyUpdateSequence(sequence_name) -- Stop the sequence name played with: StartBodyUpdateSequence, created by: Ethorbit
 	for k,anim in pairs(self.AllowedAnimations) do
 		if anim.sequence_name == sequence_name then
 			self.StoppingAnimations[k] = false
