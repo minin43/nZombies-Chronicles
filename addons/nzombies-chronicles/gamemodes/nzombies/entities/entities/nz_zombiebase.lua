@@ -1593,7 +1593,7 @@ end
 function ENT:OnAttack(target) -- OVERRIDE
 end
 
-function ENT:PlayAnimation(name, speed)
+function ENT:PlayAnimation(name, speed) -- Play an animation without disrupting movement. Created by: Ethorbit.
 	local len = self:SetSequence( name )
 	speed = speed or 1
 
@@ -1610,6 +1610,7 @@ ENT.StoppingAnimations = {}
 
 -- Adds the activity to the BodyUpdate queue, if it has the highest priority,
 -- GetBodyUpdateActivity() will return it until the animation or specified time is up
+-- (Created by Ethorbit)
 function ENT:StartBodyUpdateSequence(sequence_name, cb, playback_rate, priority, time)
 	if self:GetTimedOut() or self:GetClimbing() or self:GetJumping() or self:IsGettingPushed() then return end
 	if self:GetWandering() then return end
@@ -1652,7 +1653,7 @@ function ENT:StartBodyUpdateSequence(sequence_name, cb, playback_rate, priority,
 	return {["duration"] = time, ["endtime"] = time / playback_rate}
 end
 
-function ENT:StopBodyUpdateSequence(sequence_name)
+function ENT:StopBodyUpdateSequence(sequence_name) -- Custom stop sequency created by Ethorbit
 	for k,anim in pairs(self.AllowedAnimations) do
 		if anim.sequence_name == sequence_name then
 			self.StoppingAnimations[k] = false
@@ -1661,19 +1662,19 @@ function ENT:StopBodyUpdateSequence(sequence_name)
 	end
 end
 
-function ENT:IsPlayingCustomBodyActivity()
+function ENT:IsPlayingCustomBodyActivity() -- Check if an animation from StartBodyUpdateSequence is running, created by: Ethorbit
 	return #self.AllowedAnimations > 0
 end
 
-function ENT:GetBodyUpdateData()
+function ENT:GetBodyUpdateData() -- Get current BodyUpdate sequence details, created by: Ethorbit
 	return #self.AllowedAnimations > 0 and self.AllowedAnimations[1] or nil
 end
 
-function ENT:GetBodyUpdateActivity() -- For use inside BodyUpdate, returns the active animation with the highest priority. Set the CalcIdeal to this
+function ENT:GetBodyUpdateActivity() -- For use inside BodyUpdate, returns the active animation with the highest priority. Set the CalcIdeal to this. Created by: Ethorbit
 	return #self.AllowedAnimations > 0 and self.AllowedAnimations[1].activity_name or nil
 end
 
-function ENT:PlayIdleAndWait( name, speed )
+function ENT:PlayIdleAndWait( name, speed ) -- Play an animation, but don't move when doing it. Created by: Ethorbit
 	local data = self:PlayAnimation(name, speed)
 
 	while ( true ) do
@@ -1697,7 +1698,7 @@ function ENT:PlayIdleAndWait( name, speed )
 
 end
 
-function ENT:PlayAttackAndWait( name, speed )
+function ENT:PlayAttackAndWait( name, speed ) -- Modified by Ethorbit, moved the animating part to its own method
 	local data = self:PlayAnimation(name, speed)
 
 	while ( true ) do
