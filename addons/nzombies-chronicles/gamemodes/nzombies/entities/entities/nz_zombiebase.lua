@@ -74,7 +74,7 @@ AccessorFunc( ENT, "bAttacking", "Attacking", FORCE_BOOL)
 AccessorFunc( ENT, "bClimbing", "Climbing", FORCE_BOOL)
 AccessorFunc( ENT, "bStop", "Stop", FORCE_BOOL)
 
--- fleeing
+-- fleeing (by Ethorbit)
 AccessorFunc( ENT, "bFleeing", "Fleeing", FORCE_BOOL)
 AccessorFunc( ENT, "fLastFlee", "LastFlee", FORCE_NUMBER)
 
@@ -510,7 +510,7 @@ function ENT:SoundThink()
 	end
 end
 
-function ENT:GetFleeDestination(target)
+function ENT:GetFleeDestination(target) -- Get the place where we are fleeing to, added by: Ethorbit
 	return self:GetPos() + (self:GetPos() - target:GetPos()):GetNormalized() * (self.FleeDistance or 300)
 end
 
@@ -519,7 +519,7 @@ function ENT:RunBehaviour()
 	self:SpawnZombie()
 
 	while (true) do
-		if !self:GetStop() and self:GetFleeing() then -- Admittedly this was rushed, I took no time to understand how this can be achieved with nextbot pathing so I just made a short navmesh algorithm for fleeing. Sorry.
+		if !self:GetStop() and self:GetFleeing() then -- Admittedly this was rushed, I took no time to understand how this can be achieved with nextbot pathing so I just made a short navmesh algorithm for fleeing. Sorry. Created by Ethorbit.
 			self:SetTimedOut(false)
 
 			local target = self:GetTarget()
@@ -1111,7 +1111,7 @@ function ENT:FleeTarget(time) -- Added by Ethorbit, instead of pathing TO a play
 	end)
 end
 
-function ENT:StopFleeing()
+function ENT:StopFleeing() -- Cancel the fleeing, created by: Ethorbit
 	--self:SetLastFlee(CurTime())
 	self:SetFleeing(false)
 end
