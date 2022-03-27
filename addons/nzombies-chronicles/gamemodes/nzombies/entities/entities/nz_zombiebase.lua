@@ -1610,8 +1610,7 @@ ENT.StoppingAnimations = {}
 
 -- Adds the activity to the BodyUpdate queue, if it has the highest priority,
 -- GetBodyUpdateActivity() will return it until the animation or specified time is up
--- (Created by Ethorbit)
-function ENT:StartBodyUpdateSequence(sequence_name, cb, playback_rate, priority, time)
+function ENT:StartBodyUpdateSequence(sequence_name, cb, playback_rate, priority, time) -- (Created by Ethorbit)
 	if self:GetTimedOut() or self:GetClimbing() or self:GetJumping() or self:IsGettingPushed() then return end
 	if self:GetWandering() then return end
 	if self.FrozenTime and CurTime() < self.FrozenTime then return end
