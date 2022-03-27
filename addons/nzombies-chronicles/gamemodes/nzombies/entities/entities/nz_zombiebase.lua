@@ -311,7 +311,7 @@ function ENT:StableBecomeRagdoll(dmginfo) -- Deletes zombie, tells clients to re
 	)
 end
 
-function ENT:ScaleNPCDamage( npc, hitgroup, dmginfo )
+function ENT:ScaleNPCDamage( npc, hitgroup, dmginfo ) -- Added from the nextbot base to make it more obvious, by: Ethorbit
 	if hitgroup == HITGROUP_LEFTARM ||
 	hitgroup == HITGROUP_RIGHTARM ||
 	hitgroup == HITGROUP_LEFTLEG ||
@@ -329,8 +329,7 @@ function ENT:SetMaxHealth(hp) -- ^^^
 	self.MaxAllowedHealth = hp
 end
 
--- Used to see how long a zombie has existed for
-function ENT:GetLastSpawnTime()
+function ENT:GetLastSpawnTime() -- Used to see how long a zombie has existed for, added by: Ethorbit
 	return self.LastSpawnTime
  end
 
@@ -343,7 +342,7 @@ function ENT:StatsInit()
 	--print("PLEASE Override the base class!")
 end
 
-function ENT:MakeDust(magnitude)
+function ENT:MakeDust(magnitude) -- Added by Ethorbit, moved the original base's dust code here.
 	local effectData = EffectData()
 	effectData:SetStart( self:GetPos() + Vector(0,0,32) )
 	effectData:SetOrigin( self:GetPos() + Vector(0,0,32) )
@@ -574,7 +573,7 @@ function ENT:RunBehaviour()
 	end
 end
 
-function ENT:DissolveEffect()
+function ENT:DissolveEffect() -- Places a disintegration effect on us, created by: Ethorbit
 	local effect = EffectData()
 	effect:SetScale(1)
 	effect:SetMagnitude(1)
@@ -589,7 +588,7 @@ function ENT:DissolveEffect()
 	self:EmitSound("ambient/energy/spark" .. math.random(1, 6) .. ".wav")
 end
 
-function ENT:OnTakeDamage(dmginfo)
+function ENT:OnTakeDamage(dmginfo) -- Added by Ethorbit for implementation of the ^^^
 	if SERVER then
 		if (dmginfo:GetDamageType() == DMG_DISSOLVE and dmginfo:GetDamage() >= self:Health() and self:Health() > 0) then
 			self:DissolveEffect()
@@ -817,7 +816,7 @@ function ENT:SetTimedOut()
 	--ENT:IsTimedOut(true)
 end
 
-function ENT:JumpToTargetHeight(height)
+function ENT:JumpToTargetHeight(height) -- Created by Ethorbit, mainly to help combat cheaters
 	local jumpHeight = height or math.abs(self:GetTarget():GetPos()[3] - self:GetPos()[3]) * 1.3
 
 	self.loco:SetJumpHeight(jumpHeight)
@@ -825,7 +824,7 @@ function ENT:JumpToTargetHeight(height)
 	self.loco:SetJumpHeight(self.JumpHeight)
 end
 
-function ENT:TimeOut(time, dont_reaquire_target)
+function ENT:TimeOut(time, dont_reaquire_target) -- Modified by Ethorbit to make use of the Ignore system
 	if !dont_reaquire_target then
 		if !nzRound:InState( ROUND_GO ) then
 			--self:IgnoreTarget(self:GetTarget())
@@ -956,11 +955,11 @@ function ENT:OnContact( ent )
 end
 
 function ENT:OnInjured( dmgInfo )
-	if (IsValid(dmgInfo:GetAttacker()) and dmgInfo:GetAttacker():IsValidZombie()) then -- No team damage
+	if (IsValid(dmgInfo:GetAttacker()) and dmgInfo:GetAttacker():IsValidZombie()) then -- No team damage, added by: Ethorbit
 		dmgInfo:ScaleDamage(0)
 	return end
 
-	if (math.floor(self:Health() - dmgInfo:GetDamage()) <= 0) then -- Die from floats correctly
+	if (math.floor(self:Health() - dmgInfo:GetDamage()) <= 0) then -- Die from floats correctly, added by: Ethorbit
 		dmgInfo:SetDamage(self:Health() * 2)
 		self.ForceKilled = true
 	return end
@@ -1004,7 +1003,7 @@ function ENT:OnKilled(dmgInfo)
 	self:OnPostKilled()
 end
 
-function ENT:TryDecapitation(dmgInfo)
+function ENT:TryDecapitation(dmgInfo) -- Added by Ethorbit to move the logic out of OnKilled
 	local headbone = self.HeadBone and self:LookupBone(self.HeadBone) or self:LookupBone("ValveBiped.Bip01_Head1")
 	if !headbone then headbone = self:LookupBone("j_head") end
 	if headbone then
