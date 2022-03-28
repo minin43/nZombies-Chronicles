@@ -1359,7 +1359,7 @@ function ENT:TargetInAttackRange()
 	return self:TargetInRange( self:GetAttackRange() )
 end
 
-function ENT:TargetInZRange() -- Made to help detect when players are blocking zombies just out of their reach
+function ENT:TargetInZRange() -- Made to help detect when players are blocking zombies just out of their reach, created by: Ethorbit
 	if self:GetVelocity() != Vector(0,0,0) then return false end -- We only really care if they have blocked us from moving
 
 	local target = self:GetTarget()
@@ -1561,7 +1561,7 @@ function ENT:Attack( data, force )
 		--end
 	end
 
-	if self:GetRunSpeed() > 60 then -- This wasn't a thing in original COD, but I wanted to allow moving while hitting only when they are slow, just to add some more risk.
+	if self:GetRunSpeed() > 60 then -- This wasn't a thing in original COD, but I wanted to allow moving while hitting only when they are slow, just to add some more risk. Added by: Ethorbit
 		self:TimedEvent(0.2, function()
 			if IsValid(self) then
 				self:SetAttackingPaused(true)
@@ -1585,7 +1585,7 @@ function ENT:Attack( data, force )
 	end
 end
 
-function ENT:CanHurtTarget() -- OVERRIDE
+function ENT:CanHurtTarget() -- OVERRIDE, added by: Ethorbit
 	return true
 end
 
@@ -1932,7 +1932,7 @@ function ENT:InFieldOfView( pos )
 
 end
 
-function ENT:IsAllowedToMove()
+function ENT:IsAllowedToMove() -- Added by Ethorbit to help with my new stutter and speed fixes
 	if self:GetTargetUnreachable() then
 		return false
 	end
@@ -2054,7 +2054,7 @@ function ENT:GetCenterBounds()
 	return {["mins"] = mins, ["maxs"] = maxs}
 end
 
-function ENT:TraceSelf(start, endpos, dont_adjust, line_trace) -- Creates a hull trace the size of ourself, handy if you'd want to know if we'd get stuck from a position offset /Ethorbit
+function ENT:TraceSelf(start, endpos, dont_adjust, line_trace) -- Creates a hull trace the size of ourself, handy if you'd want to know if we'd get stuck from a position offset, created by: Ethorbit
 	local bounds = self:GetCenterBounds()
 
 	if !dont_adjust then
@@ -2225,7 +2225,7 @@ function ENT:TimedEvent(time, callback)
 	end)
 end
 
-function ENT:TimedEvents(time, amount, callback)
+function ENT:TimedEvents(time, amount, callback) -- Added by Ethorbit for a repeating TimedEvent
 	self:TimedEvent(time, function()
 		callback()
 
@@ -2236,7 +2236,7 @@ function ENT:TimedEvents(time, amount, callback)
 	end)
 end
 
-function ENT:Push(vec)
+function ENT:Push(vec) -- Push us towards a vector, created by: Ethorbit
 	if CurTime() < self:GetLastPush() + 0.2 or !self:IsOnGround() then return end
 
 	self.GettingPushed = true
@@ -2249,7 +2249,7 @@ function ENT:Push(vec)
 	self:SetLastPush( CurTime() )
 end
 
-function ENT:ApplyRandomPush( power )
+function ENT:ApplyRandomPush( power ) -- Push us in a random direction with the provided amount of force, created by: Ethorbit
 	power = power or 100
 
 	local vec = self.loco:GetVelocity() + VectorRand() * power
@@ -2257,7 +2257,7 @@ function ENT:ApplyRandomPush( power )
 	self:Push(vec)
 end
 
-function ENT:IsGettingPushed()
+function ENT:IsGettingPushed() -- Check if we're :Push'd, created by: Ethorbit
 	return self.GettingPushed
 end
 
@@ -2290,7 +2290,7 @@ function ENT:GetTargetNavArea()
 	return self:HasTarget() and navmesh.GetNearestNavArea( self:GetTarget():GetPos(), false, 100)
 end
 
-function ENT:SetTarget( target )
+function ENT:SetTarget( target ) -- Modified by Ethorbit for better support
 
 	-- if self:GetTargetUnreachable() then
 	-- 	self:SetTarget(nil)
@@ -2310,7 +2310,7 @@ function ENT:SetTarget( target )
 	self:OnNewTarget(target)
 end
 
-function ENT:OnNewTarget(target) -- OVERRIDE
+function ENT:OnNewTarget(target) -- OVERRIDE, created by: Ethorbit
 end
 
 function ENT:IsTarget( ent )
@@ -2321,7 +2321,7 @@ function ENT:RemoveTarget()
 	self:SetTarget( nil )
 end
 
-function ENT:IsValidTarget( ent )
+function ENT:IsValidTarget( ent ) -- Modified by Ethorbit for better support
 	if !ent then return false end
 
 	if IsValid(ent) then
@@ -2336,7 +2336,7 @@ function ENT:GetIgnoredTargets()
 	return self.tIgnoreList
 end
 
-function ENT:IgnoreTarget( target )
+function ENT:IgnoreTarget( target ) -- Modified by Ethorbit for better support
 	if (IsValid(target)) then
 		if !target:IsPlayer() and (target:GetTargetPriority() == TARGET_PRIORITY_ALWAYS or target:GetTargetPriority() == TARGET_PRIORITY_SPECIAL) then return end -- Ignoring them would go against the very purpose of these target priorities
 		self.tIgnoreList[target] = {
@@ -2346,15 +2346,15 @@ function ENT:IgnoreTarget( target )
 	end
 end
 
-function ENT:AllowTarget(target)
+function ENT:AllowTarget(target) -- Remove target from the Ignore List, created by: Ethorbit
 	self.tIgnoreList[target] = nil
 end
 
-function ENT:IsIgnoredTarget(ent)
+function ENT:IsIgnoredTarget(ent) -- Modified by Ethorbit ^^^^^^^^
 	return self.tIgnoreList[ent] != nil and IsValid(self.tIgnoreList[ent].ent)
 end
 
-function ENT:FreeIgnores() -- Stop ignoring targets that don't need to be ignored still
+function ENT:FreeIgnores() -- Stop ignoring targets that don't need to be ignored still, created by: Ethorbit
 	for _,v in pairs(self.tIgnoreList) do
 		if (IsValid(v.ent)) then
 			if (self:TargetInRange(self:GetAttackRange() * 2)) then self.tIgnoreList[v.ent] = nil end
