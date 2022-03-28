@@ -1,10 +1,10 @@
 AddCSLuaFile( )
 
 ENT.Type = "anim"
- 
+
 ENT.PrintName		= "invis_wall_zombie"
-ENT.Author			= "Ethorbit & Zet0r"
-ENT.Contact			= "youtube.com/Zet0r"
+ENT.Author			= "Ethorbit"
+ENT.Contact			= ""
 ENT.Purpose			= "Block everything except zombies"
 ENT.Instructions	= ""
 
@@ -30,13 +30,13 @@ function ENT:Initialize()
 	if SERVER then
 		self:SetUseType(SIMPLE_USE)
 	end
-	
+
 	--self:SetCollisionGroup(COLLISION_GROUP_PLAYER_MOVEMENT)
 	--self:SetFilter(true, true)
 end
 
 local ignoreClasses = {
-	"invis_wall", 
+	"invis_wall",
 	"invis_wall_zombie",
 	"wall_block",
 	"wall_block_zombie"
@@ -52,7 +52,7 @@ function ENT:Use(Activator, Caller, UseType, Integer)
 	})
 
 	if IsValid(ent) and !isnumber(Activator.lastInvisUseTime) or IsValid(ent) and isnumber(Activator.lastInvisUseTime) and CurTime() > Activator.lastInvisUseTime
-	and ent:GetClass() != "invis_wall" 
+	and ent:GetClass() != "invis_wall"
 	and ent:GetClass() != "invis_wall_zombie"
 	and ent:GetClass() != "wall_block"
 	and ent:GetClass() != "wall_block_zombie"
@@ -68,14 +68,15 @@ function ENT:Use(Activator, Caller, UseType, Integer)
 end
 
 function ENT:Touch(ent) -- Let zombies walk through us like it's nothing
-	if (IsValid(ent) and nzConfig.ValidEnemies[ent:GetClass()]) then
+	--if (IsValid(ent) and nzConfig.ValidEnemies[ent:GetClass()]) then
+    if ((ent.Type == "nextbot" or ent:IsNPC()) and ent:Health() > 0) then 
 		if (ent:GetCollisionGroup() == COLLISION_GROUP_DEBRIS_TRIGGER) then return end -- They already have this
 		ent.prevCollision = ent:GetCollisionGroup()
 		ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 	end
 
 	ent.touchingzombiewall = true
-	timer.Simple(0.1, function() 
+	timer.Simple(0.1, function()
 		if !IsValid(ent) then return end
 		ent.touchingzombiewall = false
 	end)

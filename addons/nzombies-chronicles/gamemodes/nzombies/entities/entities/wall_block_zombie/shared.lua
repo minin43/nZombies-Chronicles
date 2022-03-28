@@ -1,9 +1,9 @@
 AddCSLuaFile( )
 
 ENT.Type = "anim"
- 
+
 ENT.PrintName		= "wall_block_zombie"
-ENT.Author			= "Ethorbit, Alig96 & Zet0r"
+ENT.Author			= "Ethorbit"
 ENT.Contact			= "Don't"
 ENT.Purpose			= ""
 ENT.Instructions	= ""
@@ -37,7 +37,7 @@ function ENT:SetFilter(players, zombies)
 end]]
 
 local ignoreClasses = {
-	"invis_wall", 
+	"invis_wall",
 	"invis_wall_zombie",
 	"wall_block",
 	"wall_block_zombie"
@@ -53,7 +53,7 @@ function ENT:Use(Activator, Caller, UseType, Integer)
 	})
 
 	if IsValid(ent) and !isnumber(Activator.lastInvisUseTime) or IsValid(ent) and isnumber(Activator.lastInvisUseTime) and CurTime() > Activator.lastInvisUseTime
-	and ent:GetClass() != "invis_wall" 
+	and ent:GetClass() != "invis_wall"
 	and ent:GetClass() != "invis_wall_zombie"
 	and ent:GetClass() != "wall_block"
 	and ent:GetClass() != "wall_block_zombie"
@@ -80,36 +80,37 @@ function ENT:Initialize()
 	if SERVER then
 		self:SetUseType(SIMPLE_USE)
 	end
-	
+
 	-- YES! Finally found a way to make bullets pass through without disabling solidity!
 	--self:AddSolidFlags(FSOLID_CUSTOMRAYTEST)
 	--self:AddSolidFlags(FSOLID_CUSTOMBOXTEST)
-	
+
 end
 
-local function GetBosses()
-	local bosses = {}
-
-	for k,v in pairs(nzRound.BossData) do
-		local class = v["class"]
-
-		if class != nil and type(class) == "string" then
-			table.insert(bosses, class)
-		end
-	end
-
-	return bosses
-end
+-- local function GetBosses()
+-- 	local bosses = {}
+--
+-- 	for k,v in pairs(nzRound.BossData) do
+-- 		local class = v["class"]
+--
+-- 		if class != nil and type(class) == "string" then
+-- 			table.insert(bosses, class)
+-- 		end
+-- 	end
+--
+-- 	return bosses
+-- end
 
 function ENT:Touch(ent)
-	if (IsValid(ent) and nzConfig.ValidEnemies[ent:GetClass()] || IsValid(ent) and table.HasValue(GetBosses(), ent:GetClass())) then
+	--if (IsValid(ent) and nzConfig.ValidEnemies[ent:GetClass()] || IsValid(ent) and table.HasValue(GetBosses(), ent:GetClass())) then
+	if ((ent.Type == "nextbot" or ent:IsNPC()) and ent:Health() > 0) then
 		if (ent:GetCollisionGroup() == COLLISION_GROUP_DEBRIS_TRIGGER) then return end -- They already have this
 		ent.prevCollision = ent:GetCollisionGroup()
 		ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 	end
 
 	ent.touchingzombiewall = true
-	timer.Simple(0.1, function() 
+	timer.Simple(0.1, function()
 		if !IsValid(ent) then return end
 		ent.touchingzombiewall = false
 	end)
