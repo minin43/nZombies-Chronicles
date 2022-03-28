@@ -1,10 +1,10 @@
 AddCSLuaFile( )
 
 ENT.Type = "anim"
- 
+
 ENT.PrintName		= "anticheat_exclude"
-ENT.Author			= "Zet0r & Ethorbit"
-ENT.Contact			= "youtube.com/Zet0r"
+ENT.Author			= "Ethorbit"
+ENT.Contact			= ""
 ENT.Purpose			= "Stops Anti-Cheat from working in these zones"
 ENT.Instructions	= "Place where you want players to cheat at"
 

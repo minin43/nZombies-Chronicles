@@ -1,10 +1,10 @@
 AddCSLuaFile( )
 
 ENT.Type = "anim"
- 
+
 ENT.PrintName		= "anticheat_wall"
-ENT.Author			= "Zet0r & Ethorbit"
-ENT.Contact			= "youtube.com/Zet0r"
+ENT.Author			= "Ethorbit"
+ENT.Contact			= ""
 ENT.Purpose			= "Immediately marks those inside as cheating."
 ENT.Instructions	= "Place where you don't want players to cheat at"
 
