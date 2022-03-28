@@ -4,7 +4,7 @@ ENT.Type = "anim"
 
 ENT.PrintName		= "nz_script_prop"
 ENT.Author			= "Ethorbit"
-ENT.Purpose			= "A Part prop used to make something at a Workbench"
+ENT.Purpose			= "A pickupable prop that can be used at Workbenches to craft weapons (if the weapon is set)."
 ENT.Instructions	= ""
 ENT.Editable = true
 
@@ -21,7 +21,9 @@ function ENT:SetupDataTables() -- Moved all configuration here, so they can be e
 			end
 		end
 	end
-	
+
+	-- TODO: add option 'For Workbench', and have it on by default. Some config creators will not use this for workbench purposes..
+	-- TODO: add optional ID and make the gamemode fire pickup hooks for props and push the ID and weapon class along with it, one for picked up, dropped and all collected.
 	self:NetworkVar( "String", 0, "BuildClass", {KeyName = "nz_scriptprop_buildclass", Edit = {type = "Combo", title = "Weapon this part makes", values = classes, order = -1}} )
 	-- Invalidate based on Workbench buildclass
 	self:NetworkVarNotify("BuildClass", function(ent, name, old, new)
@@ -39,7 +41,7 @@ function ENT:SetupDataTables() -- Moved all configuration here, so they can be e
 
 	self:NetworkVar( "Bool", 0, "Invalid")
 	--self:SetBuildClass("")
-end	
+end
 
 function ENT:Initialize()
 	self:Enable()
@@ -78,10 +80,10 @@ end
 
 function ENT:Disable() -- When the entity will appear to no longer exist and disable interactivity
 	self.bDisabled = true
-	
+
 	if SERVER then
 		self:SetRenderMode(RENDERMODE_NONE)
-		self:SetModelScale(0) -- Just incase, sometimes rendermode_none still shows for people	
+		self:SetModelScale(0) -- Just incase, sometimes rendermode_none still shows for people
 	end
 
 	self:StartRespawnTimer()
@@ -96,7 +98,7 @@ function ENT:Pickup() -- A player picked us up
 end
 
 function ENT:Respawn() -- 'Respawn' AKA reset ourselves at a random part position
-	if nzParts.Data and nzParts.Data[self:GetModel()] then 
+	if nzParts.Data and nzParts.Data[self:GetModel()] then
 		local spawn_data = table.Random(nzParts.Data[self:GetModel()])
 		if spawn_data then
 			self:SetPos(spawn_data.pos)
@@ -110,7 +112,7 @@ end
 
 function ENT:StartRespawnTimer(time) -- Force respawn/enable after this many seconds
 	if !nzMapping.Settings.buildablesforcerespawn then return end -- Config creator does not want parts to respawn themselves
-	
+
 	-- Just in case someone's greifing or doesn't know what to do with the part
 	local time = time or 720
 	timer.Create("ForceResetPart" .. self:EntIndex(), time, 1, function()
@@ -139,8 +141,8 @@ function ENT:Reset(pos) -- When this needs to respawn
 end
 
 function ENT:Use(activator) -- Player is picking this up
-	if (self:IsDisabled() or self:GetInvalid()) then return end	
-	
+	if (self:IsDisabled() or self:GetInvalid()) then return end
+
 	if (IsValid(activator) and activator:IsPlayer()) then
 		activator:PickupPart(self)
 	end
@@ -200,5 +202,5 @@ end
 function ENT:OnRemove()
 	for _,table in pairs(nzBenches:GetAll()) do
 		table:RemoveOldPart(self)
-	end	
+	end
 end
