@@ -70,7 +70,7 @@ if SERVER then
             last_update = CurTime()
         end
 
-        return last_data
+        return last_data or ""
     end
 
     function nzConfig.SendDataToClientside(ply)
