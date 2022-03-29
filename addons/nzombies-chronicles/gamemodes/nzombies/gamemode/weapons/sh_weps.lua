@@ -1,5 +1,6 @@
 local wepMeta = FindMetaTable("Weapon")
 
+-- Replacement and variant code by: Ethorbit
 function nzWeps:GetAllOtherVariants(class) -- Gets all other weapon variants of the passed weapon class
 	--local startTime = os.clock()
 

@@ -105,9 +105,3 @@ function wepMeta:GetPrimaryAmmoType()
 
 	return oldammo -- Return it as well
 end
-
--- Stupid New TFA ammo fix
--- (They broke support for NZ ammo types)
-function wepMeta:GetPrimaryAmmoTypeC(...)
-    return self:GetPrimaryAmmoType()
-end
