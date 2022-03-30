@@ -229,7 +229,7 @@ if SERVER then
 					d:SetInflictor(ply)
 
 					for k,v in pairs(zombies) do
-						if nzConfig.ValidEnemies[v:GetClass()] and v:Health() > 0 then
+						if v.Type == "nextbot" and !v.NZBoss and v:Health() > 0 then
 							v:TakeDamageInfo(d)
 
 							if (v:Health() > 0) then

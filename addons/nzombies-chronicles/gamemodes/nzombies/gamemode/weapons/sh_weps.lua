@@ -171,3 +171,5 @@ function wepMeta:GetPrintName()
 	end
 	return name
 end
+
+-- Cancel sprint on reload, don't allow sprint until reload is finished:
