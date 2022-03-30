@@ -25,6 +25,7 @@ ___
 * [Better Collisions](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/BETTERCOLLISIONS.md) 
 * Better Easter Egg URL support
 * Better Ragdoll System
+* Better TFA Base support
 * Client Settings Menu
 * Crash Saver
 * Free Roam Spectator view
