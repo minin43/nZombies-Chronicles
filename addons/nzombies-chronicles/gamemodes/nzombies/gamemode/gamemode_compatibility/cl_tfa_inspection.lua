@@ -1,107 +1,91 @@
+if !TFA then return end
 -- Add custom NZ properties we want in the HUD
--- Might break with a future update but oh well \o/ they made everything local
 
--- local pad = 4
---
--- local function PanelPaintBars(myself, w, h)
--- 	if not myself.Bar or type(myself.Bar) ~= "number" then return end
--- 	myself.Bar = math.Clamp(myself.Bar, 0, 1)
---
--- 	w = w * 0 + 400--trick linter into letting me replace the argument lol
---
--- 	local xx, ww, blockw, padw
--- 	xx = w * 0.7
--- 	ww = w - xx
---
--- 	local bgcol = ColorAlpha(TFA_INSPECTIONPANEL.BackgroundColor or color_white, (TFA_INSPECTIONPANEL.Alpha or 0) / 2)
---
--- 	if cv_bars_exp and cv_bars_exp:GetBool() then
--- 		draw.RoundedBox(4, xx + 1, 1, ww - 2, h - 2, bgcol)
---
--- 		local w1, h1 = myself:LocalToScreen(xx + 2, 2)
--- 		local w2, h2 = myself:LocalToScreen(xx - 2 + ww * myself.Bar, h - 2)
---
--- 		render.SetScissorRect(w1, h1, w2, h2, true)
--- 		draw.RoundedBox(4, xx + 2, 2, ww - 4, h - 4, TFA_INSPECTIONPANEL.SecondaryColor or color_white)
--- 		render.SetScissorRect(0, 0, 0, 0, false)
---
--- 		return
--- 	end
---
--- 	blockw = math.floor(ww / 15)
--- 	padw = math.floor(ww / 10)
---
--- 	myself.Bars = math.Clamp(math.Round(myself.Bar * 10), 0, 10)
---
--- 	surface.SetDrawColor(bgcol)
--- 	for _ = 0, 9 do
--- 		surface.DrawRect(xx, 2, blockw, h - 5)
--- 		xx = math.floor(xx + padw)
--- 	end
---
--- 	xx = w * 0.7
--- 	surface.SetDrawColor(TFA_INSPECTIONPANEL.BackgroundColor or color_white)
---
--- 	for _ = 0, myself.Bars - 1 do
--- 		surface.DrawRect(xx + 1, 3, blockw, h - 5)
--- 		xx = math.floor(xx + padw)
--- 	end
---
--- 	xx = w * 0.7
--- 	surface.SetDrawColor(TFA_INSPECTIONPANEL.SecondaryColor or color_white)
---
--- 	for _ = 0, myself.Bars - 1 do
--- 		surface.DrawRect(xx, 2, blockw, h - 5)
--- 		xx = math.floor(xx + padw)
--- 	end
--- end
---
---
--- local function TextShadowPaint(myself, w, h)
--- 	if not myself.TextColor then
--- 		myself.TextColor = ColorAlpha(color_white, 0)
--- 	end
---
--- 	draw.NoTexture()
--- 	draw.SimpleText(myself.Text, myself.Font, 2, 2, ColorAlpha(color_black, myself.TextColor.a), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
--- 	draw.SimpleText(myself.Text, myself.Font, 0, 0, myself.TextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
--- end
---
--- local INSPECTION_SECONDARYCOLOR = TFA.Attachments.Colors["secondary"]
--- local secondary_color = ColorAlpha(INSPECTION_SECONDARYCOLOR, TFA_INSPECTIONPANEL.Alpha)
---
--- hook.Add("TFA_InspectVGUI_InfoFinish", "Add_NZ_TFA_Stats", function(wepom, contentpanel)
---     local self = wepom
---     local screenwidth = ScrW()
---     local screenheight = ScrH()
---     local lbound = 32 + pad
---
---     local statspanel = contentpanel:Add("DPanel")
---     statspanel:SetSize(screenwidth - lbound, 50)
---     statspanel.Paint = function() end
---     statspanel:Dock(BOTTOM)
---
---
---     -- DamageHeadshot:
---     local damagehspanel = statspanel:Add("DPanel")
---     damagehspanel:SetSize(400, 24)
---     local damagehstext = damagehspanel:Add("DPanel")
---
---     damagehstext.Think = function(myself)
---         if not IsValid(self) then return end
---         local hsMult = self:GetStat("Primary.DamageHeadshot")
---         if !isnumber(hsMult) then hsMult = 1.5 end
---         local dmgstr = "Headshot Multiplier: " .. hsMult
---
---         myself.Text = dmgstr
---         myself.TextColor = nil
---     end
---
---     damagehspanel.Paint = PanelPaintBars
---     damagehspanel:Dock(TOP)
---
---     damagehstext.Font = "TFA_INSPECTION_SMALL"
---     damagehstext:Dock(LEFT)
---     damagehstext:SetSize(screenwidth - lbound, 24)
---     damagehstext.Paint = TextShadowPaint
--- end)
+-- Might break with a future update but oh well \o/
+-- they made everything local
+
+nZ = nZ or {}
+nZ.TFACompatibility = nZ.TFACompatibility or {} -- hey look, IT'S NOT LOCAL!!!
+
+local TEXT_COLOR = ColorAlpha(TFA.Attachments and TFA.Attachments.Colors and TFA.Attachments.Colors["secondary"] or Color(15, 15, 15, 64), 255)
+local BACKGROUND_COLOR = ColorAlpha(TFA.Attachments and TFA.Attachments.Colors and TFA.Attachments.Colors["background"] or Color(15, 15, 15, 64), 255)
+local pad = 4
+local lbound = 32 + pad
+
+local function TextShadowPaint(myself, w, h)
+	if not myself.TextColor then
+		myself.TextColor = ColorAlpha(color_white, 0)
+	end
+
+	draw.NoTexture()
+	draw.SimpleText(myself.Text, myself.Font, 2, 2, ColorAlpha(color_black, myself.TextColor.a), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+	draw.SimpleText(myself.Text, myself.Font, 0, 0, myself.TextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+end
+
+local function get_realtime_data()
+    return {
+        ["screenwidth"] = ScrW(),
+        ["screenheight"] = ScrH()
+    }
+end
+
+-- This kind of reusable code is what the TFA crew should learn how to make
+-- and then actually made available to modders unlike 90% of their localized shitty spaghetti code
+-- watch and learn :
+local function add_inspection_stat_to_panel(statpanel, text_think_func)
+    if !text_think_func then return end
+    local screenwidth = ScrW()
+    local screenheight = ScrH()
+    local panelwidth = (screenwidth - lbound)
+
+    local newpanel = statpanel:Add("DPanel")
+    newpanel:SetSize(400, 24)
+
+    local textpanel = newpanel:Add("DPanel")
+
+    if text_think_func then
+        textpanel.Think = text_think_func(textpanel)
+    end
+
+    newpanel.Paint = nil
+    newpanel:Dock(TOP)
+
+    textpanel.Font = "TFA_INSPECTION_SMALL"
+    textpanel:Dock(LEFT)
+    textpanel:SetSize(panelwidth, 24)
+    textpanel.Paint = TextShadowPaint
+
+    local w,h = statpanel:GetSize()
+    statpanel:SetSize(panelwidth, h + 24)
+end
+
+function nZ.TFACompatibility:AddInspectionStat(text_think_func) -- WOW! modders can ACTUALLY USE IT!
+    local statpanel = nZ.TFACompatibility.InspectionStatPanel
+    if statpanel then
+        add_inspection_stat_to_panel(statpanel, text_think_func)
+    end
+end
+
+hook.Add("TFA_InspectVGUI_InfoStart", "Add_NZ_TFA_Stats", function(wepom, contentpanel)
+    local self = wepom
+    nZ.TFACompatibility.InspectionStatPanel = contentpanel:Add("DPanel") -- REVOLUTIONARY! Modders can actually access this on the outside because our code isn't retarded
+
+    local statpanel = nZ.TFACompatibility.InspectionStatPanel
+    statpanel:SetSize(0,0)
+    statpanel:Dock(BOTTOM)
+    statpanel:SetBackgroundColor(ColorAlpha(color_white, 0))
+
+    -- Just to create some spacing to separate the NZ from the Normal stats
+    add_inspection_stat_to_panel(statpanel, function() end)
+
+    -- DamageHeadshot:
+    add_inspection_stat_to_panel(statpanel, function(myself)
+        if not IsValid(self) then return end
+        local hsMult = self:GetStat("Primary.DamageHeadshot")
+        if !isnumber(hsMult) then hsMult = 1.5 end
+        local dmgstr = "Headshot Multiplier: " .. hsMult
+
+        myself.Text = dmgstr
+        myself.TextColor = TEXT_COLOR
+    end)
+end)
