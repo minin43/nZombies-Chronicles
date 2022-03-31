@@ -1,6 +1,11 @@
 -- ONLY for overriding!
 -- New stuff for existing things go to extensions/
 
+if CLIENT then
+	-- Get that laggy shit out of here
+	halo.Add = function() end
+end
+
 local oldDamageInfo = oldDamageInfo or DamageInfo
 function DamageInfo()
 	local obj = oldDamageInfo()
