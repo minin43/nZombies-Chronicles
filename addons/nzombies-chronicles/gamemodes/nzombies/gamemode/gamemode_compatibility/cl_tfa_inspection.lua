@@ -1,8 +1,8 @@
-if !TFA then return end
 -- Add custom NZ properties we want in the HUD
 
 -- Might break with a future update but oh well \o/
 -- they made everything local
+if !TFA then return end
 
 nZ = nZ or {}
 nZ.TFACompatibility = nZ.TFACompatibility or {} -- hey look, IT'S NOT LOCAL!!!

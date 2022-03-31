@@ -3,6 +3,7 @@
 
 -- I'll just fix it when it's reported to me
 
+if !TFA then return end
 CreateConVar("cl_tfa_hud_crosshair_color_enemy", 1, FCVAR_NONE, "Should crosshair use enemy color of entity being aimed at?")
 
 local CMIX_MULT = 1

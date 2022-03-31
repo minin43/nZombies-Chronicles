@@ -1,5 +1,6 @@
 -- File and other TFA compatibility files created by Ethorbit
 -- for actual TFA support since they couldn't be bothered to test
+if !TFA then return end
 
 local SWEP = FindMetaTable("Weapon")
 
