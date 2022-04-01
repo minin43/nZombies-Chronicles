@@ -8,6 +8,6 @@
 nzSQL = nzSQL or {}
 
 function nzSQL:ShowError(message)
-    ServerLog("[nZombies]" .. message .. "\n")
+    ServerLog(string.format("[nZombies] %s (%s)\n", message, sql.LastError()))
     PrintMessage(HUD_PRINTTALK, "Critical nZombies error, check the host console for details.")
 end

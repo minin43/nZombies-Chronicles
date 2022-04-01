@@ -10,7 +10,7 @@ nzSQL.Maps = nzSQL.Maps or {}
 
 function nzSQL.Maps:CreateTable()
     if (!sql.TableExists("nz_maps")) then
-        local query = "CREATE TABLE nz_maps {
+        local query = [[CREATE TABLE nz_maps {
             name TEXT PRIMARY KEY,
             category TEXT DEFAULT "",
             seconds_played INT,
@@ -18,10 +18,10 @@ function nzSQL.Maps:CreateTable()
             is_whitelisted INT NOT NULL,
             is_blacklisted INT NOT NULL,
             is_mounted INT DEFAULT 1 NOT NULL
-        }"
+        }]]
 
         if (sql.Query(query) == false) then
-            nzSQL:ShowError("[nZombies] FAILED TO CREATE nzSQL.Maps TABLE! Try restarting to see if this resolves itself, contact a Chronicles dev if not!")
+            nzSQL:ShowError("Error creating nz_maps table.")
         end
     end
 end
