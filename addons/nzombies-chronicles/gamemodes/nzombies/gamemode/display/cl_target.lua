@@ -30,7 +30,7 @@ nzTarget.TraceEnts = {
 			local function showText(newPrice)
 				text = "Press " .. nzDisplay.GetKeyFromCommand("+use") .. " to buy " .. wep.Primary.Ammo .."  Ammo refill for " .. newPrice .. " points."
 			end
-			
+
 			if wepclass == "nz_grenade" then
 				local nade = LocalPlayer():GetItem("grenade")
 				if (LocalPlayer():HasPerk("widowswine") and (!nade or nade and nade.price < 4000)) then
@@ -117,7 +117,7 @@ nzTarget.TraceEnts = {
 				local wep = LocalPlayer():GetActiveWeapon()
 				local replacement = IsValid(wep) and nzWeps:GetReplacement(wep:GetClass())
 				if IsValid(wep) and replacement and replacement.NZOnlyAllowOnePlayerToUse and nzWeps:IsSoloWeaponInUse(replacement.ClassName) then
-					text = "Only one player is allowed to have this upgraded at a time." 
+					text = "Only one player is allowed to have this upgraded at a time."
 				else
 					if IsValid(wep) and wep:HasNZModifier("pap") then
 						if wep.NZRePaPText then
@@ -129,7 +129,7 @@ nzTarget.TraceEnts = {
 								text = "Weapon fully upgraded."
 							else
 								text = "Press " .. nzDisplay.GetKeyFromCommand("+use") .. " to upgrade weapon for 2000 points."
-							end			
+							end
 						else
 							text = "This weapon is already upgraded."
 						end
@@ -216,7 +216,7 @@ nzTarget.TraceEnts = {
 	["nz_teleporter"] = function(ent)
 		local text = ""
 		if !ent:GetUseable() then return text end
-		
+
 		if !nzElec:IsOn() then
 			text = "No Power."
 		elseif ent:GetBeingUsed() then
@@ -225,10 +225,10 @@ nzTarget.TraceEnts = {
 			text = "Teleporter on cooldown!"
 		else
 			if #ent:GetDestinationsUnlocked() <= 0 then
-				text = "A door must be unlocked for this."		
+				text = "A door must be unlocked for this."
 			else
 				-- Its on
-				text = "Press " .. nzDisplay.GetKeyFromCommand("+use") .. " to Teleport for " .. ent:GetPrice() .. " points."		
+				text = "Press " .. nzDisplay.GetKeyFromCommand("+use") .. " to Teleport for " .. ent:GetPrice() .. " points."
 			end
 		end
 
@@ -252,7 +252,7 @@ nzTarget.GetTarget = function()
 		endpos = EyePos() + LocalPlayer():GetAimVector()*150,
 		filter = function(ent) return ent != LocalPlayer() and !ent.NZDisallowText end,
 		mask = MASK_ALL
-	} 
+	}
 	local trace = util.TraceLine( tr )
 	if (!trace.Hit) then return end
 	if (!trace.HitNonWorld) then return end
@@ -289,7 +289,7 @@ nzTarget.GetDoorText = function(ent)
 				text = "You cannot buy this when down."
 			end
 		end
-	elseif ent:GetClass() != "wall_block" and door_data and tonumber(door_data.buyable) != 1 and nzRound:InState( ROUND_CREATE ) then
+	elseif ent:GetClass() != "wall_block" and ent.Base != "wall_block" and door_data and tonumber(door_data.buyable) != 1 and nzRound:InState( ROUND_CREATE ) then
 		text = "This door is locked and cannot be bought in-game."
 		--PrintTable(door_data)
 	end
@@ -300,7 +300,7 @@ end
 nzTarget.GetText = function(ent)
 
 	if !IsValid(ent) then return "" end
-	
+
 	if ent.GetNZTargetText then return ent:GetNZTargetText() end
 
 	local class = ent:GetClass()

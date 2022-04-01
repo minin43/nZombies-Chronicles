@@ -1,5 +1,6 @@
 AddCSLuaFile( )
 
+ENT.Base = "wall_block"
 ENT.Type = "anim"
 
 ENT.PrintName		= "wall_block_zombie"
