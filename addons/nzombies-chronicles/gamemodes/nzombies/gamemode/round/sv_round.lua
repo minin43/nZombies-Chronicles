@@ -23,26 +23,7 @@ function nzRound:Init()
 end
 
 function nzRound:Prepare( time )
-	local spawn_radius_ent = ents.FindByClass("edit_spawn_radius")[1]
-	if (!spawn_radius_ent) then -- There is no custom spawn radius in the config, decide automatically
-		if (!self:GetSpawnRadiusSP()) then
-			self:SetSpawnRadiusSP(2500)
-		end
-
-		if (self:GetSpawnRadiusSP() != 0) then -- 0 means infinite, it should only be INCREASED for Multiplayer
-			self:SetSpawnRadiusMP(math.Clamp(self:GetSpawnRadiusSP() + 1000, 1000, 3000))
-		else
-			self:SetSpawnRadiusMP(self:GetSpawnRadiusSP())
-		end
-	else -- Custom spawn radius exists, use its values
-		self:SetSpawnRadiusSP(spawn_radius_ent:GetRadius())
-
-		if (spawn_radius_ent:GetHasMultiplayerRadius()) then
-			self:SetSpawnRadiusMP(spawn_radius_ent:GetMultiplayerRadius())
-		else
-			self:SetSpawnRadiusMP(self:GetSpawnRadiusSP())
-		end
-	end
+	nzRound:UpdateSpawnRadius()
 
 	-- Update special round type every round, before special state is set
 	local roundtype = nzMapping.Settings.specialroundtype

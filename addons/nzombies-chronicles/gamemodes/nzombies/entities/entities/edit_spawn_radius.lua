@@ -24,7 +24,7 @@ function ENT:SetupDataTables()
 
 	self:NetworkVar("Bool", 0, "HasMultiplayerRadius", { KeyName = "nz_spawn_radius_has_multiplayer", Edit = { category = "Multiplayer", title = "Multiplayer Has Different Radius?", type = "Boolean", order = 2 } });
 	self:NetworkVar("Float", 1, "MultiplayerRadius", { KeyName = "nz_spawn_radius_multiplayer", Edit = { category = "Multiplayer", title = "Multiplayer Radius", type = "Float", min = 0, max = 10000, order = 3 } });
-	
+
 	if SERVER then
 		self:SetRadius(2500)
 		self:SetHasMultiplayerRadius(false)
@@ -35,7 +35,7 @@ function ENT:SetupDataTables()
 end
 
 function ENT:Initialize()
-	if (SERVER) then 
+	if (SERVER) then
 		self:SetModel( "models/maxofs2d/cube_tool.mdl" )
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetUseType(ONOFF_USE)
@@ -46,19 +46,25 @@ function ENT:Initialize()
 				other_spawn_radius:Remove()
 			end
 		end
+
+		nzRound:UpdateSpawnRadius()
 	end
 
 	self:SetMaterial("squad/orangebox")
 	self:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
-	self:SetNextPreviewStop(0) 
+	self:SetNextPreviewStop(0)
 
 	if CLIENT then
 		self:DeactivatePreview()
 	end
 end
 
-function ENT:OnRadiusChanged() 
+function ENT:OnRadiusChanged()
 	self:SetNextPreviewStop(CurTime() + 3)
+
+	if SERVER then
+		nzRound:UpdateSpawnRadius()
+	end
 end
 
 if CLIENT then
@@ -72,7 +78,7 @@ if CLIENT then
 				self:Do3DRadiusPreview()
 			end
 		end)
-	
+
 		hook.Add("HUDPaint", self.hookAlias2D, function()
 			if IsValid(self) then
 				self:Do2DRadiusPreview()
@@ -110,12 +116,12 @@ if CLIENT then
 
 	function ENT:IsUserInRadius()
 		for _,ent in pairs(ents.FindInSphere(self:GetPos(), self:GetRadius())) do
-			if ent == LocalPlayer() then 
-				return true 
+			if ent == LocalPlayer() then
+				return true
 			end
 		end
 	end
-	
+
 	function ENT:Do3DRadiusPreview()
 		if self:IsPreviewAllowed() then
 			-- Visualize the radius:
@@ -125,7 +131,7 @@ if CLIENT then
 			end
 		end
 	end
-	
+
 	function ENT:Do2DRadiusPreview() -- Let them know whether or not they're inside the radius (in case the 3D preview is out of visible bounds)
 		if self:IsPreviewAllowed() and self:IsUserInRadius() then
 			local col = self.PreviewColor
@@ -134,13 +140,13 @@ if CLIENT then
 			surface.DrawRect(0, 0, ScrW(), ScrH())
 		end
 	end
-	
+
 	function ENT:Draw()
 		if ConVarExists("nz_creative_preview") and !GetConVar("nz_creative_preview"):GetBool() and nzRound:InState( ROUND_CREATE ) then
 			self:DrawModel()
 		end
 	end
-	
+
 	function ENT:OnRemove()
 		self:DeactivatePreview()
 	end
