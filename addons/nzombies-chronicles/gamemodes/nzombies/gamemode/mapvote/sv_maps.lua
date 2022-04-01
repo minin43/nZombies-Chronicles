@@ -1,0 +1,84 @@
+-- Map info created by Ethorbit, originally for the servers
+
+-- Refer to https://github.com/Ethorbit/nZombies-Chronicles/wiki/Saving-NZC-data-to-a-MySQL-database
+-- if you want everything to save/load from your MySQL database instead of SQLite.
+
+nzMapVote = nzMapVote or {}
+nzMapVote.MapData = {} -- Cached data
+
+-- local function map_updated(map_name)
+--     local data = nzMapVote:GetMapData(map_name, true)
+--     hook.Run("nzSQL.MapUpdated", data)
+--     nzMapVote.MapData[map_name] = data
+-- end
+
+-- function nzMapVote:GetMapData(map_name, not_cached)
+--     if !not_cached then return nzMapVote.MapData[map_name] end
+--     map_name = map_name or game.GetMap()
+--
+--     local data = hook.Run("nzSQL.GetMapData", map_name)
+--     if data then
+--
+--     return end
+--
+--
+-- end
+--
+-- function nzMapVote:GetAllMapData(not_cached)
+--     if !not_cached then return nzMapVote.MapData end
+--
+--     local maps_data = {}
+--
+--     for _,map in pairs(nzConfig.Maps) do
+--
+--     end
+-- end
+
+-- function nzMapVote:GetWhitelistedMaps()
+--
+-- end
+--
+-- function nzMapVote:GetBlacklistedMaps()
+--
+-- end
+--
+-- function nzMapVote:IsMapWhitelisted(map_name)
+--     map_name = map_name or game.GetMap()
+-- end
+--
+-- function nzMapVote:IsMapBlacklisted(map_name)
+--     map_name = map_name or game.GetMap()
+-- end
+--
+-- function nzMapVote:SetMapCategory(map_name, category_name)
+--     map_updated(map_name)
+-- end
+--
+-- function nzMapVote:SetMapMounted(map_name, is_mounted)
+--     map_updated(map_name)
+-- end
+--
+-- function nzMapVote:SetMapWhitelisted(map_name, is_whitelisted)
+--     map_updated(map_name)
+-- end
+--
+-- function nzMapVote:SetMapBlacklisted(map_name, is_blacklisted)
+--     map_updated(map_name)
+-- end
+
+-- Update current map, remove maps not on the server anymore
+-- hook.Add("Initialize", "NZ_UpdateMapDatabase", function()
+--     local data = nzMapVote:GetAllMapData(true)
+--     nzMapVote.MapData = data
+--     hook.Run("nzSQL.MapUpdated", data)
+--
+--     -- local current_map_list = nzMapVote:GetAllMapData()
+--     --
+--     -- for _,map in pairs(nzConfig.Maps) do
+--     --     if !current_map_list[map.name] then
+--     --         -- Mark as not mounted
+--     --     else
+--     --         -- Mark as mounted if not already
+--     --     end
+--     -- end
+-- end)
