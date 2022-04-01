@@ -24,7 +24,7 @@ ENT.NetworkOnKilled = false
 
 -- Zombie Stuffz
 -- fallbacks
-ENT.DeathDropHeight = 700
+ENT.DeathDropHeight = 99999999999 -- Set to big number by Ethorbit because a drop height limit is retarded IMO
 ENT.StepHeight = 22 --Default is 18 but it makes things easier
 ENT.JumpHeight = 70
 ENT.AttackRange = 65
