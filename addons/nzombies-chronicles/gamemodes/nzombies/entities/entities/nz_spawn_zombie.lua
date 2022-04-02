@@ -18,7 +18,7 @@ AccessorFunc(ENT, "dNextSpawn", "NextSpawn", FORCE_NUMBER)
 
 ENT.NZOnlyVisibleInCreative = true
 
-function ENT:Reset() 
+function ENT:Reset()
 	self:SetActive(false)
 	self.bUnderSpawned = false
 	self:SetSpawnQueue({})
@@ -32,7 +32,7 @@ function ENT:Reset()
 	self:UpdateUnlocked()
 	self:OnReset()
 
-	if SERVER then 
+	if SERVER then
 		self:StopSpawnLoop()
 	end
 end
@@ -51,7 +51,7 @@ end
 function ENT:SpawnLoop(nodelay) -- Loops the zombie spawn functionality (Tried the ENT:Think() approach and it just would NOT stop spawning all of them at once no matter how I coded it, fuck you Gmod)
 	local delay = self:GetDelay() > 0 and self:GetDelay() or 0.1
 	if nodelay then delay = 0 end
-	
+
 	local alias = "SpawningZombies" .. self.Updater:EntIndex()
 	timer.Remove(alias)
 	timer.Create(alias, delay, 1, function()
@@ -59,10 +59,10 @@ function ENT:SpawnLoop(nodelay) -- Loops the zombie spawn functionality (Tried t
 			self:Update()
 
 			if (nzRound:GetZombiesKilled() + nzEnemies:TotalAlive()) + 1 > nzRound:GetZombiesMax() then self:SpawnLoop() return end -- Just don't even try to spawn more, we'd be overspawning..
-			
+
 			for _,spawner in pairs(self:GetSpawnQueue()) do -- Valid spawns are sorted by weight, so we want to loop through them in order
 				self:ClearSpawnQueue()
-	
+
 				if nzRound:InState( ROUND_PROG ) then --and spawner:GetZombiesToSpawn() > 0 then
 					local maxspawns = NZZombiesMaxAllowed != nil and NZZombiesMaxAllowed or 35
 					local extraSpawns = 0
@@ -72,14 +72,14 @@ function ENT:SpawnLoop(nodelay) -- Loops the zombie spawn functionality (Tried t
 							extraSpawns = extraPerPlayer * (#player.GetAllPlayingAndAlive() - 1)
 						end
 					end
-				
+
 					if (maxspawns > nzRound:GetZombiesMax()) then
 						maxspawns = nzRound:GetZombiesMax()
 					end
-					
-					if CurTime() > spawner:GetNextSpawn() and nzEnemies:TotalAlive() < maxspawns + extraSpawns then --and nzEnemies:TotalAlive() < maxspawns + extraSpawns then -- GetConVar("nz_difficulty_max_zombies_alive"):GetInt()				
+
+					if CurTime() > spawner:GetNextSpawn() and nzEnemies:TotalAlive() < maxspawns + extraSpawns then --and nzEnemies:TotalAlive() < maxspawns + extraSpawns then -- GetConVar("nz_difficulty_max_zombies_alive"):GetInt()
 						self.bUnderSpawned = false
-						
+
 						local is_respawn = self.iMarkedRespawns and self.iMarkedRespawns > 0
 						local class = nzMisc.WeightedRandom(self:GetSpawnerData(), "chance")
 						local zombie = ents.Create(class)
@@ -88,18 +88,18 @@ function ENT:SpawnLoop(nodelay) -- Loops the zombie spawn functionality (Tried t
 						-- make a reference to the spawner object used for "respawning"
 						zombie:SetSpawner(spawner)
 						zombie:Activate()
-	
+
 						local zombies = self:GetZombies()
 						zombies[#zombies + 1] = zombie
 						self:SetZombies(zombies)
-	
+
 						self:SpawnedEntity(zombie)
-	
+
 						spawner:DecrementZombiesToSpawn()
 						spawner:IncrementZombiesSpawned()
-						
+
 						hook.Call("OnZombieSpawned", nzEnemies, zombie, spawner, is_respawn )
-						
+
 						if is_respawn then
 							self.iMarkedRespawns = self.iMarkedRespawns - 1
 						end
@@ -151,14 +151,14 @@ function ENT:Update()
 				end
 
 				if close_enough_to_ply then
-					table.insert(self.tValidSpawns, spawn)	
+					table.insert(self.tValidSpawns, spawn)
 				end
 			end
 		end
 	else -- Spawn radius is infinite (which typically means this is a tiny map), just pick random spawners at this point..
 		local spawn = self.Spawners[math.random(#self.Spawners)]
 
-		if spawn and (!any_suitable or spawn:IsSuitable()) and spawn:IsUnlocked() then 
+		if spawn and (!any_suitable or spawn:IsSuitable()) and spawn:IsUnlocked() then
 			table.insert(self.tValidSpawns, spawn)
 		end
 	end
@@ -167,12 +167,12 @@ function ENT:Update()
 	if (#self.tValidSpawns == 0) then
 		local players = player:GetAllPlayingAndAlive()
 		local randPly = players[math.random(#players)]
-		if IsValid(randPly) then 
+		if IsValid(randPly) then
 			local closest_spawner = nil
 			local closest_spawner_dist = nil
-	
+
 			for _,spawn in pairs(self.Spawners) do
-				if (!any_suitable or spawn:IsSuitable()) and spawn:IsUnlocked() then 
+				if (!any_suitable or spawn:IsSuitable()) and spawn:IsUnlocked() then
 					local dist = closest_spawner and closest_spawner:GetPos():DistToSqr(randPly:GetPos()) or spawn:GetPos():DistToSqr(randPly:GetPos())
 					if (dist < (closest_spawner_dist or dist + 1)) then
 						closest_spawner_dist = dist
@@ -180,21 +180,21 @@ function ENT:Update()
 					end
 				end
 			end
-	
+
 			if closest_spawner then
 				table.insert(self.tValidSpawns, closest_spawner)
-			end	
+			end
 		end
 	end
 	---------------------------------------------------------------------------------------------------------------------------------------
 
 	-- Underspawn protection
-	if !self:CanSpawnZombies() then 
+	if !self:CanSpawnZombies() then
 		if !self.bUnderSpawned and self:GetZombiesAlive() <= 0 then -- Uh oh, we're actually underspawning..
 			self.bUnderSpawned = true
 			hook.Run("OnZombieSpawnerUnderspawn", self)
 		end
-	return end 
+	return end
 
 	local spawn = self.tValidSpawns[math.random(#self.tValidSpawns)] -- This is what it does in BO1 and BO2's source code, selects a random spawner
 	self:AddToSpawnQueue(spawn)
@@ -206,7 +206,9 @@ function ENT:UpdateUnlocked()
 			self:SetUnlockedChild(true)
 		end
 
-		self.Updater:SetUnlockedChild(true)
+		if self.Updater.SetUnlockedChild then
+			self.Updater:SetUnlockedChild(true)
+		end
 	end
 end
 
@@ -216,7 +218,7 @@ end
 
 function ENT:IsUnlocked()
 	return !self.link or self.link == "disabled" or nzDoors:IsLinkOpened(self.link)
-end	
+end
 
 function ENT:HasUnlockedChild()
 	return self.bHasUnlockedChild
@@ -258,7 +260,7 @@ function ENT:SetZombies(zombies)
 	self.tZombies = {}
 
 	for _,zombie in pairs(zombies) do -- Add all the zombies from the table that are still valid
-		if (IsValid(zombie)) then 
+		if (IsValid(zombie)) then
 			self.tZombies[#self.tZombies + 1] = zombie
 		end
 	end
@@ -305,7 +307,7 @@ function ENT:GetZombiesAlive() -- Total zombies that we spawned that are still a
 	if (self.Updater and self != self.Updater and self.Updater.GetZombiesAlive) then
 		return self.Updater:GetZombiesAlive()
 	end
-	
+
 	return #self:GetZombies()
 end
 
@@ -359,7 +361,7 @@ function ENT:IsSuitable()
 
 	if (tr.Hit and IsValid(tr.Entity) and tr.Entity:IsPlayer() or !tr.Hit) then -- Doesn't matter if they spawn inside players, collision will auto disable
 		-- We are not allowed to spawn near players
-		if (!self:GetSpawnNearPlayers()) then 
+		if (!self:GetSpawnNearPlayers()) then
 			local entsInRadius = ents.FindInBox(self:GetPos() - Vector(400, 400, 400), self:GetPos() + Vector(400, 400, 400))
 			for _,v in pairs(entsInRadius) do
 				if (IsValid(v) and v:IsPlayer() and v:GetNotDowned() and !v:IsSpectating()) then
@@ -369,7 +371,7 @@ function ENT:IsSuitable()
 				end
 			end
 		end
-		
+
 		-- We are allowed to spawn near players, so just spawn
 		return true
 	end
@@ -403,7 +405,7 @@ function ENT:SetSpawnerAmount(num)
 	if self != self.Updater and self.Updater.SetSpawnerAmount then
         self.Updater:SetSpawnerAmount(num)
     return end
-	
+
     self.iSpawnerAmount = self:GetTotalZombies() + num
 	--hook.Run("OnZombieSpawnerAmountChanged", self, num)
 end
@@ -422,7 +424,7 @@ function ENT:SetActive(bool) -- Starts/Stops spawning our enemies once zombies a
 		if self.Updater.tActiveSpawns then
 			table.insert(self.Updater.tActiveSpawns, self)
 		end
-		
+
 		self.Updater:SpawnLoop(true)
 	else
 		if self.Updater.tActiveSpawns then
@@ -442,8 +444,8 @@ function ENT:IsActive()
 end
 
 function ENT:CanSpawnZombies()
-	if self != self.Updater then 
-		return self.Updater:CanSpawnZombies() 
+	if self != self.Updater then
+		return self.Updater:CanSpawnZombies()
 	end
 
 	return (self:GetTotalZombies() < nzRound:GetZombiesMax() and self:GetTotalZombies() < self:GetSpawnerAmount())
