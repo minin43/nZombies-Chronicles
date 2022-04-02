@@ -80,7 +80,7 @@ nzMapping:AddSaveModule("ZedSpawners", {
 		for k,v in pairs(data) do
 			if (v.spawnertype) then
 				nzMapping:ZedSpawn(v.spawnertype, v.pos, v.link, v.spawnnearplayers, v.customsettings or {})
-			end	
+			end
 		end
 	end,
 	cleanents = function() -- Clean ALL the spawner entities
@@ -175,7 +175,7 @@ nzMapping:AddSaveModule("TrapsLogic", {
 			end
 		end
 	end,
-	cleanents = function() 
+	cleanents = function()
 		return nzTrapsAndLogic:GetAll()
 	end
 })
@@ -413,17 +413,29 @@ nzMapping:AddSaveModule("BlockSpawnsZombie", {
 	savefunc = function()
 		local block_spawns_zombies = {}
 		for _, v in pairs(ents.FindByClass("wall_block_zombie")) do
+			-- Convert the table to a flag string - if it even has any
+			local data = v:GetDoorData()
+			local flagstr
+			if data then
+				flagstr = ""
+				for k2, v2 in pairs(data) do
+					flagstr = flagstr .. k2 .."=" .. v2 .. ","
+				end
+				flagstr = string.Trim(flagstr, ",")
+			end
+
 			table.insert(block_spawns_zombies, {
 			pos = v:GetPos(),
 			angle = v:GetAngles(),
 			model = v:GetModel(),
+			flags = flagstr,
 			})
 		end
 		return block_spawns_zombies
 	end,
 	loadfunc = function(data)
 		for k,v in pairs(data) do
-			nzMapping:BlockSpawnZombie(v.pos, v.angle, v.model)
+			nzMapping:BlockSpawnZombie(v.pos, v.angle, v.model, v.flags)
 		end
 	end,
 	cleanents = {"wall_block_zombie"},

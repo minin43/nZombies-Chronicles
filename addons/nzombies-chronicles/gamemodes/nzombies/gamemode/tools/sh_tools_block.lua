@@ -76,7 +76,7 @@ local models = {
 	"models/nzombies_plates/plate24x24.mdl",
 	"models/nzombies_plates/plate24x32.mdl",
 	"models/nzombies_plates/plate32x32.mdl",
-	
+
 	"models/nzombies_plates/platehole1x1.mdl",
 	"models/nzombies_plates/platehole1x2.mdl",
 	"models/nzombies_plates/platehole2x2.mdl",
@@ -84,7 +84,7 @@ local models = {
 	"models/nzombies_plates/tri1x1.mdl",
 	"models/nzombies_plates/tri2x1.mdl",
 	"models/nzombies_plates/tri3x1.mdl",
-	
+
 	"models/nzombies_plates/plate1x3x1trap.mdl",
 	"models/nzombies_plates/plate1x4x2trap.mdl",
 	"models/nzombies_plates/plate1x4x2trap1.mdl",

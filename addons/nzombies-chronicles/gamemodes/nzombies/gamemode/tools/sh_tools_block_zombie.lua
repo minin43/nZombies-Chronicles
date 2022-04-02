@@ -76,7 +76,7 @@ local models = {
 	"models/nzombies_plates/plate24x24.mdl",
 	"models/nzombies_plates/plate24x32.mdl",
 	"models/nzombies_plates/plate32x32.mdl",
-	
+
 	"models/nzombies_plates/platehole1x1.mdl",
 	"models/nzombies_plates/platehole1x2.mdl",
 	"models/nzombies_plates/platehole2x2.mdl",
@@ -84,7 +84,7 @@ local models = {
 	"models/nzombies_plates/tri1x1.mdl",
 	"models/nzombies_plates/tri2x1.mdl",
 	"models/nzombies_plates/tri3x1.mdl",
-	
+
 	"models/nzombies_plates/plate1x3x1trap.mdl",
 	"models/nzombies_plates/plate1x4x2trap.mdl",
 	"models/nzombies_plates/plate1x4x2trap1.mdl",
@@ -99,10 +99,10 @@ nzTools:CreateTool("zombieblock", {
 	PrimaryAttack = function(wep, ply, tr, data)
 		local ent = tr.Entity
 		if IsValid(ent) and ent:GetClass() == "wall_block_zombie" then
-			nzMapping:BlockSpawnZombie(ent:GetPos(),ent:GetAngles(), data.model, ply)
+			nzMapping:BlockSpawnZombie(ent:GetPos(),ent:GetAngles(), data.model, nil, ply)
 			ent:Remove()
 		else
-			nzMapping:BlockSpawnZombie(tr.HitPos,Angle(90,(tr.HitPos - ply:GetPos()):Angle()[2] + 90,90), data.model, ply)
+			nzMapping:BlockSpawnZombie(tr.HitPos,Angle(90,(tr.HitPos - ply:GetPos()):Angle()[2] + 90,90), data.model, nil, ply)
 		end
 	end,
 	SecondaryAttack = function(wep, ply, tr, data)

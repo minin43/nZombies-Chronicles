@@ -22,7 +22,7 @@ function ENT:Initialize()
 	self.max_planks_var = GetConVar("nz_difficulty_barricade_planks_max")
 	self.points_var = GetConVar("nz_difficulty_barricade_points")
 
-	if !self:GetHasPlanks() then 
+	if !self:GetHasPlanks() then
 		self.NoPlanks = true
 	end
 
@@ -36,26 +36,26 @@ function ENT:Initialize()
 					[6] = {
 						pos = Vector(2.5, 0, 45),
 						ang = Angle(0, 0, 100)
-					},	
+					},
 					[5] = {
-						pos = Vector(-2.5, 0, 23), 
-						ang = Angle(0, 0, 93) 
+						pos = Vector(-2.5, 0, 23),
+						ang = Angle(0, 0, 93)
 					},
 					[4] = {
-						pos = Vector(0, 15, 25), 
-						ang = Angle(0, 0, 10) 
+						pos = Vector(0, 15, 25),
+						ang = Angle(0, 0, 10)
 					},
 					[3] = {
-						pos = Vector(0, -15, 25), 
+						pos = Vector(0, -15, 25),
 						ang = Angle(0, 0, -10)
 					},
 					[2] = {
-						pos = Vector(-2.5, 0, 35), 
-						ang = Angle(0, 0, 85) 
+						pos = Vector(-2.5, 0, 35),
+						ang = Angle(0, 0, 85)
 					},
 					[1] = {
-						pos = Vector(-2.5, 0, 0), 
-						ang = Angle(0, 0, 80) 
+						pos = Vector(-2.5, 0, 0),
+						ang = Angle(0, 0, 80)
 					}
 				}
 			else -- These below aren't jumpable which likely means there's nothing under the barricade so lower the planks:
@@ -63,26 +63,26 @@ function ENT:Initialize()
 					[6] = {
 						pos = Vector(2.5, 0, 30),
 						ang = Angle(0, 0, 100)
-					},	
+					},
 					[5] = {
-						pos = Vector(-2.5, 0, 8), 
-						ang = Angle(0, 0, 93) 
+						pos = Vector(-2.5, 0, 8),
+						ang = Angle(0, 0, 93)
 					},
 					[4] = {
-						pos = Vector(0, 15, 10), 
-						ang = Angle(0, 0, 10) 
+						pos = Vector(0, 15, 10),
+						ang = Angle(0, 0, 10)
 					},
 					[3] = {
-						pos = Vector(0, -15, 10), 
+						pos = Vector(0, -15, 10),
 						ang = Angle(0, 0, -10)
 					},
 					[2] = {
-						pos = Vector(-2.5, 0, 20), 
-						ang = Angle(0, 0, 85) 
+						pos = Vector(-2.5, 0, 20),
+						ang = Angle(0, 0, 85)
 					},
 					[1] = {
-						pos = Vector(-2.5, 0, -15), 
-						ang = Angle(0, 0, 80) 
+						pos = Vector(-2.5, 0, -15),
+						ang = Angle(0, 0, 80)
 					}
 				}
 			end
@@ -132,7 +132,7 @@ function ENT:SetupDataTables()
 end
 
 function ENT:AddPlank(nosound)
-	if !self:GetHasPlanks() then 
+	if !self:GetHasPlanks() then
 		self.NoPlanks = true
 	return end
 
@@ -166,7 +166,7 @@ function ENT:RemovePlank()
 		-- table.RemoveByValue(self.Planks, plank) -- Remove it from the table
 		-- self:RemovePlank() -- and try again
 	--end
-	
+
 	if IsValid(plank) then
 		-- Drop off
 		plank:SetParent(nil)
@@ -180,7 +180,7 @@ function ENT:RemovePlank()
 		-- Remove
 		timer.Simple(2, function() if IsValid(plank) then plank:Remove() end end)
 	end
-	
+
 	table.RemoveByValue(self.Planks, plank)
 	self:SetNumPlanks( self:GetNumPlanks() - 1 )
 	if (self:GetNumPlanks() == 0) then
@@ -210,10 +210,10 @@ function ENT:Use( activator, caller )
 
 	if CurTime() > self.NextPlank then
 		if self:GetHasPlanks() and self:GetNumPlanks() < self:GetMaxAllowedPlanks() then
-			self:AddPlank()	
+			self:AddPlank()
 			if (IsValid(activator)) then
 				local pointAmount = self:GetPoints()
-				if (activator.GetRoundBarricadePoints and isnumber(activator:GetRoundBarricadePoints()) and activator:GetRoundBarricadePoints() + pointAmount < nzRound:GetBarricadePointCap()) then 
+				if (activator.GetRoundBarricadePoints and isnumber(activator:GetRoundBarricadePoints()) and activator:GetRoundBarricadePoints() + pointAmount < nzRound:GetBarricadePointCap()) then
 					activator:GivePoints(pointAmount)
 					activator:SetRoundBarricadePoints(activator:GetRoundBarricadePoints() + pointAmount)
 					hook.Call("XPFromBarrier", nil, activator, self)
@@ -242,7 +242,7 @@ function ENT:SpawnPlank()
 
 	if (!self.Classic and self.PlankPositions and self.PlankPositions[self:GetNumPlanks() + 1]) then
 		-- In COD the planks are ALWAYS in the same positions & angles:
-		if (self:GetNumPlanks()) then 
+		if (self:GetNumPlanks()) then
 			plank:SetParent(self)
 			plank:SetLocalPos(self.PlankPositions[self:GetNumPlanks() + 1].pos)
 			plank:SetLocalAngles(self.PlankPositions[self:GetNumPlanks() + 1].ang)
@@ -307,7 +307,7 @@ local function CollidableEnt(ent)
 end
 
 function IsStuck(ply)
-	local Maxs = Vector(ply:OBBMaxs().X / ply:GetModelScale(), ply:OBBMaxs().Y / ply:GetModelScale(), ply:OBBMaxs().Z / ply:GetModelScale()) 
+	local Maxs = Vector(ply:OBBMaxs().X / ply:GetModelScale(), ply:OBBMaxs().Y / ply:GetModelScale(), ply:OBBMaxs().Z / ply:GetModelScale())
 	local Mins = Vector(ply:OBBMins().X / ply:GetModelScale(), ply:OBBMins().Y / ply:GetModelScale(), ply:OBBMins().Z / ply:GetModelScale())
 
 	local tr = util.TraceHull({
@@ -317,7 +317,7 @@ function IsStuck(ply)
 		mins = Mins, -- ^
 		collisiongroup = COLLISION_GROUP_PLAYER, -- Collides with stuff that players collide with
 		filter = ply
-	})   
+	})
 
 	return tr.Hit
 end
@@ -325,33 +325,33 @@ end
 hook.Add("ShouldCollide", "zCollisionHook", function(ent1, ent2)
 	if IsValid(ent1) and ent1:GetClass() == "breakable_entry" and !ent2:IsPlayer() and ent2.Type != "nextbot" then return false end
 	if IsValid(ent1) and ent1:GetClass() == "breakable_entry_plank" and !ent2:IsPlayer() and ent2.Type != "nextbot" then return false end
-	if IsValid(ent1) and (ent1:GetClass() == "invis_wall" 
+	if IsValid(ent1) and (ent1:GetClass() == "invis_wall"
 						or ent1:GetClass() == "wall_block"
 						or ent1:GetClass() == "invis_wall_zombie"
-						or ent1:GetClass() == "Wall_block_zombie") and !ent2:IsPlayer() and ent2.Type != "nextbot" then return false end
+						or ent1.Base == "wall_block") and !ent2:IsPlayer() and ent2.Type != "nextbot" then return false end
 
 -- 	-- Barricade glitch fixed by Ethorbit:
 	if IsValid(ent1) and ent1:GetClass() == "breakable_entry" and nzConfig.ValidEnemies[ent2:GetClass()] and !ent1:GetTriggerJumps() and ent1.NoPlanks then
 		if !ent2:GetTarget() then return end
-		
+
 		if !ent1.CollisionResetTime then
 			if !IsValid(ent2:GetTarget()) then return end
-			if ent1:GetPos():Distance(ent2:GetTarget():GetPos()) > 80 then 
+			if ent1:GetPos():Distance(ent2:GetTarget():GetPos()) > 80 then
 				--return false
-				ent1:SetSolid(SOLID_NONE) 
+				ent1:SetSolid(SOLID_NONE)
 				ent1.CollisionResetTime = CurTime() + 0.1
 			end
 		end
 	end
-	
+
 	if IsValid(ent2) and ent2:GetClass() == "breakable_entry" and nzConfig.ValidEnemies[ent1:GetClass()] and !ent2:GetTriggerJumps() and ent2.NoPlanks then
 		if !ent1:GetTarget() then return end
 
 		if !ent2.CollisionResetTime then
 			if !IsValid(ent1:GetTarget()) then return end
-			if ent2:GetPos():Distance(ent1:GetTarget():GetPos()) > 80 then 
+			if ent2:GetPos():Distance(ent1:GetTarget():GetPos()) > 80 then
 				--return false
-				ent2:SetSolid(SOLID_NONE) 
+				ent2:SetSolid(SOLID_NONE)
 				ent2.CollisionResetTime = CurTime() + 0.1
 			end
 		end
@@ -388,7 +388,7 @@ function ENT:AddZombie(zombie)
 end
 
 function ENT:RemoveZombie(zombie)
-	self.ZombiesTearingDown[zombie] = nil 
+	self.ZombiesTearingDown[zombie] = nil
 end
 
 function ENT:HasZombie(zombie)

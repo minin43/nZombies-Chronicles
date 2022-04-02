@@ -207,14 +207,14 @@ end
 
 function nzMapping:BlockSpawn(pos, ang, model, flags, ply)
 	local block = ents.Create( "wall_block" )
-	
+
 	-- Replace with nZombies versions of the same model (if exist) which are grate-based (bullets go through)
 	local model2 = string.Replace(model, "/hunter/plates/", "/nzombies_plates/")
 	if !util.IsValidModel(model2) then
 		model2 = model
 	end
 	print(model2)
-	
+
 	block:SetModel( model2 )
 	block:SetPos( pos )
 	block:SetAngles( ang )
@@ -224,11 +224,11 @@ function nzMapping:BlockSpawn(pos, ang, model, flags, ply)
 	if (nzRound:GetState() != ROUND_CREATE) then
 		block:EnableCustomCollisions(true)
 		block:SetSolidFlags(FSOLID_CUSTOMRAYTEST)
-		block.TestCollision = function (startpos, delta, isbox, extents, mask) 
-			if (nzRound:GetState() == ROUND_CREATE) then 
-				return true 
-			else 
-				return false 
+		block.TestCollision = function (startpos, delta, isbox, extents, mask)
+			if (nzRound:GetState() == ROUND_CREATE) then
+				return true
+			else
+				return false
 			end
 		end
 	end
@@ -267,33 +267,38 @@ hook.Add("OnRoundPlay", "ReFuckTheWallBlockCollisions", function()
 	for _,wallblock in pairs(ents.FindByClass("wall_block")) do
 		wallblock:EnableCustomCollisions(true)
 		wallblock:SetSolidFlags(FSOLID_CUSTOMRAYTEST)
-		wallblock.TestCollision = function (startpos, delta, isbox, extents, mask) 
-			if (nzRound:GetState() == ROUND_CREATE) then 
-				return true 
-			else 
-				return false 
+		wallblock.TestCollision = function (startpos, delta, isbox, extents, mask)
+			if (nzRound:GetState() == ROUND_CREATE) then
+				return true
+			else
+				return false
 			end
 		end
 	end
 end)
 ---------------------------------------------------------------------------
 
-function nzMapping:BlockSpawnZombie(pos, ang, model, ply)
+function nzMapping:BlockSpawnZombie(pos, ang, model, flags, ply)
 	local block = ents.Create( "wall_block_zombie" )
-	
+
 	-- Replace with nZombies versions of the same model (if exist) which are grate-based (bullets go through)
 	local model2 = string.Replace(model, "/hunter/plates/", "/nzombies_plates/")
 	if !util.IsValidModel(model2) then
 		model2 = model
 	end
 	print(model2)
-	
+
 	block:SetModel( model2 )
 	block:SetPos( pos )
 	block:SetAngles( ang )
 	block:Spawn()
 	block:PhysicsInit( SOLID_VPHYSICS )
 	print(block:GetModel())
+
+	-- REMINDER APPLY FLAGS
+	if flags != nil then
+		nzDoors:CreateLink( block, flags )
+	end
 
 	local phys = block:GetPhysicsObject()
 	if IsValid(phys) then
@@ -586,7 +591,7 @@ function nzMapping:Teleporter(data)
 	if data.flag != nil then
 		tele:SetFlag(data.flag)
 	end
-	
+
 	if data.destination != nil then
 		tele:SetDestination(data.destination)
 	end
@@ -598,12 +603,12 @@ function nzMapping:Teleporter(data)
 	if data.door != nil then
 		tele:SetDoor(data.door)
 	end
-	
+
 	if data.price != nil then
 		tele:SetPrice(data.price)
 	end
 
-	if data.mdltype != nil then 
+	if data.mdltype != nil then
 		tele:SetModelType(data.mdltype)
 	end
 
@@ -626,7 +631,7 @@ function nzMapping:Teleporter(data)
 	if data.teleportertime != nil then
 		tele:SetTeleporterTime(data.teleportertime)
 	end
-	
+
 	if data.cooldown != nil then
 		tele:SetCooldownTime(data.cooldown)
 	end
@@ -653,7 +658,7 @@ function nzMapping:Teleporter(data)
 	if data.angle != nil then
 		tele:SetAngles(data.angle)
 	end
-	
+
 	if data.id != nil then
 		tele:SetFlag(tostring(data.id))
 	end
@@ -679,7 +684,7 @@ function nzMapping:Teleporter(data)
 	tele:Spawn()
 
 	tele:PhysicsInit( SOLID_VPHYSICS )
-	
+
 	local phys = tele:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:EnableMotion(false)
