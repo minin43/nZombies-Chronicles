@@ -8,6 +8,7 @@ cvars.AddChangeCallback("nz_eastereggsongs", function( convar_name, value_old, v
 		else
 			EasterEggData.StopSong()
 			EasterEggData.AudioChannel = nil
+			EasterEggData.PreloadedSong = nil
 		end
 	end
 end)
@@ -43,23 +44,27 @@ local function play_song(url, flags) -- Added by Ethorbit to make it easier and 
 	return end
 
 	sound.PlayURL(url, flags, function(channel, errorID, errorName)
-		EasterEggData.AudioChannel = channel
+		if channel then
+			EasterEggData.AudioChannel = channel
+		end
 
 		if !isPreloading then
-			print("Easter egg song was not preloaded, will play through streaming.")
-			print(url)
+			--print("Easter egg song was not preloaded, will play through streaming.")
+			--print(url)
 
 			if errorID then
 				chat.AddText("[nZombies] An error occurred when trying to play the Easter Egg. - ", errorID, errorName)
 			return end
 
 			if IsValid(channel) then
+				print("Playing easter egg song!")
 				channel:Play()
 			end
 		else
 			if !errorID then
 				print("Successfully preloaded easter egg song")
 			else
+				EasterEggData.PreloadedSong = nil
 				print("Failed to preload song - ", errorID, errorName)
 			end
 		end
