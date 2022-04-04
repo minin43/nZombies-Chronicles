@@ -49,15 +49,14 @@ local function play_song(url, flags) -- Added by Ethorbit to make it easier and 
 		end
 
 		if !isPreloading then
-			--print("Easter egg song was not preloaded, will play through streaming.")
-			--print(url)
+			print("Easter egg song was not preloaded, will play through streaming.")
+			print(url)
 
 			if errorID then
 				chat.AddText("[nZombies] An error occurred when trying to play the Easter Egg. - ", errorID, errorName)
 			return end
 
 			if IsValid(channel) then
-				print("Playing easter egg song!")
 				channel:Play()
 			end
 		else
@@ -115,7 +114,7 @@ function EasterEggData.ParseSong(play)
 end
 
 function EasterEggData.PlaySong(url) -- Modified by Ethorbit, moved most functionality into the local helper function 'play_song' above
-	EasterEggData.StopSong()
+	--EasterEggData.StopSong()
 
 	if !GetConVar("nz_eastereggsongs"):GetBool() then
 		print("Prevented playing the Easter Egg song because you have nz_eastereggsongs set to 0.")
@@ -131,7 +130,13 @@ end
 
 function EasterEggData.StopSong()
 	if IsValid(EasterEggData.AudioChannel) then
+		local url = EasterEggData.PreloadedSong
 		EasterEggData.AudioChannel:Stop()
+
+		if url and !IsValid(EasterEggData.AudioChannel) then -- Because Garry's Mod is retarded and Stop()ing removes the channel entirely /Ethorbit
+			EasterEggData.PreloadedSong = nil
+			EasterEggData.PreloadSong(url)
+		end
 	end
 end
 
