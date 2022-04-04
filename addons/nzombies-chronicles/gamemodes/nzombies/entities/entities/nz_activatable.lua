@@ -46,6 +46,10 @@ function ENT:SetupDataTables()
 	end
 end
 
+function ENT:UpdateTransmitState() -- Always transmit otherwise sometimes this entity will fail to hide itself and other weird issues
+	return TRANSMIT_ALWAYS
+end
+
 function ENT:IsActive() return self:GetActive() end
 
 function ENT:IsCooldownActive() return self:GetCooldownActive() end
@@ -76,16 +80,16 @@ function ENT:Deactivation(creativeMode)
 	self:OnCooldown()
 
 	if (!creativeMode) then
-		timer.Create("nz.activatable.cooldown.timer." .. self:EntIndex(), time, 1, function() 
-			if IsValid(self) then 
+		timer.Create("nz.activatable.cooldown.timer." .. self:EntIndex(), time, 1, function()
+			if IsValid(self) then
 				if (self:GetElectricityNeeded()) then
 					if (nzElec:IsOn()) then
-						self:Ready() 
+						self:Ready()
 					end
 				else
-					self:Ready() 
-				end		
-			end 
+					self:Ready()
+				end
+			end
 		end)
 	end
 
@@ -149,11 +153,11 @@ function ENT:GetNZTargetText()
 			return "Toggle Preview Off"
 		end
 	end
-	
+
 	-- Warn users if this trap cannot be turned on (Remote activated and no button attached)
 	if (self.Trap) then
-		if (self:GetRemoteActivated() and self.IsLinked != nil and !self:IsLinked()) then 
-			return "There is no way to activate this." 
+		if (self:GetRemoteActivated() and self.IsLinked != nil and !self:IsLinked()) then
+			return "There is no way to activate this."
 		end
 	end
 
