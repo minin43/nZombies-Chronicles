@@ -1,53 +1,86 @@
--- Main Tables
+-- Main Tables (Refactored by Ethorbit to make this a hell of a lot less redundant)
 nzConfig = nzConfig or AddNZModule("Config")
+nzConfig.Vars = nzConfig.Vars or {}
 
---  Defaults
+nzConfig.GetVar = function(name)
+	return nzConfig.Vars[name]
+end 
 
-if not ConVarExists("nz_randombox_whitelist") then CreateConVar("nz_randombox_whitelist", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
-if not ConVarExists("nz_downtime") then CreateConVar("nz_downtime", 45, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_nav_grouptargeting") then CreateConVar("nz_nav_grouptargeting", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
---if not ConVarExists("nz_round_special_interval") then CreateConVar("nz_round_special_interval", 6, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_round_prep_time") then CreateConVar("nz_round_prep_time", 10, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_randombox_maplist") then CreateConVar("nz_randombox_maplist", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_round_dropins_allow") then CreateConVar("nz_round_dropins_allow", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_barricade_classic") then CreateConVar("nz_barricade_classic", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_max_player_health") then CreateConVar("nz_difficulty_max_player_health", 300, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_max_player_armor") then CreateConVar("nz_difficulty_max_player_armor", 150, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_barricade_points") then CreateConVar("nz_difficulty_barricade_points", 10, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_barricade_points_cap_start") then CreateConVar("nz_difficulty_barricade_points_cap_start", 50, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_barricade_points_cap_per_round") then CreateConVar("nz_difficulty_barricade_points_cap_per_round", 50, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_barricade_points_cap_max") then CreateConVar("nz_difficulty_barricade_points_cap_max", 500, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_zombie_amount_base") then CreateConVar("nz_difficulty_zombie_amount_base", 6, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_zombie_amount_scale") then CreateConVar("nz_difficulty_zombie_amount_scale", 0.35, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_zombie_health_base") then CreateConVar("nz_difficulty_zombie_health_base", 150, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_zombie_health_scale") then CreateConVar("nz_difficulty_zombie_health_scale", 1.1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_max_zombies_alive") then CreateConVar("nz_difficulty_max_zombies_alive", 35, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_barricade_max_zombies") then CreateConVar("nz_difficulty_barricade_max_zombies", 3, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_barricade_planks_max") then CreateConVar("nz_difficulty_barricade_planks_max", 6, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_powerup_chance") then CreateConVar("nz_difficulty_powerup_chance", 2, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
---if not ConVarExists("nz_difficulty_powerup_max_per_round") then CreateConVar("nz_difficulty_powerup_max_per_round", 4, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_powerup_required_round_points_base") then CreateConVar("nz_difficulty_powerup_required_round_points_base", 2000, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_powerup_required_round_points_scale") then CreateConVar("nz_difficulty_powerup_required_round_points_scale", 1.14, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_difficulty_perks_max") then CreateConVar("nz_difficulty_perks_max", 4, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_point_notification_clientside") then CreateConVar("nz_point_notification_clientside", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
-if not ConVarExists("nz_zombie_lagcompensated") then CreateConVar("nz_zombie_lagcompensated", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
-if not ConVarExists("nz_spawnpoint_update_rate") then CreateConVar("nz_spawnpoint_update_rate", 4, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
+nzConfig.DefineVar = function(var, val, flags, desc, min, max)
+	if not ConVarExists(var) then
+		local convar = CreateConVar(var, val, flags, desc, min, max)
+		nzConfig.Vars[var] = convar
 
-if not ConVarExists("nz_maxragdolls") then CreateConVar("nz_maxragdolls", 10, {FCVAR_ARCHIVE}, "Max amount of ragdolls allowed to exist at any time.", 0, 8000) end
-if not ConVarExists("nz_ragdollremovetime") then CreateConVar("nz_ragdollremovetime", 1, {FCVAR_ARCHIVE}, "How many seconds it takes to fade and remove ragdolls that are over the maxragdoll limit.", 0, 30) end
+		hook.Run("NZ.VarInitialized", var, convar)
 
-if not ConVarExists("nz_mapvote_item_limit") then CreateConVar("nz_mapvote_item_limit", 30, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Max amount of items that can show in the Map Vote") end
-if not ConVarExists("nz_mapvote_map_time_limit") then CreateConVar("nz_mapvote_time_limit", 30, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The time everyone has to choose a map") end
-if not ConVarExists("nz_mapvote_config_time_limit") then CreateConVar("nz_mapvote_config_time_limit", 20, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The time everyone has to choose a config for a map") end
-if not ConVarExists("nz_mapvote_unlock_round") then CreateConVar("nz_mapvote_unlock_round", 12, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The MapVote unlocks after this round, dying after it will automatically initiate it.") end
-if not ConVarExists("nz_mapvote_allow_current_map") then CreateConVar("nz_mapvote_allow_current_map", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Allow the current map to be voted for.") end
-if not ConVarExists("nz_mapvote_auto_change_no_players") then CreateConVar("nz_mapvote_auto_change_no_players", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Auto changes to a random map after a duration when nobody is on.") end
-if not ConVarExists("nz_mapvote_auto_change_no_players_minutes") then CreateConVar("nz_mapvote_auto_change_no_players_minutes", 1800, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Consecutive minutes of nobody online before auto changing") end
+		cvars.AddChangeCallback(var, function(name, oldVal, newVal)
+ 			hook.Run("NZ.VarChanged", name, oldVal, newVal)
+		end)
+	end
+end
 
---if not ConVarExists(CLIENT and "nz_client_ragdolltime" or "nz_server_ragdolltime") then CreateConVar(CLIENT and "nz_client_ragdolltime" or "nz_server_ragdolltime", 30, {FCVAR_ARCHIVE}, CLIENT and "How long clientside Zombie ragdolls will stay in the map." or "How long serverside Zombie ragdolls will stay in the map.") end
+nzConfig.DefineClientVar = function(...) -- Params ^^
+	if CLIENT then
+		nzConfig.DefineVar(...)
+	end
+end
 
---if not ConVarExists("nz_rtv_time") then CreateConVar("nz_rtv_time", 45, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
---if not ConVarExists("nz_rtv_enabled") then CreateConVar("nz_rtv_enabled", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
+nzConfig.DefineServerVar = function(...) -- Params   ^^
+	if SERVER then
+		nzConfig.DefineVar(...)
+	end
+end
+
+-- Defaults
+nzConfig.DefineVar("nz_randombox_whitelist", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
+nzConfig.DefineVar("nz_downtime", 45, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_nav_grouptargeting", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+--define_convar("nz_round_special_interval", 6, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_round_prep_time", 10, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_randombox_maplist", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_round_dropins_allow", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_barricade_classic", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_max_player_health", 300, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_max_player_armor", 150, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_barricade_points", 10, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_barricade_points_cap_start", 50, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_barricade_points_cap_per_round", 50, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_barricade_points_cap_max", 500, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_zombie_amount_base", 6, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_zombie_amount_scale", 0.35, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_zombie_health_base", 150, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_zombie_health_scale", 1.1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_max_zombies_alive", 35, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_barricade_max_zombies", 3, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_barricade_planks_max", 6, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_powerup_chance", 2, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+--nzConfig.DefineVar("nz_difficulty_powerup_max_per_round", 4, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_powerup_required_round_points_base", 2000, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_powerup_required_round_points_scale", 1.14, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_difficulty_perks_max", 4, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_point_notification_clientside", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+nzConfig.DefineVar("nz_zombie_lagcompensated", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
+nzConfig.DefineVar("nz_spawnpoint_update_rate", 4, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
+
+nzConfig.DefineVar("nz_maxragdolls", 10, {FCVAR_ARCHIVE}, "Max amount of ragdolls allowed to exist at any time.", 0, 8000)
+nzConfig.DefineVar("nz_ragdollremovetime", 1, {FCVAR_ARCHIVE}, "How many seconds it takes to fade and remove ragdolls that are over the maxragdoll limit.", 0, 30)
+
+nzConfig.DefineVar("nz_mapvote_item_limit", 30, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Max amount of items that can show in the Map Vote")
+nzConfig.DefineVar("nz_mapvote_time_limit", 30, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The time everyone has to choose a map")
+nzConfig.DefineVar("nz_mapvote_config_time_limit", 20, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The time everyone has to choose a config for a map")
+nzConfig.DefineVar("nz_mapvote_unlock_round", 12, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The MapVote unlocks after this round, dying after it will automatically initiate it.")
+nzConfig.DefineVar("nz_mapvote_allow_current_map", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Allow the current map to be voted for.")
+nzConfig.DefineVar("nz_mapvote_auto_change_no_players", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Auto changes to a random map after a duration when nobody is on.")
+nzConfig.DefineVar("nz_mapvote_auto_change_no_players_minutes", 1800, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Consecutive minutes of nobody online before auto changing")
+
+nzConfig.DefineClientVar("nz_weapon_auto_reload", 1, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Auto reloads your weapon after firing the last shot")
+nzConfig.DefineClientVar("nz_round_sounds", 1, false, "Whether or not to play round changing sounds.")
+nzConfig.DefineClientVar("nz_zombie_eyes", 1, false, "Enable/Disable the rendering of zombie eyes")
+nzConfig.DefineClientVar("nz_holiday_events", 1, false, "Toggle nZombies holiday cosmetic events (Mostly affects zombie appearance)")
+
+--nzConfig.DefineVar(CLIENT and "nz_client_ragdolltime" or "nz_server_ragdolltime", 30, {FCVAR_ARCHIVE}, CLIENT and "How long clientside Zombie ragdolls will stay in the map." or "How long serverside Zombie ragdolls will stay in the map.")
+--nzConfig.DefineVar("nz_rtv_time", 45, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
+--nzConfig.DefineVar("nz_rtv_enabled", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
 
 -- Zombie table - Moved to shared area for client collision prediction (barricades)
 nzConfig.ValidEnemies = {

@@ -1,3 +1,6 @@
+-- Created by Ethorbit
+-- TODO, recode this awful spaghetti shit (the hardcoded powerup assignments)
+
 if (SERVER) then
     util.AddNetworkString("nzSounds.PlaySound")
     util.AddNetworkString("nzSounds.PlaySoundFile")
@@ -72,12 +75,12 @@ function nzSounds:RefreshSounds()
     if (!table.IsEmpty(nzMapping.Settings) and table.IsEmpty(nzSounds.Sounds.Custom)) then
         nzSounds.Sounds.Custom = table.Copy(nzSounds.Sounds.Default)
     end
-    
+
     if (SERVER) then
         net.Start("nzSounds.RefreshSounds")
         net.Broadcast()
     end
-end 
+end
 nzSounds:RefreshSounds()
 
 function nzSounds:GetSound(event) -- Gets the sound file from a sound event
@@ -88,7 +91,7 @@ function nzSounds:GetSound(event) -- Gets the sound file from a sound event
     end
 
     if (SERVER) then
-        if (!nzSounds.Sounds.Default[event]) then 
+        if (!nzSounds.Sounds.Default[event]) then
             if (isstring(event)) then
                 ServerLog("[nZombies] Tried to play an invalid Sound Event! (" .. event .. ")\n")
             else
@@ -106,24 +109,24 @@ function nzSounds:GetSound(event) -- Gets the sound file from a sound event
 
     if (CLIENT) then
         -- FALLBACK in case for some reason the client has not gotten their sounds to refresh yet
-        if (nzSounds and nzSounds.Sounds and table.IsEmpty(nzSounds.Sounds.Custom)) then    
+        if (nzSounds and nzSounds.Sounds and table.IsEmpty(nzSounds.Sounds.Custom)) then
             if (!table.IsEmpty(nzMapping.Settings)) then -- Stops endless loop from non-submitted configs
                 nzSounds:RefreshSounds()
                 snd = nzSounds:GetSound(event)
             end
         end
 
-        if (snd == nil or !nzSounds.Sounds.Default[event]) then 
+        if (snd == nil or !nzSounds.Sounds.Default[event]) then
             if (!nzSounds.Sounds.Default[event]) then
                 if (isstring(event)) then
                     print("[nZombies] Tried to play an invalid Sound Event! (" .. event .. ")")
                 else
                     print("[nZombies] Tried to play an invalid Sound Event!")
                 end
-            end 
+            end
 
             snd = nzSounds:GetDefaultSound(event)
-        end  
+        end
 
         if snd == nil then return end
 
@@ -155,7 +158,7 @@ end
 
 function nzSounds:PlayFileCS(file, ply, ent) -- Plays a clientside file everywhere either for 1 or all players for either a certain entity or globally
     if (file == nil || !isstring(file)) then return end
-    
+
     if (SERVER) then
         net.Start("nzSounds.PlaySoundFile")
         net.WriteString(file)
@@ -210,7 +213,7 @@ function nzSounds:Play(event, ply) -- Plays a sound event everywhere either for 
         net.WriteString(event)
         if !ply then
             net.Broadcast()
-        else 
+        else
             net.Send(ply)
         end
     end
@@ -232,12 +235,12 @@ end
 if (CLIENT) then
     function nzSounds:StopFile(file) -- Stops a sound file from playing
         if (!IsValid(LocalPlayer()) || file == nil || !isstring(file)) then return end
-        LocalPlayer():StopSound(file) 
+        LocalPlayer():StopSound(file)
     end
 
     function nzSounds:Stop(event) -- Stops all sounds bound to an event
         if (!IsValid(LocalPlayer())) then return end -- The client has not fully loaded yet, LocalPlayer() does not exist.
-        
+
         local notValid = !nzSounds.Sounds.Custom[event] or table.IsEmpty(nzSounds.Sounds.Custom)
         local snds = notValid and nzSounds.Sounds.Default[event] or nzSounds.Sounds.Custom[event]
 
@@ -275,13 +278,13 @@ if (CLIENT) then
     end)
 
     net.Receive("nzSounds.RefreshSounds", function()
-        nzSounds:RefreshSounds()  
+        nzSounds:RefreshSounds()
         nzSounds:StopAll()
     end)
 
     hook.Add("InitPostEntity", "NZSyncCustomSounds", function()
         timer.Simple(2, function()
-            nzSounds:RefreshSounds()  
+            nzSounds:RefreshSounds()
         end)
     end)
 end

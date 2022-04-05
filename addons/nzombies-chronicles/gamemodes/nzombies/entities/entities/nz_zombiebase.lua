@@ -88,7 +88,6 @@ AccessorFunc( ENT, "iActStage", "ActStage", FORCE_NUMBER)
 
 ENT.ActStages = {}
 
-local holidayEnabled = GetConVar("nzc_holiday_events")
 function ENT:SetupDataTables()
 	-- If you want decapitation in you zombie and overwrote ENT:SetupDataTables() make sure to add self:NetworkVar("Bool", 0, "Decapitated") again.
 	self:NetworkVar("Bool", 0, "Decapitated")
@@ -144,7 +143,7 @@ function ENT:Initialize()
 
 
 	if CLIENT and NZEvent and NZEvent != "NONE" then
-		if (holidayEnabled:GetInt() > 0) then
+		if nzConfig.GetVar("nz_holiday_events"):GetBool() then
 			if (NZEvent == "Christmas") then
 				self.CustomModelColor = table.Random({Color(255, 0, 0), Color(0, 255, 0)})
 			end
@@ -607,8 +606,6 @@ end
 local eyeglow =  Material( "nzr/nz/zlight" )
 local defaultColor = Color(0, 255, 255, 255)
 
-local holidayEnabled = GetConVar("nzc_holiday_events")
-
 function ENT:Draw()
 	self:DrawModel()
 
@@ -626,9 +623,9 @@ function ENT:Draw()
 		end
 	end
 
-	if (!zombieEyeRenderInt or zombieEyeRenderInt and zombieEyeRenderInt > 0) then
+	if nzConfig.GetVar("nz_zombie_eyes"):GetBool() then
 		local eyeColor
-		if (holidayEnabled:GetInt() > 0) then
+		if nzConfig.GetVar("nz_holiday_events"):GetBool() then
 			if (NZEvent == "Christmas") then
 				eyeColor = Color(math.random(0, 255), math.random(0, 255), math.random(0, 255)) -- Christmas light eyes
 			end
