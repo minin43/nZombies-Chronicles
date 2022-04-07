@@ -20,67 +20,17 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-
-
--- (Created by Cryotheus, originally here: https://github.com/Cryotheus/nzombies_progress_bar)
+-- (Originally created by Cryotheus, see it here: https://github.com/Cryotheus/nzombies_progress_bar)
+-- (Modified by Ethorbit - integrated the networking into the core of nZombies to make this code a lot cleaner)
 if SERVER then
-	--[[
-	for those who want to know how I write my code, I seperate functions and declerations
-	I also keep multiple oneliners close to each other, and I try to group my declerations
-	by their purpose/usage, then order them alphabetically. That's the gist, the rest is
-	obvious such as snake_case and (no parenthesis padding)
-	]]
-
 	resource.AddSingleFile("materials/bar/bloodline_bar.png")
 	resource.AddSingleFile("materials/bar/bloodline_bar_back.png")
-	util.AddNetworkString("update_prog_bar_killed")
-	util.AddNetworkString("update_prog_bar_max")
+end
 
-	local update_rate = 0.25
+if CLIENT then
+	if nzProgressBar then return end
+	nzProgressBar = {} -- This is now a part of the gamemode
 
-	local zombies_killed = 0
-	local zombies_killed_cache = 0
-
-	CreateConVar("nz_progbar_update_rate", "0.25", bit.bor(FCVAR_NOTIFY, FCVAR_NEVER_AS_STRING, FORCE_NUMBER), "Delay between updates to the client. Lower values, mean more frequent but higher cost.", 0.1, 10.0)
-
-	cvars.AddChangeCallback("nz_progbar_update_rate", function(name, old_value, new_value) update_rate = tonumber(new_value) or 0.25 end)
-
-	hook.Add("OnRoundCreative", "prog_bar_onroundend_hook", function() timer.Remove("update_client_prog_bar") end)
-	hook.Add("OnRoundEnd", "prog_bar_onroundend_hook", function() timer.Remove("update_client_prog_bar") end)
-	hook.Add("OnRoundPreparation", "prog_bar_onroundprep_hook", function() timer.Remove("update_client_prog_bar") end)
-	hook.Add("OnRoundStart", "prog_bar_onroundstart_hook", function()
-		net.Start("update_prog_bar_max")
-		net.WriteUInt(nzRound:GetZombiesMax(), 32)
-		net.Broadcast()
-
-		zombies_killed_cache = 0
-
-		timer.Create("update_client_prog_bar", update_rate, 0, function()
-			zombies_killed = nzRound:GetZombiesKilled()
-
-			--only send if there has been a change, saves network usage and CPU usage.
-			if zombies_killed_cache < zombies_killed then
-				net.Start("update_prog_bar_killed")
-				net.WriteUInt(zombies_killed, 32)
-				net.Broadcast()
-
-				zombies_killed_cache = zombies_killed
-			end
-		end)
-	end)
-
-	hook.Add("PlayerInitialSpawn", "prog_bar_first_spawn_hook", function(player)
-		local zombies_max = nzRound:GetZombiesMax()
-
-		if zombies_max and zombies_max > 1 then
-			timer.Simple(5, function()
-				net.Start("update_prog_bar_max")
-				net.WriteUInt(nzRound:GetZombiesMax(), 32)
-				net.Send(player)
-			end)
-		end
-	end)
-elseif CLIENT then
 	local bar_mat = Material("bar/bloodline_bar.png")
 	local bar_mat_bg = Material("bar/bloodline_bar_back.png")
 
@@ -92,10 +42,10 @@ elseif CLIENT then
 	local scale = 0.5
 	local scr_h =  ScrH()
 	local scr_w = ScrW()
+	local zombies_max = 0
 	local zombies_killed = 0
 	local zombies_killed_text = ""
 	local zombies_killed_text_font = ""
-	local zombies_max = 1
 
 	local pb_h = 0
 	local pb_stencil_w = 0
@@ -229,12 +179,12 @@ elseif CLIENT then
 		if cvars_bar_text_enabled ~= 0 then fl_draw_DrawText(zombies_killed_text, zombies_killed_text_font, pb_text_x, pb_text_y, color_white, TEXT_ALIGN_CENTER) end
 	end
 
-	local function disable_bar()
+	function nzProgressBar.Disable()
 		pb_y_percent = 0
 		prog_bar_active = false
 	end
 
-	local function enable_bar()
+	function nzProgressBar.Enable()
 		local enable_var = GetConVar("nz_progbar_enabled")
 		if enable_var and enable_var:GetBool() then
 			if not prog_bar_rendering then
@@ -247,61 +197,54 @@ elseif CLIENT then
 		end
 	end
 
+	cvars.RemoveChangeCallback("nz_progbar_enabled", "nZProgBarEnabledCallback")
 	cvars.AddChangeCallback("nz_progbar_enabled", function(name, old_value, new_value)
 		cvars_bar_enabled = math.Round(new_value)
 
-		if cvars_bar_enabled ~= 0 then enable_bar() else disable_bar() end
-	end)
+		if cvars_bar_enabled ~= 0 then nzProgressBar.Enable() else nzProgressBar.Disable() end
+	end, "nZProgBarEnabledCallback")
 
+	cvars.RemoveChangeCallback("nz_progbar_scale", "nZProgBarScaleCallback")
 	cvars.AddChangeCallback("nz_progbar_scale", function(name, old_value, new_value)
 		scale = new_value
 
 		calc_vars()
 		set_font(44 * scale, 300)
-	end)
+	end, "nZProgBarScaleCallback")
 
+	cvars.RemoveChangeCallback("nz_progbar_text_enabled", "nZProgBarTextEnabledCallback")
 	cvars.AddChangeCallback("nz_progbar_text_enabled", function(name, old_value, new_value)
 		cvars_bar_text_enabled = math.Round(new_value)
 		--
-	end)
+	end, "nZProgBarTextEnabledCallback")
 
+	cvars.RemoveChangeCallback("nz_progbar_y_pos", "nZProgBarYPosCallback")
 	cvars.AddChangeCallback("nz_progbar_y_pos", function(name, old_value, new_value)
 		cvars_bar_y = new_value
 		--
-	end)
+	end, "nZProgBarYPosCallback")
 
+
+	cvars.RemoveChangeCallback("nz_progbar_text_y_pos", "nZProgBarTextYPosCallback")
 	cvars.AddChangeCallback("nz_progbar_text_y_pos", function(name, old_value, new_value)
 		cvars_bar_text_y_pos = new_value
 
 		calc_vars()
-	end)
+	end, "nZProgBarTextYPosCallback")
 
 	hook.Add("OnScreenSizeChanged", "prog_bar_screen_res_changed_hook", function() scr_h, scr_w = ScrH(), ScrW() end)
-	hook.Add("OnRoundCreative", "prog_bar_onroundend_hook", function() disable_bar() end)
-	hook.Add("OnRoundEnd", "prog_bar_onroundend_hook", function() disable_bar() end)
-	hook.Add("OnRoundPreparation", "prog_bar_onroundprep_hook", function() disable_bar() end)
+	hook.Add("OnRoundCreative", "prog_bar_onroundend_hook", function() nzProgressBar.Disable() end)
+	hook.Add("OnRoundEnd", "prog_bar_onroundend_hook", function() nzProgressBar.Disable() end)
+	hook.Add("OnRoundPreparation", "prog_bar_onroundprep_hook", function() nzProgressBar.Disable() end)
 	hook.Add("OnRoundStart", "prog_bar_onroundstart_hook", function()
 		progress_current_percent = 0
 		progress_percent = 0
 
-		enable_bar()
+		nzProgressBar.Enable()
 	end)
 
-	net.Receive("update_prog_bar_killed", function()
-		zombies_killed = net.ReadUInt(32)
-
-		local end_txt = zombies_max
-
-		if nzRound:GetNumber() == -1 then -- Round Infinity support
-			end_txt = "∞"
-		end
-
-		zombies_killed_text = "zombies killed  " .. zombies_killed .. " / " .. end_txt
-		progress_percent = zombies_killed / zombies_max
-	end)
-
-	net.Receive("update_prog_bar_max", function()
-		zombies_max = net.ReadUInt(32)
+	hook.Add("NZ.UpdateZombiesMax", "NZUpdateProgressBarMaxZombies", function(num)
+		zombies_max = nzRound:GetZombiesMax()
 
 		local end_txt = zombies_max
 
@@ -310,5 +253,17 @@ elseif CLIENT then
 		end
 
 		zombies_killed_text = "zombies killed  0 / " .. end_txt
+	end)
+
+	hook.Add("NZ.UpdateZombiesKilled", "NZUpdateProgressBarZombiesKilled", function(num)
+		zombies_killed = num
+		local end_txt = zombies_max
+
+		if nzRound:GetNumber() == -1 then -- Round Infinity support
+			end_txt = "∞"
+		end
+
+		zombies_killed_text = "zombies killed  " .. zombies_killed .. " / " .. end_txt
+		progress_percent = zombies_killed / zombies_max
 	end)
 end
