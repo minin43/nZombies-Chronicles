@@ -5,6 +5,12 @@ if SERVER then
 	util.AddNetworkString( "nzPlayerReadyState" )
 	util.AddNetworkString( "nzPlayerPlayingState" )
 
+	-- Extra networking brought in by: Ethorbit
+	util.AddNetworkString("nz.ZombiesMax")
+	util.AddNetworkString("nz.ZombiesKilled")
+	util.AddNetworkString("nz.ZombieHealth")
+	util.AddNetworkString("nz.ZombieSpeeds")
+
 	function nzRound:SendNumber( number, ply )
 
 		net.Start( "nzRoundNumber" )
@@ -51,6 +57,10 @@ if SERVER then
 		self:SendNumber( self:GetNumber(), ply )
 		self:SendSpecialRound( self:IsSpecial(), ply)
 		self:SendState(self:GetState(), ply)
+		self:SendZombiesMax(self:GetZombiesMax(), ply)
+		self:SendZombiesKilled(self:GetZombiesKilled(), ply)
+		self:SendZombieHealth(self:GetZombieHealth(), ply)
+		self:SendZombieSpeeds(self:GetZombieSpeeds(), ply)
 
 		for _, v in pairs(player.GetAll()) do
 			self:SendReadyState(v, v:GetReady(), ply)
@@ -63,6 +73,35 @@ if SERVER then
 
 	FullSyncModules["Round"] = function(ply)
 		nzRound:SendSync(ply)
+	end
+
+	-- Extra stuff brought in by: Ethorbit
+	function nzRound:SendZombiesMax(num, ply)
+		if !num then return end
+		net.Start("nz.ZombiesMax")
+		net.WriteInt(num, 25)
+		return ply and net.Send(ply) or net.Broadcast()
+	end
+
+	function nzRound:SendZombiesKilled(num, ply)
+		if !num then return end
+		net.Start("nz.ZombiesKilled")
+		net.WriteInt(num, 25)
+		return ply and net.Send(ply) or net.Broadcast()
+	end
+
+	function nzRound:SendZombieHealth(num, ply) -- Commented because I gave zombiebase entities a :GetMaxHealth(), which supports more than just walkers like this does.
+		-- if !num then return end
+		-- net.Start("nz.ZombieHealth")
+		-- net.WriteInt(num, 25)
+		-- return ply and net.Send(ply) or net.Broadcast()
+	end
+
+	function nzRound:SendZombieSpeeds(tbl, ply)
+		if !tbl then return end
+		net.Start("nz.ZombieSpeeds")
+		net.WriteTable(tbl)
+		return ply and net.Send(ply) or net.Broadcast()
 	end
 end
 
@@ -106,4 +145,22 @@ if CLIENT then
 		end
 	end
 	net.Receive( "nzPlayerPlayingState", receivePlayerPlayingState )
+
+	-- Extra stuff brought in by: Ethorbit
+	net.Receive("nz.ZombiesMax", function()
+		local num = net.ReadInt(25)
+		nzRound:SetZombiesMax(num)
+	end)
+
+	net.Receive("nz.ZombiesKilled", function()
+		nzRound:SetZombiesKilled(net.ReadInt(25))
+	end)
+
+	net.Receive("nz.ZombieHealth", function()
+		nzRound:SetZombieHealth(net.ReadInt(25))
+	end)
+
+	net.Receive("nz.ZombieSpeeds", function()
+		nzRound:SetZombieSpeeds(net.ReadTable())
+	end)
 end

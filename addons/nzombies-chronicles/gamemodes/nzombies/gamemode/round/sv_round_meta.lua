@@ -1,9 +1,10 @@
 --pool network strings
-util.AddNetworkString( ", nzRoundNumber" )
-util.AddNetworkString( ", nzRoundState" )
-util.AddNetworkString( ", nzRoundSpecial" )
-util.AddNetworkString( "nzPlayerReadyState" )
-util.AddNetworkString( "nzPlayerPlayingState" )
+-- util.AddNetworkString( ", nzRoundNumber" )
+-- util.AddNetworkString( ", nzRoundState" )
+-- util.AddNetworkString( ", nzRoundSpecial" )
+-- util.AddNetworkString( "nzPlayerReadyState" )
+-- util.AddNetworkString( "nzPlayerPlayingState" )
+-- Commented by Ethorbit because these are already in the sh_sync
 
 nzRound.Number = nzRound.Number or 0 -- Default for reloaded scenarios
 nzRound.ZombiesKilled = nzRound.ZombiesKilled or {}
@@ -12,7 +13,7 @@ function nzRound:ClearZombiesKilled()
 	self.ZombiesKilled = {}
 end
 
-function nzRound:GetZombiesKilled(spawner_class)
+function nzRound:GetZombiesKilled(spawner_class) -- Modified by Ethorbit for better flexibility
 	if (spawner_class) then
 		return self.ZombiesKilled[spawner_class] or 0
 	else
@@ -20,30 +21,36 @@ function nzRound:GetZombiesKilled(spawner_class)
 	end
 end
 
-function nzRound:SetZombiesKilled(num, spawner_class)
+function nzRound:SetZombiesKilled(num, spawner_class) -- Modified by Ethorbit for better flexibility
 	if (spawner_class) then
 		self.ZombiesKilled[spawner_class] = num
 	else
 		self.ZombiesKilled["Round"] = num
 	end
+
+	nzRound:SendZombiesKilled(num)
+	hook.Run("NZ.UpdateZombiesKilled", num)
 end
 
 function nzRound:GetZombiesMax()
-	return self.ZombiesMax
+	return self.ZombiesMax or 0
 end
 
 function nzRound:SetZombiesMax( num )
 	self.ZombiesMax = num
+	self:SendZombiesMax(num) -- Added by Ethorbit for better clientside support
+	hook.Run("NZ.UpdateZombiesMax", num)
 
-	net.Start("update_prog_bar_max")
-	net.WriteUInt(nzRound:GetZombiesMax(), 32)
-	net.Broadcast()
-
-	net.Start("update_prog_bar_killed")
-	net.WriteUInt(nzRound:GetZombiesKilled(), 32)
-	net.Broadcast()
+	-- net.Start("update_prog_bar_max")
+	-- net.WriteUInt(nzRound:GetZombiesMax(), 32)
+	-- net.Broadcast()
+	--
+	-- net.Start("update_prog_bar_killed")
+	-- net.WriteUInt(nzRound:GetZombiesKilled(), 32)
+	-- net.Broadcast()
 end
 
+-- Powerup stuff added by Ethorbit for more accurate COD details
 function nzRound:GetPowerUpsToSpawn()
 	return self.PowerupsToSpawn
 end
@@ -79,11 +86,12 @@ function nzRound:GetZombiesSpawned()
 end
 
 function nzRound:GetZombieHealth()
-	return self.ZombieHealth
+	return self.ZombieHealth or 0
 end
 
 function nzRound:SetZombieHealth( num )
 	self.ZombieHealth = num
+	self:SendZombieHealth(num) -- Added by Ethorbit for better clientside support
 end
 
 function nzRound:GetHellHoundHealth()
@@ -119,11 +127,12 @@ end
 -- end
 
 function nzRound:GetZombieSpeeds()
-	return self.ZombieSpeeds
+	return self.ZombieSpeeds or {}
 end
 
 function nzRound:SetZombieSpeeds( tbl )
 	self.ZombieSpeeds = tbl
+	self:SendZombieSpeeds(tbl) -- Added by Ethorbit for better clientside support
 end
 
 function nzRound:SetGlobalZombieData( tbl )
