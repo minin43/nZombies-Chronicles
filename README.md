@@ -47,7 +47,7 @@ ___
 The following addons have compatibility added in the gamemode, but must be downloaded from the Workshop:
 
 * [TFA Base](https://steamcommunity.com/workshop/filedetails/?id=415143062)
-* [Maxwell's XP Tools](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
+* [XP-Tools Leveling System](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
 
 ## Licenses
 _Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both licensed under GPL-3.0, originally created by [Alig96](https://github.com/Alig96) and improved by [Zet0r](https://github.com/Zet0rz)._
