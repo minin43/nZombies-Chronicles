@@ -7,7 +7,7 @@ Getting the COD details right was important, and this was achieved after countle
 Getting the gamemode out of its broken and unmaintainable state was equally important, and this was also achieved with non-stop bug and exploit fixes, totalling up to 1 and a half years of hard dedicated work.
 <br></br>
 
-[![Export Tutorial](https://i.imgur.com/D7GuaAR.jpg)](https://www.youtube.com/watch?v=9p8snS73tJ0&t=7s)  
+[![Gameplay Footage](https://i.imgur.com/D7GuaAR.jpg)](https://www.youtube.com/watch?v=9p8snS73tJ0&t=7s)  
 
 #### Play on the Dedicated servers
 * 147.135.124.18:27016 (US)
@@ -45,8 +45,10 @@ ___
 
 
 ## Licenses
-_Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both licensed under GPL-3.0_
+_Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both licensed under GPL-3.0, originally created by [Alig96](https://github.com/Alig96) and improved by [Zet0r](https://github.com/Zet0rz)._
 
-_The contents of the [mit_licensed_code](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mit_licensed_code/) directory has MIT licensed work with each directory containing a license file with copyrights to their respective owner(s)._
+_The Round Progress Bar in [display/sh_round_progress_bar.lua](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/display/sh_round_progress_bar.lua) is licensed under MIT, originally created by [Cryotheus](https://github.com/Cryotheus/)._
 
 _The Map Vote in [mapvote/](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mapvote/) is licensed under Creative Commons Zero v1.0 Universal, originally created by [Willox](https://github.com/willox)._
+
+_The Level System in [levelling/](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/levelling/) is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0, originally created by [MaxineAnne](https://github.com/MaxineAnne)._
