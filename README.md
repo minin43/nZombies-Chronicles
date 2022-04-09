@@ -32,6 +32,7 @@ ___
 * Fixed nzombies.fgd mapping support
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
+* Level & XP System
 * PaP Camo Chooser
 * [Improved AI](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/IMPROVEDAI.md)
 * [Improved Networking](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/IMPROVEDNETWORKING.md)
