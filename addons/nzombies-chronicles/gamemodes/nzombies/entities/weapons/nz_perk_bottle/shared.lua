@@ -63,21 +63,22 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
-	if SERVER then
-		if !IsValid(self.Owner) then return end
+	if CLIENT then
+		if self.Owner == LocalPlayer() then
+			local vm = LocalPlayer():GetViewModel()
+			print(self:GetPerk())
 
-		-- Change their viewmodel material
-		local vm = self.Owner:GetViewModel()
+			if (self.GetPerk and nzPerks:Get(self:GetPerk()) and nzPerks:Get(self:GetPerk()).material) then
+				local mat = nzPerks:Get(self:GetPerk()).material --perk_materials[self:GetPerk()]
+				self:SetMaterial(mat)
 
-		if (self.GetPerk and nzPerks:Get(self:GetPerk()) and nzPerks:Get(self:GetPerk()).material) then
-			local mat = nzPerks:Get(self:GetPerk()).material --perk_materials[self:GetPerk()]
-			self:SetMaterial(mat)
-
-			oldmat = vm:GetMaterial() or ""
-
-			self.Think = function()
-				vm:SetSubMaterial(0, mat)
+				oldmat = vm:GetMaterial() or ""
 				vm:SetMaterial(mat)
+
+				self.Think = function()
+					vm:SetSubMaterial(0, mat)
+					vm:SetMaterial(mat)
+				end
 			end
 		end
 	end
