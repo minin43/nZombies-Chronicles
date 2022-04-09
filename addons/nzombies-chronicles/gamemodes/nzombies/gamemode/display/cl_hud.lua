@@ -329,45 +329,18 @@ net.Receive("RenderMaxAmmo", function()
 	end)
 end)
 
-local function PowerUpsHud()
+-- Change:
+local powerup_icon_width = 60
+local powerup_icon_height = 60
+local powerup_width_spacing = 70
+local powerup_height_spacing = 45
+local powerup_font = "nz.display.hud.main"
+local powerup_font_height_spacing = 80
+
+local function PowerUpsHud() -- Heavily modified by Ethorbit for centered powerup icons, custom icons, spectator support and  better optimization
 	if nzRound:InProgress() or nzRound:InState(ROUND_CREATE) then
-		local font = "nz.display.hud.main"
-		local w = ScrW() / 2
-		local offset = 40
-		local c = 0
-		local text_w = 745
-
 		---------icon--------------
-		local scale = (ScrW()/1920 + 1)/1.25
-		local w = 617
-		local size = 38
-		local es = 82
-		local es_nom = 0
-		local width = (ScrW() / 2)
-		local height = ScrH() - 130
-		local powerupsActive = 0
-
-		function ReturnPosition(id, seconds, subtractBy) -- When the powerup disappears we need to align everything back again
-			if timer.Exists(id) then return end -- We already did this, we need to wait..
-			timer.Create(id, seconds, 1, function()
-				totalWidth = totalWidth - 75
-			end)
-		end
-
-		local function AddPowerup(material, time) -- Display another powerup on the player's screen
-			local width = ScrW() / 2 + 75 * powerupsActive - totalWidth / 2
-
-			if width - ScrW() / 2 > totalWidth then
-				prevWidth = totalWidth
-				totalWidth = width - ScrW() / 2
-			end
-
-			surface.SetMaterial(material)
-			surface.SetDrawColor(255,255,255)
-			surface.DrawTexturedRect(width - 30, ScrH() - 98, 60, 60)
-			draw.SimpleText(math.Round(time - CurTime()), font, width - 5, height, Color(255, 255, 255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-			powerupsActive = powerupsActive + 1
-		end
+		local icon_tbl = {}
 
 		if (!NZCustomPowerupsHUD) then NZCustomPowerupsHUD = {} end
 		for k,v in pairs(nzPowerUps.ActivePowerUps) do
@@ -377,8 +350,7 @@ local function PowerUpsHud()
 						NZCustomPowerupsHUD["doublepoints"] = powerup_double_points_icon
 					end
 
-					AddPowerup(NZCustomPowerupsHUD["doublepoints"], v)
-					ReturnPosition("Returning" .. "dp", math.Round(v - CurTime()))
+					icon_tbl[#icon_tbl + 1] = {NZCustomPowerupsHUD["doublepoints"], v}
 				end
 
 				if k == "insta" then
@@ -386,8 +358,7 @@ local function PowerUpsHud()
 						NZCustomPowerupsHUD["instakill"] = powerup_insta_kill_icon
 					end
 
-					AddPowerup(NZCustomPowerupsHUD["instakill"], v)
-					ReturnPosition("Returning" .. "insta", math.Round(v - CurTime()))
+					icon_tbl[#icon_tbl + 1] = {NZCustomPowerupsHUD["instakill"], v}
 				end
 
 				if k == "firesale" then
@@ -395,25 +366,25 @@ local function PowerUpsHud()
 						NZCustomPowerupsHUD["firesale"] = powerup_firesale_icon
 					end
 
-					AddPowerup(NZCustomPowerupsHUD["firesale"], v)
-					ReturnPosition("Returning" .. "firesale", math.Round(v - CurTime()))
+					icon_tbl[#icon_tbl + 1] = {NZCustomPowerupsHUD["firesale"], v}
 				end
-
-				local powerupData = nzPowerUps:Get(k)
-				--draw.SimpleText(powerupData.name .. " - " .. math.Round(v - CurTime()), font, w, ScrH() * 0.85 + offset * c, Color(255, 255, 255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-				c = c + 1
 			end
 		end
-		if !nzPowerUps.ActivePlayerPowerUps[LocalPlayer()] then nzPowerUps.ActivePlayerPowerUps[LocalPlayer()] = {} end
-		for k,v in pairs(nzPowerUps.ActivePlayerPowerUps[LocalPlayer()]) do
-			if nzPowerUps:IsPlayerPowerupActive(LocalPlayer(), k) then
+
+		local player = LocalPlayer()
+		if (LocalPlayer():IsSpectating()) then
+			player = LocalPlayer():GetObserverTarget()
+		end
+
+		if !nzPowerUps.ActivePlayerPowerUps[player] then nzPowerUps.ActivePlayerPowerUps[player] = {} end
+		for k,v in pairs(nzPowerUps.ActivePlayerPowerUps[player]) do
+			if nzPowerUps:IsPlayerPowerupActive(player, k) then
 				if k == "zombieblood" then
 					if !NZCustomPowerupsHUD["zombieblood"] then
 						NZCustomPowerupsHUD["zombieblood"] = powerup_zombie_blood_icon
 					end
 
-					AddPowerup(NZCustomPowerupsHUD["zombieblood"], v)
-					ReturnPosition("Returning" .. "zombieblood", math.Round(v - CurTime()))
+					icon_tbl[#icon_tbl + 1] = {NZCustomPowerupsHUD["zombieblood"], v}
 				end
 
 				if k == "deathmachine" then
@@ -421,14 +392,47 @@ local function PowerUpsHud()
 						NZCustomPowerupsHUD["deathmachine"] = powerup_death_machine_icon
 					end
 
-					AddPowerup(NZCustomPowerupsHUD["deathmachine"], v)
-					ReturnPosition("Returning" .. "deathmachine", math.Round(v - CurTime()))
+					icon_tbl[#icon_tbl + 1] = {NZCustomPowerupsHUD["deathmachine"], v}
 				end
 
 				local powerupData = nzPowerUps:Get(k)
-				--draw.SimpleText(powerupData.name .. " - " .. math.Round(v - CurTime()), font, w, ScrH() * 0.85 + offset * c, Color(255, 255, 255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-				c = c + 1
 			end
+		end
+
+		-- Now that we know the powerups that are active for us, we can render them as centered on the bottom of the screen.
+		local powerup_count = #icon_tbl
+		local powerup_width_spacing = (powerup_count > 1 and powerup_width_spacing or 0)
+		local total_width = (powerup_icon_width * powerup_count) + (powerup_width_spacing * (powerup_count ))
+		local iterated = 0
+
+		for k,v in pairs(icon_tbl) do
+			local material = v[1]
+			local time = v[2]
+			local center = (ScrW() / 2)
+			-- my brain fucking hurts
+			local move_back_amount = (powerup_icon_width * k)
+
+			if powerup_count > 1 and k != iterated  then
+				move_back_amount = move_back_amount + ((powerup_width_spacing * k) / 1.5)
+			end
+
+			local pos = (center - move_back_amount) + (total_width / 2)
+
+			surface.SetMaterial(material)
+			surface.SetDrawColor(255,255,255)
+			surface.DrawTexturedRect(pos, ScrH() - (powerup_icon_height + powerup_height_spacing), powerup_icon_width, powerup_icon_height)
+			surface.SetFont(powerup_font)
+
+			local text = tostring(math.Round(time - CurTime()))
+			local text_width,_ = surface.GetTextSize(text)
+
+			-- I am tired and can't figure out how to do dynamic text for any font
+			-- with my limited time. If a developer wants to do this, have fun!
+
+			-- Hint: the pos + 25 is hardcoded, fix it.
+			draw.SimpleText(text, powerup_font, (pos + 25), (ScrH() - (powerup_icon_height)) - powerup_font_height_spacing, Color(255, 255, 255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+			iterated = iterated + 1
 		end
 	end
 end
