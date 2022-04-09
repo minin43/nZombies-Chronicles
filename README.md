@@ -32,7 +32,6 @@ ___
 * Fixed nzombies.fgd mapping support
 * HUD Perk Icon Chooser
 * HUD Gun Tile Chooser
-* Level & XP System
 * PaP Camo Chooser
 * [Improved AI](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/IMPROVEDAI.md)
 * [Improved Networking](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/IMPROVEDNETWORKING.md)
@@ -44,6 +43,11 @@ ___
 * Over 300+ NZC Weapon Configs
 * [Over 30+ NZC Map Configs](https://github.com/Ethorbit/nZombies-Chronicles/wiki/List-Of-All-Configured-Maps)
 
+## Compatibility
+The following addons have compatibility added in the gamemode, but must be downloaded from the Workshop:
+
+* [TFA Base](https://steamcommunity.com/workshop/filedetails/?id=415143062)
+* [Maxwell's XP Tools](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
 
 ## Licenses
 _Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both licensed under GPL-3.0, originally created by [Alig96](https://github.com/Alig96) and improved by [Zet0r](https://github.com/Zet0rz)._
@@ -51,5 +55,3 @@ _Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both l
 _The Round Progress Bar in [display/sh_round_progress_bar.lua](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/display/sh_round_progress_bar.lua) is licensed under MIT, originally created by [Cryotheus](https://github.com/Cryotheus/)._
 
 _The Map Vote in [mapvote/](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mapvote/) is licensed under Creative Commons Zero v1.0 Universal, originally created by [Willox](https://github.com/willox)._
-
-_The Level System in [levelling/](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/levelling/) is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0, originally created by [MaxineAnne](https://github.com/MaxineAnne)._
