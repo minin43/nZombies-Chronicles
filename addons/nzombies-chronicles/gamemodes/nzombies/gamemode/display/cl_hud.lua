@@ -131,7 +131,7 @@ end
 
 local tbl = {Entity(3), Entity(1), Entity(3), Entity(4), Entity(5),}
 
-local function ScoreHud()
+local function ScoreHud() -- Heavily modified by Ethorbit, more accurate to COD and better Multiplayer support
 	if GetConVar("cl_drawhud"):GetBool() then
 		if nzRound:InProgress() then
 
@@ -211,7 +211,7 @@ local function ScoreHud()
 	end
 end
 
-local function GunHud()
+local function GunHud() -- Spectator support added by Ethorbit
 	if GetConVar("cl_drawhud"):GetBool() then
 		if !LocalPlayer():IsNZMenuOpen() then
 			local small_screen = nzDisplay.IsSmallScreen()
@@ -300,7 +300,7 @@ local fadeouttime = nil
 local fadeout = 0
 local totalWidth = 0
 
-net.Receive("RenderMaxAmmo", function()
+net.Receive("RenderMaxAmmo", function() -- Max Ammo animation by Ethorbit, requested by DoorMatt and icons were created by Sam
 	local alpha = 0
 	local fadeout = 0
 	local fadeouttime = nil
@@ -487,6 +487,8 @@ net.Receive("nz_points_notification", function()
 	PointsNotification(ply, amount)
 end)
 
+
+-- TODO: fix rare bug where point numbers stop rendering /Ethorbit
 local function DrawPointsNotification()
 
 	if GetConVar("nz_point_notification_clientside"):GetBool() then
@@ -537,7 +539,7 @@ end
 	["pap"] = Material("vulture_icons/pap.png", "smooth unlitgeneric"),
 }]]
 
-local function PerksHud()
+local function PerksHud() -- Improved by Ethorbit
 	local scale = (ScrW()/1920 + 1)/2
 	local w = -20
 	local size = 50
@@ -606,7 +608,7 @@ local round_white = 0
 local round_alpha = 255
 local round_num = 0
 local infmat = Material("materials/round_-1.png", "smooth")
-local function RoundHud()
+local function RoundHud() -- Improved by Ethorbit, round 6 bug fixed by NapalmBurner
 	if (round_num == 0 and LocalPlayer():IsSpectating() and #player.GetAllPlaying() > 0) then
 		round_num = nzRound:GetNumber()
 	end
