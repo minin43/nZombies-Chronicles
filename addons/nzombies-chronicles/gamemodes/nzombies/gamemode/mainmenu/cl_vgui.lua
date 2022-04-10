@@ -264,11 +264,13 @@ local function MenuSettingsListInit(self)
 		end
 	end
 
+	hook.Run("NZ.MenuSettingsList_PreButtonInit", self)
 	self:AddButton( "Load Map config", "nz_chatcommand", "/load" )
 	self:AddButton( "Save Map config", "nz_chatcommand", "/save" )
 	self:AddButton( "Player Model Editor", function() nzPlayers:PlayerModelEditor() end)
 	self:AddButton( "Generate Navmesh", "nz_chatcommand", "/generate" )
 	self:AddButton( "Cheats (Beta)", "nz_chatcommand", "/cheats" )
+	hook.Run("NZ.MenuSettingsList_PostButtonInit", self)
 end
 
 function MenuSettingsPanel:Init()

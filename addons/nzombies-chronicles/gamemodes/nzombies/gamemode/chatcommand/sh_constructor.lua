@@ -1,7 +1,7 @@
 -- Chat Commands module
 nzChatCommand = nzChatCommand or AddNZModule("chatcommand")
-
 nzChatCommand.commands = nzChatCommand.commands or {}
+nzChatCommand.prefixes = nzChatCommand.prefixes or {} -- added by Ethorbit to both continue the optimization and allow more than just "/"
 
 if CLIENT then
 	nzChatCommand.servercommands = nzChatCommand.servercommands or {} -- For autocomplete
@@ -17,6 +17,8 @@ end
 
 --TODO add more descriptive table indices.
 function nzChatCommand.Add(text, realm, func, allowAll, usageHelp)
+	nzChatCommand.prefixes[text[1]] = true -- We're assuming the first character is a command prefix (/), it's no big deal if this is incorrect.
+
 	if realm or SERVER then -- Always server
 		if usageHelp then
 			table.insert(nzChatCommand.commands, {text, func, allowAll and true or false, usageHelp})
@@ -31,8 +33,8 @@ end
 -- Hooks
 if SERVER then
 	local function commandListenerSV( ply, text, public )
-		--print("Here", text, ply)
-		if text[1] == "/" then
+		--if text[1] == "/" then -- WTF is this code?
+		if nzChatCommand.prefixes[text[1]] then -- This makes more sense, if optimization is the goal
 			text = string.lower(text)
 			for k,v in pairs(nzChatCommand.commands) do
 				if (string.sub(text, 1, string.len(v[1])) == v[1]) then
@@ -57,6 +59,7 @@ if SERVER then
 			end
 			ply:ChatPrint("NZ No valid command exists with this name, try '/help' for a list of commands.")
 		end
+		--end
 	end
 	hook.Add("PlayerSay", "nzChatCommand", commandListenerSV)
 
@@ -72,7 +75,8 @@ end
 
 if CLIENT then
 	local function commandListenerCL( ply, text, public, dead )
-		if text[1] == "/" then
+		--if text[1] == "/" then -- WTF is this code?
+		if nzChatCommand.prefixes[text[1]] then -- This makes more sense, if optimization is the goal
 			text = string.lower(text)
 			for k,v in pairs(nzChatCommand.commands) do
 				if (string.sub(text, 1, string.len(v[1])) == v[1]) then
@@ -96,6 +100,7 @@ if CLIENT then
 				end
 			end
 		end
+		--end
 	end
 	hook.Add("OnPlayerChat", "nzChatCommandClient", commandListenerCL)
 

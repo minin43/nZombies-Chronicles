@@ -4,7 +4,7 @@ nzConfig.Vars = nzConfig.Vars or {}
 
 nzConfig.GetVar = function(name)
 	return nzConfig.Vars[name]
-end 
+end
 
 nzConfig.DefineVar = function(var, val, flags, desc, min, max)
 	if not ConVarExists(var) then
@@ -50,7 +50,7 @@ nzConfig.DefineVar("nz_difficulty_zombie_amount_base", 6, {FCVAR_SERVER_CAN_EXEC
 nzConfig.DefineVar("nz_difficulty_zombie_amount_scale", 0.35, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 nzConfig.DefineVar("nz_difficulty_zombie_health_base", 150, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 nzConfig.DefineVar("nz_difficulty_zombie_health_scale", 1.1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
-nzConfig.DefineVar("nz_difficulty_max_zombies_alive", 35, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+--nzConfig.DefineVar("nz_difficulty_max_zombies_alive", 35, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 nzConfig.DefineVar("nz_difficulty_barricade_max_zombies", 3, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 nzConfig.DefineVar("nz_difficulty_barricade_planks_max", 6, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 nzConfig.DefineVar("nz_difficulty_powerup_chance", 2, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
@@ -65,19 +65,45 @@ nzConfig.DefineVar("nz_spawnpoint_update_rate", 4, {FCVAR_SERVER_CAN_EXECUTE, FC
 nzConfig.DefineVar("nz_maxragdolls", 10, {FCVAR_ARCHIVE}, "Max amount of ragdolls allowed to exist at any time.", 0, 8000)
 nzConfig.DefineVar("nz_ragdollremovetime", 1, {FCVAR_ARCHIVE}, "How many seconds it takes to fade and remove ragdolls that are over the maxragdoll limit.", 0, 30)
 
-nzConfig.DefineVar("nz_mapvote_item_limit", 30, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Max amount of items that can show in the Map Vote")
-nzConfig.DefineVar("nz_mapvote_time_limit", 30, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The time everyone has to choose a map")
-nzConfig.DefineVar("nz_mapvote_config_time_limit", 20, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The time everyone has to choose a config for a map")
-nzConfig.DefineVar("nz_mapvote_unlock_round", 12, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "The MapVote unlocks after this round, dying after it will automatically initiate it.")
-nzConfig.DefineVar("nz_mapvote_allow_current_map", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Allow the current map to be voted for.")
-nzConfig.DefineVar("nz_mapvote_auto_change_no_players", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Auto changes to a random map after a duration when nobody is on.")
-nzConfig.DefineVar("nz_mapvote_auto_change_no_players_minutes", 1800, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Consecutive minutes of nobody online before auto changing")
+local mapvoteFlags = {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}
+nzConfig.DefineVar("nz_mapvote_item_limit", 30, mapvoteFlags, "Max amount of items that can show in the Map Vote")
+nzConfig.DefineVar("nz_mapvote_time_limit", 30, mapvoteFlags, "The time everyone has to choose a map")
+nzConfig.DefineVar("nz_mapvote_config_time_limit", 20, mapvoteFlags, "The time everyone has to choose a config for a map")
+nzConfig.DefineVar("nz_mapvote_unlock_round", 12, mapvoteFlags, "The MapVote unlocks after this round, dying after it will automatically initiate it.")
+nzConfig.DefineVar("nz_mapvote_allow_current_map", 1, mapvoteFlags, "Allow the current map to be voted for.")
+nzConfig.DefineVar("nz_mapvote_auto_change_no_players", 0, mapvoteFlags, "Auto changes to a random map after a duration when nobody is on.")
+nzConfig.DefineVar("nz_mapvote_auto_change_no_players_minutes", 1800, mapvoteFlags, "Consecutive minutes of nobody online before auto changing")
 
 nzConfig.DefineClientVar("nz_weapon_auto_reload", 1, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Auto reloads your weapon after firing the last shot")
-nzConfig.DefineClientVar("nz_round_sounds", 1, false, "Whether or not to play round changing sounds.")
-nzConfig.DefineClientVar("nz_zombie_eyes", 1, false, "Enable/Disable the rendering of zombie eyes")
-nzConfig.DefineClientVar("nz_holiday_events", 1, false, "Toggle nZombies holiday cosmetic events (Mostly affects zombie appearance)")
+nzConfig.DefineClientVar("nz_draw_distance", -1, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Sets the max distance the world can render.")
+nzConfig.DefineClientVar("nz_round_sounds", 1, {FCVAR_ARCHIVE}, "Whether or not to play round changing sounds.")
+nzConfig.DefineClientVar("nz_gameover_music", 1, {FCVAR_ARCHIVE}, "Whether or not to play gameover music.")
+nzConfig.DefineClientVar("nz_zombie_eyes", 1, {FCVAR_ARCHIVE}, "Enable/Disable the rendering of zombie eyes")
+nzConfig.DefineClientVar("nz_holiday_events", 1, {FCVAR_ARCHIVE}, "Toggle nZombies holiday cosmetic events (Mostly affects zombie appearance)")
 
+local xpFlags = {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}
+local commentSuffix = " (Only works if XP-Tools is installed on the server)"
+nzConfig.DefineVar("nz_xp_from_zombies_allowed", 1, xpFlags, "Can players gain XP from killing non-boss zombies?" .. commentSuffix)
+nzConfig.DefineVar("nz_xp_from_reviving_allowed", 1, xpFlags, "Can players gain XP from reviving?" .. commentSuffix)
+nzConfig.DefineVar("nz_xp_from_doors_allowed", 1, xpFlags, "Can players gain XP from purchasing doors? Amount scales depending on the price of the door." .. commentSuffix)
+nzConfig.DefineVar("nz_xp_from_barriers_allowed", 1, xpFlags, "Can players gain XP from repairing barriers?" .. commentSuffix)
+nzConfig.DefineVar("nz_xp_from_powerups_allowed", 1, xpFlags, "Can players gain XP from picking up powerups?" .. commentSuffix)
+nzConfig.DefineVar("nz_xp_from_box_allowed", 1, xpFlags, "Can players gain XP from purchasing the Mystery Box?" .. commentSuffix)
+nzConfig.DefineVar("nz_xp_from_boss_allowed", 1, xpFlags, "Can players gain XP from defeating bosses?" .. commentSuffix)
+nzConfig.DefineVar("nz_xp_from_map_records_allowed", 1, xpFlags, "Can players gain XP from beating map records?" .. commentSuffix)
+
+nzConfig.DefineVar("nz_xp_amount_from_zombies", 12, xpFlags, "XP received per non-boss zombie." .. commentSuffix)
+nzConfig.DefineVar("nz_xp_amount_from_reviving", 90, xpFlags, "XP received per revive." .. commentSuffix)
+nzConfig.DefineVar("nz_xp_amount_from_barriers", 10, xpFlags, "XP received per board repaired." .. commentSuffix)
+nzConfig.DefineVar("nz_xp_amount_from_powerups", 20, xpFlags, "XP received per powerup grabbed." .. commentSuffix)
+nzConfig.DefineVar("nz_xp_amount_from_box", 14, xpFlags, "XP received from purchasing Mystery Box." .. commentSuffix)
+nzConfig.DefineVar("nz_xp_amount_from_boss", 120, xpFlags, "XP received from defeating a boss." .. commentSuffix)
+nzConfig.DefineVar("nz_xp_amount_from_map_records", 180, xpFlags, "XP received from beating a map's record." .. commentSuffix)
+
+nzConfig.DefineClientVar("nz_xp_hudtype", 1, {FCVAR_ARCHIVE}, "1 for bottom, 2 for distracting top" .. commentSuffix)
+nzConfig.DefineClientVar("nz_xp_visuals", 1, {FCVAR_ARCHIVE}, "Enable/Disable the XP-Tools visuals" .. commentSuffix)
+nzConfig.DefineClientVar("nz_xp_bar_shrink_amount", 0.0, {FCVAR_ARCHIVE}, "Changes the horizontal scale of the XP bar, but only if the nz_xp_hudtype is on 1 or less." .. commentSuffix)
+--nzConfig.DefineClientVar("nz_levelup_sound", )
 --nzConfig.DefineVar(CLIENT and "nz_client_ragdolltime" or "nz_server_ragdolltime", 30, {FCVAR_ARCHIVE}, CLIENT and "How long clientside Zombie ragdolls will stay in the map." or "How long serverside Zombie ragdolls will stay in the map.")
 --nzConfig.DefineVar("nz_rtv_time", 45, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
 --nzConfig.DefineVar("nz_rtv_enabled", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})

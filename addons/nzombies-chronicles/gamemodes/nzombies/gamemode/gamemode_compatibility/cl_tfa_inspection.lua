@@ -88,4 +88,18 @@ hook.Add("TFA_InspectVGUI_InfoStart", "Add_NZ_TFA_Stats", function(wepom, conten
         myself.Text = dmgstr
         myself.TextColor = TEXT_COLOR
     end)
+
+	-- ProjectileRadius:
+	if wepom.Primary and wepom.Primary.ProjectileRadius then
+		add_inspection_stat_to_panel(statpanel, function(myself)
+			if not IsValid(self) then return end
+			local ProjRadius = self:GetStat("Primary.ProjectileRadius")
+			if !isnumber(ProjRadius) then return end
+
+			local ProjRadius = "Projectile Radius: " .. ProjRadius
+
+			myself.Text = dmgstr
+			myself.TextColor = TEXT_COLOR
+		end)
+	end
 end)

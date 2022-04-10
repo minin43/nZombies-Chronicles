@@ -34,3 +34,48 @@ function SWEP:ClearStatCache(vn)
         table.Empty(self.StatCache2)
     end
 end
+
+-- Give tfa_exp_base a configurable Radius property based on weapon that fired it, instead of just guessing from its damage
+-- Hopefully they consider this so I can remove this silly override.. :
+hook.Add("OnEntityCreated", "NZC.OverrideTFAExpExplosion", function(ent)
+    if ent:GetClass() == "tfa_exp_base" then
+        ent.Explode = function()
+            local self = ent
+
+            if not IsValid(self.Inflictor) then
+                self.Inflictor = self
+            end
+
+            self.Damage = self.mydamage or self.Damage
+
+            local dmg = DamageInfo()
+            dmg:SetInflictor(self.Inflictor)
+            dmg:SetAttacker(IsValid(self:GetOwner()) and self:GetOwner() or self)
+            dmg:SetDamage(self.Damage)
+            dmg:SetDamageType(bit.bor(DMG_BLAST, DMG_AIRBOAT))
+
+            -- Customizable radius
+            local radius
+            local wepOwner = self.Owner
+            if (IsValid(wepOwner)) then
+                local wep = wepOwner:GetActiveWeapon()
+                if (IsValid(wep)) then
+                    radius = wep.ProjectileRadius
+                end
+            end
+
+            if (!isnumber(radius)) then
+                radius = math.pow( self.Damage / 150, 0.75) * 200
+            end
+
+            util.BlastDamageInfo(dmg, self:GetPos(), radius)
+
+            -- Disable the shaking, most people don't like it.
+            --util.ScreenShake(self:GetPos(), self.Damage * 20, 255, self.Damage / 200, math.pow(self.Damage / 100, 0.75) * 400)
+
+            self:DoExplosionEffect()
+
+            self:Remove()
+        end
+    end
+end)
