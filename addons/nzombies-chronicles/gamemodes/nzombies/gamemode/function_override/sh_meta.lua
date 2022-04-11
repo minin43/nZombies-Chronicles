@@ -1,5 +1,6 @@
 -- ONLY for overriding!
 -- New stuff for existing things go to extensions/
+local cTakeDmgInfo = FindMetaTable("CTakeDamageInfo")
 
 if CLIENT then
 	-- Get that laggy shit out of here
@@ -23,6 +24,17 @@ hook.Add("PostEntityTakeDamage", "PostEntTakeDamage", function(ent, dmginfo, too
 	end
 end)
 ------------------------------------------------------------------
+
+local entMeta = FindMetaTable("Entity")
+
+-- TakeDamageInfo crash fix by Ethorbit as I have gotten really
+-- fucking annoyed by thirdparty code (even some gamemode code) causing it.
+local oldTakeDamageInfo = entMeta.TakeDamageInfo
+function entMeta:TakeDamageInfo(dmginfo)
+	if self.Health and isfunction(self.Health) and self:Health() <= 0 then return end -- JUST STOP!
+
+	oldTakeDamageInfo(self, dmginfo)
+end
 
 local playerMeta = FindMetaTable("Player")
 local wepMeta = FindMetaTable("Weapon")
@@ -206,7 +218,7 @@ if SERVER then
 	end
 	hook.Add("WeaponEquip", "nzModifyAimDownSights", ReplaceAimDownSight)
 
-	hook.Add("KeyPress", "nzReloadCherry", function(ply, key)
+	hook.Add("KeyPress", "nzReloadCherry", function(ply, key) -- Improved Electric Cherry by: Ethorbit
 		if key == IN_RELOAD then
 			if ply:HasPerk("cherry") then
 				local wep = ply:GetActiveWeapon()
@@ -330,7 +342,7 @@ if SERVER then
 			--if ply:Crouching() then
 				local zombies = ents.FindInSphere(ply:GetPos(), 250)
 				for k,v in pairs(zombies) do
-					if nzConfig.ValidEnemies[v:GetClass()] then
+					if (v:IsNextBot() or v:IsNPC()) and v:Health() > 0 then
 						local dmg = DamageInfo()
 						dmg:SetDamage(345)
 						dmg:SetDamageType(DMG_BLAST)
