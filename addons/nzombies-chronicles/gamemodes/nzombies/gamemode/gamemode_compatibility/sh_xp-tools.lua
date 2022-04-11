@@ -155,5 +155,3 @@ end
 -- Remove the XP for doing nothing, there's little point when there's so many ways to get it in nZombies:
 print("[nZ Maxwell XP Compatibility] Removed Auto XP timer.")
 timer.Remove("AutoXPTimer")
-
--- Add proper Nextbot support:

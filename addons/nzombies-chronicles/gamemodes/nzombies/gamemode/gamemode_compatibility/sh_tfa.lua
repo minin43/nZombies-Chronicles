@@ -38,7 +38,7 @@ end
 -- Give tfa_exp_base a configurable Radius property based on weapon that fired it, instead of just guessing from its damage
 -- Hopefully they consider this so I can remove this silly override.. :
 hook.Add("OnEntityCreated", "NZC.OverrideTFAExpExplosion", function(ent)
-    if ent:GetClass() == "tfa_exp_base" then
+    if ent.Base == "tfa_exp_base" then
         ent.Explode = function()
             local self = ent
 
@@ -71,7 +71,7 @@ hook.Add("OnEntityCreated", "NZC.OverrideTFAExpExplosion", function(ent)
             util.BlastDamageInfo(dmg, self:GetPos(), radius)
 
             -- Disable the shaking, most people don't like it.
-            --util.ScreenShake(self:GetPos(), self.Damage * 20, 255, self.Damage / 200, math.pow(self.Damage / 100, 0.75) * 400)
+            --util.ScreenShake(self:GetPos(), self.Damage, 255, self.Damage / 200, radius * 1.5)
 
             self:DoExplosionEffect()
 
