@@ -18,12 +18,14 @@ local exclude = {
     ["Resistance"] = true
 }
 
-for k,v in pairs(Maxwell.Perks) do
-    if v.name and exclude[v.name] then
-        table.remove(Maxwell.Perks, k)
-        print("[nZ Maxwell XP Compatibility] Removed default perk (" .. v.name .. ")")
+hook.Add(SERVER and "Initialize" or "InitPostEntity", "NZ_RemoveDefaultMaxwellPerks", function()
+    for k,v in pairs(Maxwell.Perks) do
+        if v.name and exclude[v.name] then
+            Maxwell.Perks[k] = nil
+            print("[nZ Maxwell XP Compatibility] Removed default perk (" .. v.name .. ")")
+        end
     end
-end
+end)
 
 -- More config options (commands are in config/sh_constructor.lua)
 Maxwell.XPFromNPCs = GetConVar("nz_xp_from_zombies_allowed"):GetBool()
