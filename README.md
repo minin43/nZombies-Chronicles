@@ -44,12 +44,12 @@ ___
 * [Over 30+ NZC Map Configs](https://github.com/Ethorbit/nZombies-Chronicles/wiki/List-Of-All-Configured-Maps)
 
 ## Thirdparty Content
-The following addons have compatibility added in the gamemode, but must be downloaded from the Workshop for the functionality to exist:
+The following addons have compatibility added in the gamemode, you'll have to download them from the Workshop if you want the extra functionality.
 * [XP-Tools Leveling System](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
 
 ## Workshop Conflicts
 You need to uninstall these addons from the Workshop in order to play this gamemode without problems:
-* [TFA Base](https://steamcommunity.com/sharedfiles/filedetails/?id=415143062) - An nZombies-friendly version is already included with the gamemode
+* [TFA Base](https://steamcommunity.com/sharedfiles/filedetails/?id=415143062) - An nZombies friendly version is already included with the gamemode
 
 ## Licenses
 _Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both licensed under GPL-3.0, originally created by [Alig96](https://github.com/Alig96) and improved by [Zet0r](https://github.com/Zet0rz)._
