@@ -44,7 +44,7 @@ ___
 * [Over 30+ NZC Map Configs](https://github.com/Ethorbit/nZombies-Chronicles/wiki/List-Of-All-Configured-Maps)
 
 ## Thirdparty Content
-The following addons have compatibility added in the gamemode, but must be downloaded from the Workshop:
+The following addons have compatibility added in the gamemode, but must be downloaded from the Workshop for the functionality to exist:
 * [XP-Tools Leveling System](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
 
 ## Workshop Conflicts
