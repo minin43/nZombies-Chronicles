@@ -43,15 +43,19 @@ ___
 * Over 300+ NZC Weapon Configs
 * [Over 30+ NZC Map Configs](https://github.com/Ethorbit/nZombies-Chronicles/wiki/List-Of-All-Configured-Maps)
 
-## Compatibility
+## Thirdparty Content
 The following addons have compatibility added in the gamemode, but must be downloaded from the Workshop:
-
-* [TFA Base](https://steamcommunity.com/workshop/filedetails/?id=415143062)
 * [XP-Tools Leveling System](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
+
+## Workshop Conflicts
+You need to uninstall these addons from the Workshop in order to play this gamemode without problems:
+* [TFA Base](https://steamcommunity.com/sharedfiles/filedetails/?id=415143062) - An nZombies-friendly version is already included with the gamemode
 
 ## Licenses
 _Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both licensed under GPL-3.0, originally created by [Alig96](https://github.com/Alig96) and improved by [Zet0r](https://github.com/Zet0rz)._
 
-_The Round Progress Bar in [display/sh_round_progress_bar.lua](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/display/sh_round_progress_bar.lua) is licensed under MIT, originally created by [Cryotheus](https://github.com/Cryotheus/)._
+_The Round Progress Bar in [sh_round_progress_bar.lua](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/display/sh_round_progress_bar.lua) is licensed under MIT, originally created by [Cryotheus](https://github.com/Cryotheus/)._
+
+_The TFA Base code in [addons/tfa_base]() is licensed under MIT, created by TFA and the content is licensed under CC BY-NC-SA 4.0, created by TFA Base contributors._
 
 _The Map Vote in [mapvote/](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/gamemodes/nzombies/gamemode/mapvote/) is licensed under Creative Commons Zero v1.0 Universal, originally created by [Willox](https://github.com/willox)._

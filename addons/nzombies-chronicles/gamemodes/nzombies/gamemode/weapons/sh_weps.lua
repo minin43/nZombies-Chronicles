@@ -1,7 +1,24 @@
 local wepMeta = FindMetaTable("Weapon")
 
--- Replacement and variant code by: Ethorbit
-function nzWeps:GetAllOtherVariants(class) -- Gets all other weapon variants of the passed weapon class
+function wepMeta:NZMaxAmmo() -- Replaced TFA's version with Chtidino's
+
+	local ammo_type = self:GetPrimaryAmmoType() or self.Primary.Ammo
+
+    if SERVER then
+        self.Owner:SetAmmo( self.Primary.MaxAmmo, ammo_type )
+		self:SetClip1( self.Primary.ClipSize )
+    end
+end
+
+function wepMeta:GetPaP() -- Moved from TFA Base here, as this is where it actually belongs /Ethorbit
+	return ( self.HasNZModifier and self:HasNZModifier("pap") ) or self.pap or false
+end
+
+function wepMeta:IsPaP() -- Moved from TFA Base here, as this is where it actually belongs /Ethorbit
+	return self:GetPaP()
+end
+
+function nzWeps:GetAllOtherVariants(class) -- Gets all other weapon variants of the passed weapon class, created by Ethorbit
 	--local startTime = os.clock()
 
 	local wep_class = !isentity(class) and class or class:GetClass()
@@ -34,7 +51,7 @@ function nzWeps:GetAllOtherVariants(class) -- Gets all other weapon variants of 
 	return tbl
 end
 
-function nzWeps:GetReplacement(class) -- The weapon that the one provided turns into when PaP'd
+function nzWeps:GetReplacement(class) -- The weapon that the one provided turns into when PaP'd, created by Ethorbit
 	local selectedWep = weapons.Get(class)
 	local replacement = ""
 	if istable(selectedWep) then
@@ -44,11 +61,11 @@ function nzWeps:GetReplacement(class) -- The weapon that the one provided turns 
 	if (isstring(replacement)) then return weapons.Get(replacement) end
 end
 
-function wepMeta:GetReplacement() -- The weapon that the one provided turns into when PaP'd
+function wepMeta:GetReplacement() -- The weapon that the one provided turns into when PaP'd, created by Ethorbit
 	return nzWeps:GetReplacement(self:GetClass())
 end
 
-function nzWeps:Unreplaced(class) -- Get the weapon an upgraded weapon is when it's not PaP'd
+function nzWeps:Unreplaced(class) -- Get the weapon an upgraded weapon is when it's not PaP'd, created by Ethorbit
 	local unreplaced = nzWeps:GetReplaceChild(class)
 	if unreplaced then
 		for i = 1, 100 do -- While loop not needed, but feel free to turn this into one
@@ -63,12 +80,12 @@ function nzWeps:Unreplaced(class) -- Get the weapon an upgraded weapon is when i
 	end
 end
 
-function nzWeps:IsReplaceable(class) -- Due to Unreplaced and GetReplaceChild, this function is actually slow. Use it sparingly!
+function nzWeps:IsReplaceable(class) -- Due to Unreplaced and GetReplaceChild, this function is actually slow. Use it sparingly! Created by Ethorbit
 	local unrep = nzWeps:Unreplaced(class)
 	return istable(unrep) and nzWeps:GetReplacement(unrep.ClassName)
 end
 
-function nzWeps:GetAllReplacements(class) -- All weapons that this one can turn into when PaPing
+function nzWeps:GetAllReplacements(class) -- All weapons that this one can turn into when PaPing, created by Ethorbit
 	local replacements = {}
 	local newClass = nzWeps:GetReplacement(class)
 
@@ -90,11 +107,11 @@ function nzWeps:GetAllReplacements(class) -- All weapons that this one can turn 
 	return replacements
 end
 
-function wepMeta:GetAllReplacements() -- All weapons that this one can turn into when PaPing
+function wepMeta:GetAllReplacements() -- All weapons that this one can turn into when PaPing, created by Ethorbit
 	return nzWeps:GetAllReplacements(self:GetClass())
 end
 
-function nzWeps:GetReplaceChild(class) -- What this weapon was before it was turned into another weapon via PaPing
+function nzWeps:GetReplaceChild(class) -- What this weapon was before it was turned into another weapon via PaPing, created by Ethorbit
 	local replacedBy = nil
 	for _,v in pairs(weapons.GetList()) do
 		if (isstring(v.NZPaPReplacement)) then
@@ -107,7 +124,7 @@ function nzWeps:GetReplaceChild(class) -- What this weapon was before it was tur
 	return replacedBy
 end
 
-function wepMeta:GetReplaceChild() -- What this weapon was before it was turned into another weapon via PaPing
+function wepMeta:GetReplaceChild() -- What this weapon was before it was turned into another weapon via PaPing, created by Ethorbit
 	return nzWeps:ReplacedBy(self:GetClass())
 end
 
