@@ -42,14 +42,18 @@ ___
 * [More Traps](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/Traps/README.md)   
 * Over 300+ NZC Weapon Configs
 * [Over 30+ NZC Map Configs](https://github.com/Ethorbit/nZombies-Chronicles/wiki/List-Of-All-Configured-Maps)
+* Voting (Maps)
+* Round Progress Bar
 
 ## Thirdparty Content
 The following addons have compatibility added in the gamemode, you'll have to download them from the Workshop if you want the extra functionality.
 * [XP-Tools Leveling System](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
 
 ## Workshop Conflicts
-You need to uninstall these addons from the Workshop in order to play this gamemode without problems:
-* [TFA Base](https://steamcommunity.com/sharedfiles/filedetails/?id=415143062) - An nZombies friendly version is already included with the gamemode
+These addons are already in the gamemode, you need to uninstall them from the Workshop to play without problems:
+* [TFA Base](https://steamcommunity.com/sharedfiles/filedetails/?id=415143062) 
+* [nZombies Progress Bar](https://steamcommunity.com/sharedfiles/filedetails/?id=1928020460) 
+* MapVote - Fretta-like Map Voting
 
 ## Licenses
 _Gamemode forked from [nZombies 1.0](https://github.com/Zet0rz/nzombies), both licensed under GPL-3.0, originally created by [Alig96](https://github.com/Alig96) and improved by [Zet0r](https://github.com/Zet0rz)._
