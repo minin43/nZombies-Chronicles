@@ -78,6 +78,7 @@ if SERVER then
 			end)
 		end
 
+		-- Electric cherry AOE downed damage added by: Ethorbit
 		if self:HasPerk("cherry") then
 			nzEffects:Tesla( {
 				pos = self:GetPos() + Vector(0,0,50),
@@ -103,7 +104,7 @@ if SERVER then
 		end
 
 		if #player.GetAllPlaying() <= 1 and self:HasPerk("revive") and (!self.SoloRevive or self.SoloRevive < 3) then
-			-- Despawn zombies nearby, so that we don't immediately go down when auto revived
+			-- Despawn zombies nearby, so that we don't immediately go down when auto revived, created by Ethorbit
 			for _,zombie in pairs(ents.FindInSphere(self:GetPos(), 200)) do
 				if IsValid(zombie) and zombie:IsValidZombie() then
 					zombie:RespawnZombie()
@@ -137,6 +138,11 @@ if SERVER then
 		end
 
 		hook.Call("PlayerDowned", nzRevive, self)
+
+		-- Added by Ethorbit as I think this is helpful info to have
+		if self.SetLastDownedPosition then
+			self:SetLastDownedPosition(self:GetPos())
+		end
 
 		-- Equip the first pistol found in inventory - unless a pistol is already equipped
 		local wep = self:GetActiveWeapon()
@@ -201,6 +207,11 @@ if SERVER then
 		self.DownPoints = nil
 		self.HasWhosWho = nil
 		self.DownedWithSoloRevive = nil
+
+		-- Added by Ethorbit as I think this is helpful info to have
+		if self.SetLastRevivedPosition then
+			self:SetLastRevivedPosition(self:GetPos())
+		end
 
 		--self:SetPos(self:GetPos() + Vector(0,0,25))
 		self:ResetHull()
@@ -285,6 +296,11 @@ if SERVER then
 			else
 				self:Kill()
 			end
+		end
+
+		-- Added by Ethorbit as I think this is helpful info to have
+		if self.SetLastDeathPosition then
+			self:SetLastDeathPosition(self:GetPos())
 		end
 
 		if !nosync then hook.Call("PlayerKilled", nzRevive, self) end

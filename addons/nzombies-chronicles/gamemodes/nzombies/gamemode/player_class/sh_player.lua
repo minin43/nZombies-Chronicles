@@ -3,7 +3,6 @@
 -- one of those is meant to have something!
 
 local PLAYER = FindMetaTable("Player")
-
 local oldHasWep = isfunction(oldHasWep) and oldHasWep or PLAYER.HasWeapon
 local oldGetRunSpeed = isfunction(oldGetRunSpeed) and oldGetRunSpeed or PLAYER.GetRunSpeed
 local oldGetWalkSpeed = isfunction(oldGetWalkSpeed) and oldGetWalkSpeed or PLAYER.GetWalkSpeed

@@ -22,11 +22,15 @@ function PLAYER:SetupDataTables()
 	self.Player:NetworkVar("Int", 4, "Spec_Clip2")
 	self.Player:NetworkVar("Int", 5, "Spec_Nades")
 	self.Player:NetworkVar("Int", 6, "Spec_NadesSpecial")
-	
+
 	self.Player:NetworkVar("Float", 1, "LastNovaGasTouch")
 
 	self.Player:NetworkVar("Entity", 0, "WhosWhoEntity") -- Put this here so it is much faster to get their Who's Who clone, originally we'd loop through all the clones and compare their GetPerkOwner
 	self.Player:NetworkVar("Entity", 1, "TeleporterEntity") -- So we can know what Teleporter is teleporting us
+
+	self.Player:NetworkVar("Vector", 0, "LastDownedPosition")
+	self.Player:NetworkVar("Vector", 1, "LastRevivedPosition")
+	self.Player:NetworkVar("Vector", 2, "LastDeathPosition")
 end
 
 function PLAYER:Init()
@@ -54,20 +58,20 @@ function PLAYER:Loadout()
 	self.Player:GiveMaxAmmo()
 --	self.Player:Give("tfa_fists")
 
-	
+
 	if !GetConVar("nz_papattachments"):GetBool() and FAS2_Attachments != nil then
 		for k,v in pairs(FAS2_Attachments) do
 			self.Player:FAS2_PickUpAttachment(v.key)
 		end
 	end
-	
+
 	--timer.Simple(2, function()
 		if nzMapping.Settings.knifeclass and weapons.Get(nzMapping.Settings.knifeclass) then
 			self.Player:Give(nzMapping.Settings.knifeclass)
 		else
 			self.Player:Give("nz_quickknife_crowbar")
 		end
-		
+
 		-- We need this to disable the grenades for those that it causes problems with until they've been remade :(
 		if !GetConVar("nz_failsafe_preventgrenades"):GetBool() then
 			if nzMapping.Settings.nadeclass and weapons.Get(nzMapping.Settings.nadeclass) then
@@ -93,7 +97,7 @@ function PLAYER:Spawn()
 	-- Ensure that their speeds don't come from Creative Mode
 	self.Player:SetRunSpeed(self.Player:GetDefaultRunSpeed())
 	self.Player:SetMaxRunSpeed(self.Player:GetDefaultRunSpeed())
-	self.Player:SetWalkSpeed(self.Player:GetDefaultWalkSpeed())	
+	self.Player:SetWalkSpeed(self.Player:GetDefaultWalkSpeed())
 	self.Player:InitStamina()
 	--------------------------------------------------
 
@@ -129,7 +133,7 @@ function PLAYER:Spawn()
 			end
 		end
 	end
-	
+
 	self.Player:SetUsingSpecialWeapon(false)
 end
 
