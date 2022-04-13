@@ -1,3 +1,4 @@
+-- Auto Reload and FOV is in function_override/sh_meta.lua /Ethorbit
 local wepMeta = FindMetaTable("Weapon")
 
 function wepMeta:NZMaxAmmo() -- Replaced TFA's version with Chtidino's

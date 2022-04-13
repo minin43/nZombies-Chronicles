@@ -413,6 +413,102 @@ if SERVER then
 	-- Plus, why override a function when it's not necessary to?
 	-- That should always be a last resort.
 else
+	-- Custom FOV and Draw Distance
+	local CustomFOV = GetConVar("nz_custom_fov")
+	local EnableCustomFOV = GetConVar("nz_custom_fov_enabled")
+	local DrawDistance = CreateConVar("nz_draw_distance", -1, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Sets the max distance the world can render.")
+	local Default_FOV = GetConVar("default_fov")
+
+	local view = {origin = vector_origin, angles = angle_zero, fov=0, zdraw=-1}
+	function GM:CalcView( ply, origin, angles, fov )
+	   view.origin = origin
+	   view.angles = angles
+	   view.fov    = fov
+
+   		-- first person ragdolling
+	   if ply:Team() == TEAM_SPEC and ply:GetObserverMode() == OBS_MODE_IN_EYE then
+	      local tgt = ply:GetObserverTarget()
+	      if IsValid(tgt) and (not tgt:IsPlayer()) then
+	         -- assume if we are in_eye and not speccing a player, we spec a ragdoll
+	         local eyes = tgt:LookupAttachment("eyes") or 0
+	         eyes = tgt:GetAttachment(eyes)
+	         if eyes then
+	            view.origin = eyes.Pos
+	            view.angles = eyes.Ang
+	         end
+	      end
+	   end
+
+	   local wep = ply:GetActiveWeapon()
+	   if IsValid(wep) then
+	      local func = wep.CalcView
+	      if func then
+	         view.origin, view.angles, view.fov = func( wep, ply, origin*1, angles*1, fov )
+	      end
+	   end
+
+	   local allow_custom_fov = EnableCustomFOV != nil and EnableCustomFOV:GetBool()
+
+	   if (CustomFOV and Default_FOV) then
+		   -- Custom FOV
+		   if allow_custom_fov then
+			   local newFov = math.Clamp(ply:GetFOV() + CustomFOV:GetFloat() - Default_FOV:GetFloat(), 0, CustomFOV:GetFloat())
+			   view.fov = CustomFOV != nil and newFov or fov
+		   end
+
+		   -- Custom Draw Distance
+		   view.zfar = (DrawDistance != nil and DrawDistance:GetFloat() > 0.0) and DrawDistance:GetFloat() or view.zfar
+	   end
+
+	   return view
+	end
+
+	-- Auto weapon reloading
+	local autoReload = GetConVar("nz_weapon_auto_reload")
+	hook.Add("CreateMove", "NZAutoReload", function(cmd)
+		local wep = LocalPlayer():GetActiveWeapon()
+		if (IsValid(wep)) then
+			local clip = wep:Clip1()
+			if (isnumber(clip) and clip - 1 < 0) then -- Fired last shot
+				if (isfunction(wep.GetStatus) and isnumber(wep:GetStatus()) and wep:GetStatus() == 5) then return end -- Already reloading
+				if (isfunction(wep.Ammo1) and wep:Ammo1() == 0) then return end -- Can't reload, there's no ammo!
+				if (wep.Primary and (!wep.Primary.ClipSize or isnumber(wep.Primary.ClipSize) and wep.Primary.ClipSize <= 0)) then return end -- We don't need to ever reload this
+				if autoReload:GetBool() then -- Auto Reload option enabled
+					cmd:SetButtons(bit.bor(cmd:GetButtons(), IN_RELOAD))
+				end
+			end
+		end
+	end)
+
+	-- local function OverrideTheCalcView()
+	--     if GAMEMODE and isfunction(GAMEMODE.CalcView) then
+	--         local OldCalcView = !isfunction(OldCalcView) and GAMEMODE.CalcView or OldCalcView
+	--
+	--         function GAMEMODE.CalcView(me, ply, pos, angles, fov, znear, zfar)
+	--             local allow_custom_fov = EnableCustomFOV != nil and EnableCustomFOV:GetInt() > 0
+	--
+	--             if (CustomFOV and Default_FOV) then
+	--                 if allow_custom_fov then
+	--                     local newFov = math.Clamp(ply:GetFOV() + CustomFOV:GetFloat() - Default_FOV:GetFloat(), 0, CustomFOV:GetFloat())
+	--                     fov = CustomFOV != nil and newFov or fov
+	--                 end
+	--
+	--                 zfar = (DrawDistance != nil and DrawDistance:GetFloat() > 0.0) and DrawDistance:GetFloat() or zfar
+	--             end
+	--
+	--             if nzRevive and nzRevive.Players[LocalPlayer():EntIndex()] then
+	--                 pos = pos + Vector(0,0,-15)
+	--                 angles = angles + Angle(0,0,20)
+	--             end
+	--
+	--             return OldCalcView(me, ply, pos, angles, fov, znear, zfar)
+	--         end
+	--
+	--         hook.Remove("CalcView", "CalcDownedView")
+	--     end
+	-- end
+	-- hook.Add("PostGamemodeLoaded", "OverrideCalcView", OverrideTheCalcView)
+	-- OverrideTheCalcView()
 
 	--[[ Manual speedup of the reload function on FAS2 weapons - seemed like the original solution broke along the way
 	function ReplaceReloadFunction(wep)

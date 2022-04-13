@@ -74,8 +74,10 @@ nzConfig.DefineVar("nz_mapvote_allow_current_map", 1, mapvoteFlags, "Allow the c
 nzConfig.DefineVar("nz_mapvote_auto_change_no_players", 0, mapvoteFlags, "Auto changes to a random map after a duration when nobody is on.")
 nzConfig.DefineVar("nz_mapvote_auto_change_no_players_minutes", 1800, mapvoteFlags, "Consecutive minutes of nobody online before auto changing")
 
-nzConfig.DefineClientVar("nz_weapon_auto_reload", 1, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Auto reloads your weapon after firing the last shot")
+nzConfig.DefineClientVar("nz_custom_fov_enabled", 0, {FCVAR_ARCHIVE}, "Enables/Disables customizable nZombies FOV")
+nzConfig.DefineClientVar("nz_custom_fov", 75, {FCVAR_ARCHIVE}, "Set a custom FOV (Only works if nz_custom_fov_enabled is on)")
 nzConfig.DefineClientVar("nz_draw_distance", -1, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Sets the max distance the world can render.")
+nzConfig.DefineClientVar("nz_weapon_auto_reload", 1, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Auto reloads your weapon after firing the last shot")
 nzConfig.DefineClientVar("nz_round_sounds", 1, {FCVAR_ARCHIVE}, "Whether or not to play round changing sounds.")
 nzConfig.DefineClientVar("nz_gameover_music", 1, {FCVAR_ARCHIVE}, "Whether or not to play gameover music.")
 nzConfig.DefineClientVar("nz_zombie_eyes", 1, {FCVAR_ARCHIVE}, "Enable/Disable the rendering of zombie eyes")
