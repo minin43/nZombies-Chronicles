@@ -36,7 +36,7 @@ function ENT:Use( activator, caller )
 end
 
 function ENT:Draw()
-	if LocalPlayer():IsInCreative() then 
+	if LocalPlayer():IsInCreative() then
 		self:DrawModel()
 	return end
 
@@ -45,7 +45,7 @@ function ENT:Draw()
 	end
 
 	local targ = LocalPlayer():GetObserverTarget()
-	if (IsValid(targ) and targ:IsPlayer() and targ:Alive()) then -- Only show if they are spectating somebody (Not in free roam where they can easily tell teammates where parts are)
+	if (IsValid(targ) and targ:IsPlayer() and targ:Alive() and LocalPlayer():GetObserverMode() != OBS_MODE_ROAMING) then -- Only show if they are spectating somebody (Not in free roam where they can easily tell teammates where parts are)
 		self:DrawModel()
 	return end
 end
