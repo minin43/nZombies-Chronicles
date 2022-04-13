@@ -10,11 +10,11 @@ hook.Add("OnPartRemoved", "NZHUDPartRemoved", function(ply, part)
 end)
 
 hook.Add("HUDPaint", "NZ.PartHUD", function()
-    local ply = LocalPlayer():IsSpectating() and LocalPlayer():GetObserverTarget() or LocalPlayer()
+    local ply = nzDisplay:GetPlayer()
     if IsValid(ply) then
         if ply:HasParts() then
             local num = 0
-            for _,part in pairs(ply:GetParts()) do 
+            for _,part in pairs(ply:GetParts()) do
                 num = num + 1
                 if part_mats[part] then
                     surface.SetDrawColor(255, 255, 255)

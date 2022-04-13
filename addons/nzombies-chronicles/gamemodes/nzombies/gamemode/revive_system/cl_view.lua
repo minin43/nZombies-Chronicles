@@ -7,11 +7,11 @@ function XYCompassToScreen(pos, boundary)
 	local dir = (pos - EyePos()):GetNormalized()
 	dir = Vector(dir.x, dir.y, 0)
 	eyedir = Vector(eyedir.x, eyedir.y, 0)
-	
+
 	eyedir:Rotate(Angle(0,-90,0))
 	local newdirx = eyedir:Dot(dir)
 	--draw.SimpleText(newdirx, "nz.display.hud.small", ScrW()/2, ScrH() - 50, Color(255, 255, 255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	
+
 	return ScrW()/2 + (newdirx*w/2), math.Clamp(pos:ToScreen().y, boundary, h)
 end
 
@@ -25,7 +25,7 @@ local tab = {
  [ "$pp_colour_mulr" ] = 0,
  [ "$pp_colour_mulg" ] = 0,
  [ "$pp_colour_mulb" ] = 0
-} 
+}
 local fade = 1
 
 local mat_revive = Material("materials/Revive.png", "unlitgeneric smooth")
@@ -43,39 +43,47 @@ function nzRevive:ResetColorFade()
 		 [ "$pp_colour_mulb" ] = 0
 	}
 	fade = 1
-	
+
 	--print("Color reset!")
 end
 
-local function CalcDownView(ply, pos, ang, fov, znear, zfar)
-	if nzRevive.Players[LocalPlayer():EntIndex()] then
-		local pos = pos + Vector(0,0,-15)
-		local ang = ang + Angle(0,0,20)
-		
-		return {origin = pos, angles = ang, fov = fov, znear = znear, zfar = zfar, drawviewer = false }
+local function CalcDownView(...) -- Fixed by Ethorbit so that this doesn't override the game's CalcView
+	local player = nzDisplay:GetPlayer(OBS_MODE_IN_EYE) -- add spectator support /Ethorbit
+
+	if nzRevive.Players[player:EntIndex()] then
+		local view = GAMEMODE:CalcView(...)
+
+		view.origin = view.origin + Vector(0,0,-15)
+		view.angles = view.angles + Angle(0,0,20)
+
+		return view
 	end
 end
 
 local function CalcDownViewmodelView(wep, vm, oldpos, oldang, pos, ang)
-	if nzRevive.Players[LocalPlayer():EntIndex()] then
+	local player = nzDisplay:GetPlayer(OBS_MODE_IN_EYE) -- add spectator support /Ethorbit
+
+	if nzRevive.Players[player:EntIndex()] then
 		local oldpos = oldpos + Vector(0,0,-15)
 		local oldang = oldang + Angle(0,0,20)
 		if wep:IsCW2() or wep:IsFAS2() then oldpos = oldpos + oldang:Up() * -100 end
-		
+
 		return oldpos, oldang
 	end
 end
 
 local function DrawColorModulation()
-	if nzRevive.Players[LocalPlayer():EntIndex()] then
+	local player = nzDisplay:GetPlayer(OBS_MODE_IN_EYE) -- add spectator support /Ethorbit
+
+	if nzRevive.Players[player:EntIndex()] then
 		local fadeadd = ((1/GetConVar("nz_downtime"):GetFloat()) * FrameTime()) * -1 	-- Change 45 to the revival time
 		tab[ "$pp_colour_colour" ] = math.Approach(tab[ "$pp_colour_colour" ], 0, fadeadd)
 		tab[ "$pp_colour_addr" ] = math.Approach(tab[ "$pp_colour_addr" ], 0.5, fadeadd *-0.5)
 		tab[ "$pp_colour_mulr" ] = math.Approach(tab[ "$pp_colour_mulr" ], 1, -fadeadd)
 		tab[ "$pp_colour_mulg" ] = math.Approach(tab[ "$pp_colour_mulg" ], 0, fadeadd)
 		tab[ "$pp_colour_mulb" ] = math.Approach(tab[ "$pp_colour_mulb" ], 0, fadeadd)
-		
-		--print(fadeadd, tab[ "$pp_colour_colour" ], tab[ "$pp_colour_brightness" ]) 
+
+		--print(fadeadd, tab[ "$pp_colour_colour" ], tab[ "$pp_colour_brightness" ])
 		DrawColorModify(tab)
 	end
 end
@@ -106,7 +114,7 @@ net.Receive("NZWhosWhoReviving", function() -- Also update Who's Who clone's rev
 end)
 
 local function DrawDownedPlayers()
-	
+
 	for k,v in pairs(nzRevive.Players) do
 		local ply = Entity(k)
 		if IsValid(ply) and ply:IsPlayer() then -- If they're outside PVS, don't draw the icon at all
@@ -114,23 +122,23 @@ local function DrawDownedPlayers()
 			local posxy = (ply:GetPos() + Vector(0,0,35)):ToScreen()
 			local dir = ((ply:GetPos() + Vector(0,0,35)) - EyeVector()*2):GetNormal():ToScreen()
 			--print(posxy["x"], posxy["y"], posxy["visible"])
-			
+
 			if posxy.x - 35 < 60 or posxy.x - 35 > ScrW()-130 or posxy.y - 50 < 60 or posxy.y - 50 > ScrH()-110 then
 				posxy.x, posxy.y = XYCompassToScreen((ply:GetPos() + Vector(0,0,35)), 60)
 			end
-			
+
 			surface.SetMaterial(mat_revive)
 			if v.ReviveTime then
 				surface.SetDrawColor(255, 255, 255)
 			elseif v.DownTime then
 				surface.SetDrawColor(255, 150 - (CurTime() - v.DownTime)*(150/GetConVar("nz_downtime"):GetFloat()), 0)
 			end
-			
+
 			--draw.SimpleText(v.ReviveTime and "REVIVING" or "DOWNED", font, posxy["x"], posxy["y"] + 10, v.ReviveTime and Color(255,255,255) or Color(200, 0, 0,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 			--draw.SimpleText(k:Nick(), font2, posxy["x"], posxy["y"] - 20, v.ReviveTime and Color(255,255,255) or Color(200, 0, 0,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-			
+
 			surface.DrawTexturedRect(posxy.x - 35, posxy.y - 50, 70, 50)
-		end	
+		end
 	end
 
 	for k,v in pairs(ents.FindByClass("whoswho_downed_clone")) do
@@ -140,7 +148,7 @@ local function DrawDownedPlayers()
 			local posxy = (ply:GetPos() + Vector(0,0,35)):ToScreen()
 			local dir = ((ply:GetPos() + Vector(0,0,35)) - EyeVector()*2):GetNormal():ToScreen()
 			--print(posxy["x"], posxy["y"], posxy["visible"])
-			
+
 			if posxy.x - 35 < 60 or posxy.x - 35 > ScrW()-130 or posxy.y - 50 < 60 or posxy.y - 50 > ScrH()-110 then
 				posxy.x, posxy.y = XYCompassToScreen((ply:GetPos() + Vector(0,0,35)), 60)
 			end
@@ -151,34 +159,34 @@ local function DrawDownedPlayers()
 			elseif player.DownTime then
 				surface.SetDrawColor(255, 150 - (CurTime() - player.DownTime)*(150/GetConVar("nz_downtime"):GetFloat()), 0)
 			end
-			
+
 			--draw.SimpleText(v.ReviveTime and "REVIVING" or "DOWNED", font, posxy["x"], posxy["y"] + 10, v.ReviveTime and Color(255,255,255) or Color(200, 0, 0,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 			--draw.SimpleText(k:Nick(), font2, posxy["x"], posxy["y"] - 20, v.ReviveTime and Color(255,255,255) or Color(200, 0, 0,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 			surface.DrawTexturedRect(posxy.x - 35, posxy.y - 50, 70, 50)
-		end	
+		end
 	end
 end
 
 local function DrawRevivalProgress()
 	if !LocalPlayer():GetNotDowned() then return end -- There should never be an intentional time where you're able to revive when down..
-	
+
 	local tr = util.QuickTrace(LocalPlayer():EyePos(), LocalPlayer():GetAimVector()*100, LocalPlayer())
 	local dply = tr.Entity
 	for k,v in pairs(ents.FindInCone(LocalPlayer():EyePos(), LocalPlayer():GetAimVector() * 120, 100, 100)) do
-		if (v:IsPlayer() and v != LocalPlayer() and !v:GetNotDowned() or v:GetClass() == "whoswho_downed_clone") then 
+		if (v:IsPlayer() and v != LocalPlayer() and !v:GetNotDowned() or v:GetClass() == "whoswho_downed_clone") then
 			dply = v
 		end
 	end
 
 	local id = dply:EntIndex()
-	
+
 	local revtime = LocalPlayer():HasPerk("revive") and 1.5 or 3.03
 
-	
+
 	if IsValid(dply) and nzRevive.Players[id] and nzRevive.Players[id].RevivePlayer == LocalPlayer() then
 		surface.SetDrawColor(0,0,0)
 		surface.DrawRect(ScrW()/2 - 150, ScrH() - 300, 300, 20)
-		
+
 		surface.SetDrawColor(255,255,255)
 		surface.DrawRect(ScrW()/2 - 145, ScrH() - 295, 290 * (CurTime()-nzRevive.Players[id].ReviveTime)/revtime, 10)
 	end
@@ -190,7 +198,7 @@ local function DrawDownedNotify()
 		local text = "YOU NEED HELP!"
 		local font = "nz.display.hud.main"
 		local rply = nzRevive.Players[LocalPlayer():EntIndex()].RevivePlayer
-		
+
 		if IsValid(rply) and rply:IsPlayer() then
 			text = rply:Nick().." is reviving you!"
 		end
@@ -221,7 +229,7 @@ local function DrawDownedHeadsUp()
 	local max = 2
 	local c = 0
 	--table.SortByMember(nz.nzRevive.Data.Notify, "time")
-	
+
 	for k,v in pairs(nzRevive.Notify) do
 		if type(k) == "Player" and IsValid(k) then
 			local fade = math.Clamp(CurTime() - v.time - 5, 0, 1)
@@ -248,11 +256,11 @@ local function DrawDamagedOverlay()
 	if GetConVar("cl_lvl_blood_flashing") and GetConVar("cl_lvl_blood_flashing"):GetBool() and LocalPlayer():Alive() then --GetConVar("nz_bloodoverlay"):GetBool()
 		local fade = (math.Clamp(LocalPlayer():Health()/LocalPlayer():GetMaxHealth(), 0.3, 0.7)-0.3)/0.4
 		local fade2 = 1 - math.Clamp(LocalPlayer():Health()/LocalPlayer():GetMaxHealth(), 0, 0.7)/0.7
-		
+
 		surface.SetMaterial(blood_overlay)
 		surface.SetDrawColor(255,255,255,180-fade*255)
 		surface.DrawTexturedRect( -10, -10, ScrW()+20, ScrH()+20)
-		
+
 		if fade2 > 0 then
 			if bloodpulse then
 				pulse = math.Approach(pulse, 255, math.Clamp(pulse, 1, 50)*FrameTime()*100)
@@ -269,7 +277,7 @@ end
 
 local function DrawTombstoneNotify()
 	local font = "nz.display.hud.small"
-	
+
 	if LocalPlayer():GetDownedWithTombstone() then
 		local text = "Hold E to feed the zombies"
 		draw.SimpleText(text, font, ScrW()/2, ScrH() - 320, Color(255, 255, 255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -281,19 +289,19 @@ local senttombstonerequest = false
 
 local function DrawTombstoneProgress()
 	if LocalPlayer():GetDownedWithTombstone() then
-	
+
 		local killtime = 1
-		
+
 		if LocalPlayer():KeyDown(IN_USE) then
 			if !tombstonetime then
 				tombstonetime = CurTime()
 			end
-			
+
 			local pct = math.Clamp((CurTime()-tombstonetime)/killtime, 0, 1)
-			
+
 			surface.SetDrawColor(0,0,0)
 			surface.DrawRect(ScrW()/2 - 150, ScrH() - 300, 300, 20)
-			
+
 			surface.SetDrawColor(255,255,255)
 			surface.DrawRect(ScrW()/2 - 145, ScrH() - 295, 290 * pct, 10)
 			if pct >= 1 and !senttombstonerequest then

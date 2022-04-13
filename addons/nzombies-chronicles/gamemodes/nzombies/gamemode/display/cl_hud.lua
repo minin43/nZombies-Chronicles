@@ -4,6 +4,13 @@ nzDisplay.IsSmallScreen = function()
 	return ScrW() < 1100
 end
 
+function nzDisplay:GetPlayer(mode) -- Gets local player or the player the local player is spectating, created by Ethorbit for better HUD support
+ 	if !LocalPlayer():IsSpectating() then return LocalPlayer() end
+ 	if mode and LocalPlayer():GetObserverMode() != mode then return LocalPlayer() end -- They only care about who we're spectating if we're in a certain spectator mode
+	local targ = LocalPlayer():GetObserverTarget()
+	return (IsValid(targ) and targ:IsPlayer() and targ) or LocalPlayer()
+end
+
 local bloodline_points = Material("bloodline_score2.png", "unlitgeneric smooth")
 local bloodline_gun = Material("cod_hud.png", "unlitgeneric smooth")
 
@@ -60,11 +67,7 @@ local hpHudEnabled = CreateClientConVar("nzc_health_hud", 1, true, false, "Enabl
 
 local function HealthHud() -- Made by Ethorbit to make the Health/Armor HUD look better, ^ materials by: Berb (Thanks to him for that!)
 	if (hpHudEnabled:GetInt() == 1 or hpHudEnabled:GetInt() == 2) then
-		local player = LocalPlayer()
-		if (LocalPlayer():IsSpectating() and !LocalPlayer():IsInCreative()) then
-			player = LocalPlayer():GetObserverTarget()
-		end
-
+		local player = nzDisplay:GetPlayer()
 		local small_screen = nzDisplay.IsSmallScreen()
 
 		if (IsValid(player) and player:Alive() and player:GetNotDowned()) then
@@ -215,13 +218,8 @@ local function GunHud() -- Spectator support added by Ethorbit
 	if GetConVar("cl_drawhud"):GetBool() then
 		if !LocalPlayer():IsNZMenuOpen() then
 			local small_screen = nzDisplay.IsSmallScreen()
-
-			local player = LocalPlayer()
-			local isSpecPly = false
-			if (LocalPlayer():IsSpectating()) then
-				player = LocalPlayer():GetObserverTarget()
-				isSpecPly = true
-			end
+			local player = nzDisplay:GetPlayer()
+			local isSpecPly = LocalPlayer():IsSpectating()
 
 			if (IsValid(player)) then
 				local wep = player:GetActiveWeapon()
@@ -371,11 +369,7 @@ local function PowerUpsHud() -- Heavily modified by Ethorbit for centered poweru
 			end
 		end
 
-		local player = LocalPlayer()
-		if (LocalPlayer():IsSpectating()) then
-			player = LocalPlayer():GetObserverTarget()
-		end
-
+		local player = nzDisplay:GetPlayer()
 		if !nzPowerUps.ActivePlayerPowerUps[player] then nzPowerUps.ActivePlayerPowerUps[player] = {} end
 		for k,v in pairs(nzPowerUps.ActivePlayerPowerUps[player]) do
 			if nzPowerUps:IsPlayerPowerupActive(player, k) then
@@ -543,11 +537,7 @@ local function PerksHud() -- Improved by Ethorbit
 	local scale = (ScrW()/1920 + 1)/2
 	local w = -20
 	local size = 50
-
-	local player = LocalPlayer()
-	if (LocalPlayer():IsSpectating()) then
-		player = LocalPlayer():GetObserverTarget()
-	end
+	local player = nzDisplay:GetPlayer()
 
 	if (IsValid(player) and player.GetPerks) then
 		for k,v in pairs(player:GetPerks()) do
@@ -620,10 +610,8 @@ local function RoundHud() -- Improved by Ethorbit, round 6 bug fixed by NapalmBu
 
 	local h
 
-	local player = LocalPlayer()
-	if (LocalPlayer():IsSpectating()) then
-		player = LocalPlayer():GetObserverTarget()
-	end
+	local player = nzDisplay:GetPlayer()
+	if !player:IsPlayer() then return end
 
 	if (hpHudEnabled) then
 		if (!IsValid(player)) then
@@ -759,11 +747,7 @@ end
 
 local grenade_icon = Material("grenade-256.png", "unlitgeneric smooth")
 local function DrawGrenadeHud()
-	local player = LocalPlayer()
-	if (LocalPlayer():IsSpectating()) then
-		player = LocalPlayer():GetObserverTarget()
-	end
-
+	local player = nzDisplay:GetPlayer()
 	if (IsValid(player)) then
 		local num = player:GetAmmoCount(GetNZAmmoID("grenade") or -1)
 		local numspecial = player:GetAmmoCount(GetNZAmmoID("specialgrenade") or -1)

@@ -22,19 +22,23 @@ function GM:PlayerDeathThink( ply )
 	--local players = player.GetAllPlayingAndAlive()
 	local players = {}
 	for _,v in pairs(player.GetAll()) do
-		if (IsValid(v) and !v:IsSpectating() and v:Alive()) then
+		if (IsValid(v) and (v:Team() == TEAM_PLAYERS or v:IsInCreative()) and v:Alive()) then
 			table.insert(players, v)
 		end
 	end
-	
-	if (#player.GetAllPlaying() <= 0) then
-		ply:SetSpectatingType(6)
-	elseif ply:KeyPressed( IN_RELOAD ) then
+
+	if #players <= 0 then
+		if ply:GetObserverMode() != OBS_MODE_ROAMING then
+			ply:SetObserverMode(OBS_MODE_ROAMING)
+			ply:SpectateClosestEntity()
+		end
+	elseif ply:KeyPressed( IN_RELOAD ) and IsValid(ply:GetObserverTarget()) and ply:GetObserverTarget():IsPlayer() then
 		ply:SetSpectatingType( ply:GetSpectatingType() + 1 )
 		if ply:GetSpectatingType() > 5 then
 			ply:SetSpectatingType( 4 )
 			ply:SetupHands(players[ ply:GetSpectatingID() ])
 		end
+
 		ply:Spectate( ply:GetSpectatingType() )
 	elseif ply:KeyPressed( IN_ATTACK ) then
 		ply:SetSpectatingID( ply:GetSpectatingID() + 1 )
@@ -53,6 +57,24 @@ function GM:PlayerDeathThink( ply )
 
 		ply:Spectate(ply:GetSpectatingType())
 	end
+
+	local targ = ply:GetObserverTarget()
+
+	-- Always spectate something valid, added by Ethorbit because of all the visual bugs
+	if ply:GetSpectatingType() != 6 or #players <= 1 then -- Leave them be if they're roaming around. unless a new game started
+		if !IsValid(targ)  then
+			ply:SpectateClosestEntity()
+			ply:SetObserverMode(OBS_MODE_ROAMING)
+		elseif targ:IsPlayer() and targ:Team() != TEAM_PLAYERS and !targ:IsInCreative() then -- We're spectating a spectator or dead player...
+			ply:SpectateClosestEntity()
+			ply:SetObserverMode(OBS_MODE_ROAMING)
+		elseif !targ:IsPlayer() and #player.GetAllPlayingAndAlive() > 0 then -- We're not spectating a player even though we can
+			ply:SpectateEntity(player.GetAllPlayingAndAlive()[1])
+			ply:SetObserverMode(OBS_MODE_CHASE)
+		end
+	end
+
+	ply:SetMoveType(MOVETYPE_OBSERVER)
 end
 
 local function disableDeadUse( ply, ent )
