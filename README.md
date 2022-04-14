@@ -35,6 +35,7 @@ ___
 * PaP Camo Chooser
 * [Improved AI](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/IMPROVEDAI.md)
 * [Improved Networking](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/IMPROVEDNETWORKING.md)
+* Round Progress Bar
 * Record System
 * [More Creative Mode features](https://github.com/Ethorbit/nZombies-Chronicles/blob/master-workshop/Info/New%20Creative%20Mode%20Stuff/README.md) 
 * [More Enemies](https://github.com/Ethorbit/nZombies-Chronicles/tree/master-workshop/Info/New%20Enemies)
@@ -43,7 +44,6 @@ ___
 * Over 300+ NZC Weapon Configs
 * [Over 30+ NZC Map Configs](https://github.com/Ethorbit/nZombies-Chronicles/wiki/List-Of-All-Configured-Maps)
 * Voting (Maps)
-* Round Progress Bar
 
 ## Thirdparty Content
 The following addons have compatibility added in the gamemode, you'll have to download them from the Workshop if you want the extra functionality.
