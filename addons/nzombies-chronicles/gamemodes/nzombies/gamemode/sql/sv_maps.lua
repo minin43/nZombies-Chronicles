@@ -10,15 +10,15 @@ nzSQL.Maps = nzSQL.Maps or {}
 
 function nzSQL.Maps:CreateTable()
     if (!sql.TableExists("nz_maps")) then
-        local query = [[CREATE TABLE nz_maps {
+        local query = [[CREATE TABLE nz_maps (
             name TEXT PRIMARY KEY,
             category TEXT DEFAULT "",
             seconds_played INT,
             size_kilobytes INT,
-            is_whitelisted INT NOT NULL,
-            is_blacklisted INT NOT NULL,
+            is_whitelisted INT DEFAULT 0 NOT NULL,
+            is_blacklisted INT DEFAULT 0 NOT NULL,
             is_mounted INT DEFAULT 1 NOT NULL
-        }]]
+        );]]
 
         if (sql.Query(query) == false) then
             nzSQL:ShowError("Error creating nz_maps table.")
@@ -29,7 +29,7 @@ end
 nzSQL.Maps:CreateTable()
 
 function nzSQL.Maps:MapExists(map_name)
-    local query = string.format("SELECT EXISTS(SELECT name = %s FROM nz_maps)", sql.SQLStr(map_name))
+    local query = string.format("SELECT EXISTS(SELECT name = %s FROM nz_maps)", SQLStr(map_name))
     return sql.Query(query) == 1
 end
 
@@ -38,11 +38,19 @@ function nzSQL.Maps:GetNames()
 end
 
 function nzSQL.Maps:SetCategory(map_name, category_name)
+    local query = string.format("UPDATE nz_maps SET category = %s WHERE name = %s", SQLStr(category_name), SQLStr(map_name))
 
+    if (sql.Query(query) == false) then
+        nzSQL:ShowError("Error setting map " .. map_name .. "'s category to: " .. category_name)
+    end
 end
 
 function nzSQL.Maps:GetCategory(map_name)
+    local query = string.format("SELECT category FROM nz_maps WHERE name = %s", SQLStr(map_name))
 
+    if (sql.Query(query) == false) then
+        nzSQL:ShowError("Error getting category for map: " .. map_name)
+    end
 end
 
 function nzSQL.Maps:SetKBSize(map_name, kb_size)
