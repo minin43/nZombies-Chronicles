@@ -16,7 +16,7 @@ function plyMeta:SetSpectator()
 	self:SetSpectatingID( 1 )
 end
 
-function plyMeta:SpectateClosestEntity()
+function plyMeta:SpectateClosestEntity() -- Spectate the closest entity to the spectator, created by Ethorbit
 	local closestEnt = nzMisc:GetClosestEntityToPosition(self:GetPos(), function(ent)
 		return ent != self and ent:GetParent() != self and ent:IsInWorld() and (!ent:IsPlayer() or ent:Team() == TEAM_PLAYERS)
 	end)
