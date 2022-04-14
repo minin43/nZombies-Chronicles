@@ -11,6 +11,10 @@ TLDR: you can override functions from the sql/sv_sql.lua or instead sql/ .lua fi
 
 **A:** I wanted to make this as mod friendly as possible as database syntax differs between database types. Also, it cuts down on the gamemode's own code.
 <br></br>
+**Q:** Why does the nzSQL class use the syntax that it does?
+
+**A:** No particular reason, it's just easier for me as the developer to manage.
+<br></br>
 **Q:** Why not add hooks for us instead so we don't have to override functions?
 
 **A:** Hooks are redundant if the only purpose they serve is to allow people to override functions.

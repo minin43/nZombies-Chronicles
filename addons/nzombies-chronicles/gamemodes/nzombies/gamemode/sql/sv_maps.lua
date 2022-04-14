@@ -8,29 +8,50 @@
 nzSQL = nzSQL or {}
 nzSQL.Maps = nzSQL.Maps or {}
 
-function nzSQL.Maps:CreateTable()
-    if (!sql.TableExists("nz_maps")) then
-        local query = [[CREATE TABLE nz_maps (
-            name TEXT PRIMARY KEY,
-            category TEXT DEFAULT "",
-            seconds_played INT,
-            size_kilobytes INT,
-            is_whitelisted INT DEFAULT 0 NOT NULL,
-            is_blacklisted INT DEFAULT 0 NOT NULL,
-            is_mounted INT DEFAULT 1 NOT NULL
-        );]]
-
-        if (sql.Query(query) == false) then
-            nzSQL:ShowError("Error creating nz_maps table.")
-        end
-    end
-end
-
-nzSQL.Maps:CreateTable()
+nzSQL:CreateTable(
+   "nz_maps",
+   {
+        {
+            ["name"] = "name",
+            ["type"] = nzSQL:String(32),
+            ["primary"] = true
+        },
+        {
+            ["name"] = "category",
+            ["type"] = nzSQL:String(120),
+            ["default"] = "Other"
+        },
+        {
+            ["name"] = "seconds_played",
+            ["type"] = nzSQL:Number()
+        },
+        {
+            ["name"] = "size_kilobytes",
+            ["type"] = nzSQL:Number()
+        },
+        {
+            ["name"] = "is_whitelisted",
+            ["type"] = nzSQL:Number(),
+            ["default"] = "0",
+            ["not_null"] = true
+        },
+        {
+            ["name"] = "is_blacklisted",
+            ["type"] = nzSQL:Number(),
+            ["default"] = "0",
+            ["not_null"] = true
+        },
+        {
+            ["name"] = "is_mounted",
+            ["type"] = nzSQL:Number(),
+            ["default"] = "1",
+            ["not_null"] = true
+        }
+   }
+)
 
 function nzSQL.Maps:MapExists(map_name)
-    local query = string.format("SELECT EXISTS(SELECT name = %s FROM nz_maps)", SQLStr(map_name))
-    return sql.Query(query) == 1
+    return nzSQL:RowExists("nz_maps", "name", map_name)
 end
 
 function nzSQL.Maps:GetNames()
