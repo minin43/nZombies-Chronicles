@@ -14,37 +14,37 @@ nzSQL:CreateTable(
    {
         {
             ["name"] = "name",
-            ["type"] = nzSQL:String(32),
+            ["type"] = nzSQL.Q:String(32),
             ["primary"] = true
         },
         {
             ["name"] = "category",
-            ["type"] = nzSQL:String(120),
+            ["type"] = nzSQL.Q:String(120),
             ["default"] = "Other"
         },
         {
             ["name"] = "seconds_played",
-            ["type"] = nzSQL:Number()
+            ["type"] = nzSQL.Q:Number()
         },
         {
             ["name"] = "size_kilobytes",
-            ["type"] = nzSQL:Number()
+            ["type"] = nzSQL.Q:Number()
         },
         {
             ["name"] = "is_whitelisted",
-            ["type"] = nzSQL:Number(),
+            ["type"] = nzSQL.Q:Number(),
             ["default"] = "0",
             ["not_null"] = true
         },
         {
             ["name"] = "is_blacklisted",
-            ["type"] = nzSQL:Number(),
+            ["type"] = nzSQL.Q:Number(),
             ["default"] = "0",
             ["not_null"] = true
         },
         {
             ["name"] = "is_mounted",
-            ["type"] = nzSQL:Number(),
+            ["type"] = nzSQL.Q:Number(),
             ["default"] = "1",
             ["not_null"] = true
         }
@@ -96,25 +96,29 @@ function nzSQL.Maps:SetBlacklisted(map_name, is_blacklisted, callback)
 end
 
 function nzSQL.Maps:GetWhitelisted(map_name, callback)
-    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where(nzSQL.Q:And(nzSQL.Q:Equals("is_whitelisted", "1"), nzSQL.Q:Equals("name", map_name))), callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where( nzSQL.Q:And({ nzSQL.Q:Equals("is_whitelisted", "1"), nzSQL.Q:Equals("name", map_name)} )), callback)
 end
 
 function nzSQL.Maps:GetBlacklisted(map_name, callback)
-    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where(nzSQL.Q:And(nzSQL.Q:Equals("is_blacklisted", "1"), nzSQL.Q:Equals("name", map_name))), callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where( nzSQL.Q:And({ nzSQL.Q:Equals("is_blacklisted", "1"), nzSQL.Q:Equals("name", map_name)} )), callback)
 end
 
 -- Update all maps on server start
--- hook.Add("Initialize", "NZ_UpdateMapDatabase", function()
---     local db_maps = nzSQL.Maps:GetNames()
---     for _,map in pairs(db_maps) do
---
---     end
---
---     for _,map in pairs(nzConfig.Maps) do
---         if !current_map_list[map.name] then
---             -- Mark as not mounted
---         else
---             -- Mark as mounted if not already
---         end
---     end
--- end)
+hook.Add("Initialize", "NZ_UpdateMapDatabase", function()
+    local db_maps = nzSQL.Maps:GetNames()
+    -- for _,map in pairs(db_maps) do
+    --     if !nzConfig.FileData[map] then
+    --
+    --     else
+    --
+    --     end
+    -- end
+
+    for mapname,maptbl in pairs(nzConfig.MapData) do
+        nzSQL:SelectExists(nzSQL.Maps.TableName, mapname, function(value)
+            if value == 0 then
+                nzSQL:InsertIntoTable(nzSQL.Maps.TableName, {"name", "size_kilobytes"}, {mapname, maptbl.map_size})
+            end
+        end)
+    end
+end)

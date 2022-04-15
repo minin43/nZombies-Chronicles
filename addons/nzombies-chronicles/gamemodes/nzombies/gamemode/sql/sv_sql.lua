@@ -7,6 +7,7 @@
 
 nzSQL = nzSQL or {} -- Class for working with a database
 nzSQL.Q = nzSQL.Q or {} -- Class for turning argumments into strings compatible with database queries
+nzSQL.Result = nzSQL.Result or {} -- Class for working with callback data returned from nzSQL.Query
 
 -- Override below functions in a thirdparty addon if you want to
 -- use a different database other than Gmod's SQLite sv.db file
@@ -26,6 +27,7 @@ function nzSQL:ShowError(messages) -- Error handling is SQLite only, override fu
         message_string = message_string .. (k != 1 and " " or "") .. message
     end
 
+    debug.Trace()
     ServerLog(string.format("[nZombies Database Error] %s\n", message_string))
 end
 
@@ -38,11 +40,24 @@ function nzSQL:Query(query, messagesOnError, callback)
     if val == false then
         messagesOnError = messagesOnError or {"Error"}
         messagesOnError[#messagesOnError + 1] = sql.LastError()
+        messagesOnError[#messagesOnError + 1] = " The query that failed: " .. query
         nzSQL:ShowError(messagesOnError)
     end
 
+    print("[nZombies Database] " .. query)
+
     if isfunction(callback) then
         callback(val)
+    end
+end
+
+function nzSQL.Result:GetFirstRow(nzsql_query_data)
+    return nzsql_query_data[1]
+end
+
+function nzSQL.Result:GetFirstValue(nzsql_query_data)
+    for _,v in pairs(nzsql_query_data) do
+        return v
     end
 end
 
@@ -95,26 +110,63 @@ function nzSQL:CreateTable(table_name, columns, callback)
         end
 
         query = query .. ");"
-        nzSQL:Query(query, {"Error creating table:", table_name}, callback)
+        nzSQL:Query(query, {"Error creating table:", table_name or ""}, callback)
     end
+end
+
+-- nzSQL:InsertIntoTable("nz_maps", {"name", "category"}, {"Map Name", "Category Name"})
+-- nzSQL:InsertIntoTable("columns_test", nil, {"First Column's Value", "Second Column's Value", "Third Column's Value"})
+function nzSQL:InsertIntoTable(table_name, keys, values, callback)
+    local query = string.format("INSERT INTO %s %s", SQLStr(table_name), keys != nil and "(" or "")
+
+    if keys != nil then
+        for i = 1, #keys do
+            local key = keys[i]
+            query = string.format("%s%s", query, SQLStr(key))
+
+            if i < #keys then
+                query = query .. ", "
+            end
+        end
+    end
+
+    query = string.format("%s%s", query, keys != nil and ") VALUES (" or "VALUES (")
+
+    for i = 1, #values do
+        local value = values[i]
+        query = string.format("%s%s", query, SQLStr(value))
+
+        if i < #values then
+            query = query .. ", "
+        end
+    end
+
+    query = query .. ");"
+    nzSQL:Query(query, {"Failed to insert new row into table:", table_name or ""}, callback)
 end
 
 -- nzSQL:UpdateRow("nz_maps", "category", "Unlisted Maps", nzSQL.Q:Where( nzSQL.Q:Equals("name", "nz_ravine")) )
 function nzSQL:UpdateRow(table_name, column_name, value, condition)
-    local query = string.format("UPDATE %s SET %s = %s %s", SQLStr(table_name), SQLStr(column_name), SQLStr(value), condition or "")
+    local query = string.format("UPDATE %s SET %s = %s %s", SQLStr(table_name), SQLStr(column_name, true), SQLStr(value), condition or "")
     nzSQL:Query(query, {"Error updating row for table:", table_name})
 end
 
 -- local ravineStats = nzSQL:SelectRow("nz_maps", "map", nzSQL.Q:Where( nzSQL.Q:Equals("name", "nz_ravine")) )
 function nzSQL:SelectRow(table_name, column_name, condition, callback)
-    local query = string.format("SELECT %s FROM %s %s", SQLStr(table_name), SQLStr(column_name), condition or "")
+    local query = string.format("SELECT %s FROM %s %s", SQLStr(column_name, true), SQLStr(table_name), condition or "")
     nzSQL:Query(query, {"Error selecting row for table:", column_name or ""}, callback)
 end
 
--- if (nzSQL:RowExists("nz_maps", "map_name", "gm_flatgrass")) then // code end
+-- nzSQL:RowExists("nz_maps", "map_name", "gm_flatgrass", function(value) if value then // flatgrass exists! end end)
 function nzSQL:RowExists(table_name, column_name, value, callback)
     local query = string.format("SELECT EXISTS(SELECT %s FROM %s)", nzSQL:Equals(column_name, value), SQLStr(table_name))
     nzSQL:Query(query, {"Error checking existence of row for table:", table_name}, callback)
+end
+
+-- nzSQL:SelectExists("nz_maps", "*", function(value) if value then // nz_maps table exists! end end)
+function nzSQL:SelectExists(table_name, column_name, callback)
+    local query = string.format("SELECT EXISTS(SELECT %s FROM %s)", SQLStr(column_name, true), SQLStr(table_name))
+    nzSQL:Query(query, {"Error checking column existence for table:", table_name or ""}, callback)
 end
 
 function nzSQL.Q:PrimaryKey()
@@ -139,7 +191,7 @@ end
 
 -- nzSQL.Q:Equals("name", "nz_ravine")
 function nzSQL.Q:Equals(first, second)
-    return string.format("%s = %s", SQLStr(first), SQLStr(second))
+    return string.format("%s = %s", SQLStr(first, true), SQLStr(second))
 end
 
 local function get_like(first, second, type)

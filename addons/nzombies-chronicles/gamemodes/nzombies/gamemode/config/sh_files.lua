@@ -7,6 +7,7 @@ nzConfig = nzConfig or AddNZModule("Config")
 nzConfig.Filenames = nzConfig.Filenames or {}
 nzConfig.FileData = nzConfig.FileData or {}
 nzConfig.Maps = nzConfig.Maps or {}
+nzConfig.MapData = nzConfig.MapData or {}
 
 function nzConfig.GetAllMaps() -- Get all maps that have configs
     return table.Copy(nzConfig.Maps)
@@ -18,12 +19,12 @@ end
 
 function nzConfig.GetFilenameProperties(filename) -- Gets the map, config name and workshop id (if present), from a config filename
     local cfg = string.Explode(";", string.StripExtension(filename))
-    local map, configname, workshopid = string.sub(cfg[1], 4), cfg[2], cfg[3]
+    local map, config_name, workshop_id = string.sub(cfg[1], 4), cfg[2], cfg[3]
 
     return {
         ["map"] = map,
-        ["configname"] = configname,
-        ["workshopid"] = workshopid
+        ["config_name"] = config_name,
+        ["workshop_id"] = workshop_id
     }
 end
 
@@ -63,22 +64,33 @@ if SERVER then
     util.AddNetworkString("HereIsConfigData")
 
     local last_update = 0
-    local last_data = nil
+    local last_file_data = nil
+    local last_map_data = nil
     local function getCachedCompressedData() -- Returns cached data from a minimum of the last 10 seconds, for performance when dealing with multiple clients at once.
         if (!isnumber(last_update) or CurTime() - last_update > 10) then
-            last_data = util.Compress(util.TableToJSON(nzConfig.FileData))
+            last_file_data = util.Compress(util.TableToJSON(nzConfig.FileData))
+            last_map_data = util.Compress(util.TableToJSON(nzConfig.MapData))
             last_update = CurTime()
         end
 
-        return last_data or ""
+        return {last_file_data, last_map_data} or {}
     end
 
     function nzConfig.SendDataToClientside(ply)
-        local filedata = getCachedCompressedData()
+        local data = getCachedCompressedData()
+        if #data < 1 then
+            data[1] = ""
+            data[2] = ""
+        elseif #data < 2 then
+            data[2] = ""
+        end
+
         net.Start("HereIsConfigData")
         net.WriteTable(nzConfig.Filenames)
-        net.WriteInt(#filedata, 32)
-        net.WriteData(filedata, #filedata)
+        net.WriteInt(#data[1], 32)
+        net.WriteData(data[1], #data[1])
+        net.WriteInt(#data[2], 32)
+        net.WriteData(data[2], #data[2])
         net.WriteTable(nzConfig.Maps)
 
         if !ply then
@@ -102,7 +114,12 @@ if CLIENT then
 
         local data_filedata_length = net.ReadInt(32)
         local data_filedata = util.Decompress(net.ReadData(data_filedata_length))
+
+        local data_mapdata_length = net.ReadInt(32)
+        local data_mapdata = util.Decompress(net.ReadData(data_mapdata_length))
+        
         nzConfig.FileData = util.JSONToTable(data_filedata)
+        nzConfig.MapData = util.JSONToTable(data_mapdata)
         nzConfig.Maps = net.ReadTable()
 
         hook.Run("nzConfig.UpdatedConfigFileData")
@@ -129,7 +146,7 @@ function nzConfig.UpdateData(is_first_time) -- Add the filenames and FileData fo
 
                 local full_path = directory .. fileData.path .. filename
                 local props = nzConfig.GetFilenameProperties(filename)
-                if !props.configname then continue end
+                if !props.config_name then continue end
 
                 if (hook.Run("NZConfig.ShouldAddMap", props.map) == false) then continue end
 
@@ -139,16 +156,27 @@ function nzConfig.UpdateData(is_first_time) -- Add the filenames and FileData fo
 
                 if !added_maps[props.map] then
                     nzConfig.Maps[#nzConfig.Maps + 1] = props.map
+
+                    local map_bsp = props.map .. ".bsp"
+                    local map_bsp_path = "maps/" .. map_bsp
+                    local map_size = file.Size(map_bsp_path, "GAME") / 1000
+                    nzConfig.MapData[props.map] = {
+                        ["map_size"] = map_size
+                    }
+
                     added_maps[props.map] = true
                 end
 
+                local file_size = file.Size(full_path, "GAME") / 1000
+
                 table.insert(nzConfig.FileData[props.map], { -- We won't store big data here, rather we make functions for that above to save on memory/network bandwidth
-                    ["filepath"] = full_path,
-                    ["filename"] = filename,
-                    ["directory"] = fileData.path,
-                    ["pathtype"] = fileData.type,
-                    ["configname"] = props.configname
-                    --["workshopid"] = props.workshopid
+                    ["config_path"] = full_path,
+                    ["config_filename"] = filename,
+                    ["config_directory"] = fileData.path,
+                    ["config_pathtype"] = fileData.type,
+                    ["config_name"] = props.config_name,
+                    ["config_size"] = file_size
+                    --["workshop_id"] = props.workshop_id
                 })
             end
         end
