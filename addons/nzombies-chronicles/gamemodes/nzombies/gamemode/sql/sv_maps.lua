@@ -7,9 +7,10 @@
 
 nzSQL = nzSQL or {}
 nzSQL.Maps = nzSQL.Maps or {}
+nzSQL.Maps.TableName = "nz_maps"
 
 nzSQL:CreateTable(
-   "nz_maps",
+   nzSQL.Maps.TableName,
    {
         {
             ["name"] = "name",
@@ -50,64 +51,56 @@ nzSQL:CreateTable(
    }
 )
 
-function nzSQL.Maps:MapExists(map_name)
-    return nzSQL:RowExists("nz_maps", "name", map_name)
+function nzSQL.Maps:MapExists(map_name, callback)
+    nzSQL:RowExists(nzSQL.Maps.TableName, "name", map_name, nil, callback)
 end
 
-function nzSQL.Maps:GetNames()
-    return sql.Query("SELECT name FROM nz_maps")
+function nzSQL.Maps:GetNames(callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nil, callback)
 end
 
-function nzSQL.Maps:SetCategory(map_name, category_name)
-    local query = string.format("UPDATE nz_maps SET category = %s WHERE name = %s", SQLStr(category_name), SQLStr(map_name))
-
-    if (sql.Query(query) == false) then
-        nzSQL:ShowError("Error setting map " .. map_name .. "'s category to: " .. category_name)
-    end
+function nzSQL.Maps:SetCategory(map_name, category_name, callback)
+    nzSQL:UpdateRow(nzSQL.Maps.TableName, "category", category_name, nzSQL.Q:Where(nzSQL.Q:Equals("name", map_name)), callback)
 end
 
-function nzSQL.Maps:GetCategory(map_name)
-    local query = string.format("SELECT category FROM nz_maps WHERE name = %s", SQLStr(map_name))
-
-    if (sql.Query(query) == false) then
-        nzSQL:ShowError("Error getting category for map: " .. map_name)
-    end
+function nzSQL.Maps:GetCategory(map_name, callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "category", nil, callback)
 end
 
-function nzSQL.Maps:SetKBSize(map_name, kb_size)
-
+function nzSQL.Maps:SetKBSize(map_name, kb_size, callback)
+    nzSQL:UpdateRow(nzSQL.Maps.TableName, "size_kilobytes", kb_size, nzSQL.Q:Where(nzSQL.Q:Equals("name", map_name)), callback)
 end
 
-function nzSQL.Maps:SetSecondsPlayed(map_name, seconds_played)
-
+function nzSQL.Maps:SetSecondsPlayed(map_name, seconds_played, callback)
+    nzSQL:UpdateRow(nzSQL.Maps.TableName, "seconds_played", seconds_played, nzSQL.Q:Where(nzSQL.Q:Equals("name", map_name)), callback)
 end
 
-function nzSQL.Maps:GetSecondsPlayed(map_name)
-
+function nzSQL.Maps:GetSecondsPlayed(map_name, callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "seconds_played", nil, callback)
 end
 
-function nzSQL.Maps:GetAllWhitelisted()
-
+function nzSQL.Maps:GetAllWhitelisted(callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where(nzSQL.Q:Equals("is_whitelisted", "1")), callback)
 end
 
-function nzSQL.Maps:GetAllBlacklisted()
-
+function nzSQL.Maps:GetAllBlacklisted(callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where(nzSQL.Q:Equals("is_blacklisted", "1")), callback)
 end
 
-function nzSQL.Maps:SetWhitelisted(map_name, is_whitelisted)
-
+function nzSQL.Maps:SetWhitelisted(map_name, is_whitelisted, callback)
+    nzSQL:UpdateRow(nzSQL.Maps.TableName, "is_whitelisted", is_whitelisted, nzSQL.Q:Where(nzSQL.Q:Equals("name", map_name)), callback)
 end
 
-function nzSQL.Maps:SetBlacklisted(map_name, is_blacklisted)
-
+function nzSQL.Maps:SetBlacklisted(map_name, is_blacklisted, callback)
+    nzSQL:UpdateRow(nzSQL.Maps.TableName, "is_blacklisted", is_blacklisted, nzSQL.Q:Where(nzSQL.Q:Equals("name", map_name)), callback)
 end
 
-function nzSQL.Maps:GetWhitelisted(map_name)
-
+function nzSQL.Maps:GetWhitelisted(map_name, callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where(nzSQL.Q:And(nzSQL.Q:Equals("is_whitelisted", "1"), nzSQL.Q:Equals("name", map_name))), callback)
 end
 
-function nzSQL.Maps:GetBlacklisted(map_name)
-
+function nzSQL.Maps:GetBlacklisted(map_name, callback)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "name", nzSQL.Q:Where(nzSQL.Q:And(nzSQL.Q:Equals("is_blacklisted", "1"), nzSQL.Q:Equals("name", map_name))), callback)
 end
 
 -- Update all maps on server start
