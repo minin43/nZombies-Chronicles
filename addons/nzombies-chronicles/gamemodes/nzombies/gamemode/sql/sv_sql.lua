@@ -31,7 +31,17 @@ function nzSQL:ShowError(messages) -- Error handling is SQLite only, override fu
     ServerLog(string.format("[nZombies Database Error] %s\n", message_string))
 end
 
--- nzSQL:Query(nzSQL:SelectRow("nz_maps", "*"), function(maps) PrintTable(maps) end)
+-- nzSQL:Query(nzSQL:SelectRow("nz_maps", "name"), function(maps) PrintTable(maps) end)
+-- If you're overriding this, know that the above would send data structured like so to callback:
+-- 1:
+-- 		name	=	dm_lockdown
+-- 2:
+-- 		name	=	gm_flatgrass
+-- 3:
+-- 		name	=	gm_construct
+
+-- (the name is the table's column and the value is row's column value)
+-- If it's any different, the gamemode will not utilize this properly.
 function nzSQL:Query(query, messagesOnError, callback)
     -- sql.Query and sql.LastError is
     -- for SQLite only, override func otherwise
@@ -51,14 +61,37 @@ function nzSQL:Query(query, messagesOnError, callback)
     end
 end
 
+-- PrintTable(nzSQL.Result:GetFirstRow(value))
+-- name   =	  dm_lockdown
 function nzSQL.Result:GetFirstRow(nzsql_query_data)
     return nzsql_query_data[1]
 end
 
+-- print(nzSQL.Result:GetFirstValue(value))
+-- dm_lockdown
 function nzSQL.Result:GetFirstValue(nzsql_query_data)
+    if istable(nzsql_query_data) and istable(nzsql_query_data[1]) then
+        nzsql_query_data = nzSQL.Result:GetFirstRow(nzsql_query_data)
+    end
+
     for _,v in pairs(nzsql_query_data) do
         return v
     end
+end
+
+-- 1	=	dm_lockdown
+-- 2	=	gm_flatgrass
+-- 3	=	gm_construct
+function nzSQL.Result:GetValues(nzsql_query_data)
+    local values = {}
+
+    for _,tbl in pairs(nzsql_query_data) do
+        for _,value in pairs(tbl) do
+            values[#values + 1] = value
+        end
+    end
+
+    return values
 end
 
 -- nzSQL:CreateTable(
@@ -81,6 +114,19 @@ end
 function nzSQL:CreateTable(table_name, columns, callback)
     if (!sql.TableExists(table_name)) then
         local query = string.format("CREATE TABLE %s (", SQLStr(table_name))
+
+        local primary_key_defined
+
+        for k,v in pairs(columns) do
+            if v.primary then
+                primary_key_defined = true
+                break
+            end
+        end
+
+        if !primary_key_defined then -- There should always be a primary key.
+            query = string.format("%s id %s,", query, nzSQL.Q:PrimaryKey())
+        end
 
         for i = 1, #columns do
             local column = columns[i]
@@ -155,12 +201,6 @@ end
 function nzSQL:SelectRow(table_name, column_name, condition, callback)
     local query = string.format("SELECT %s FROM %s %s", SQLStr(column_name, true), SQLStr(table_name), condition or "")
     nzSQL:Query(query, {"Error selecting row for table:", column_name or ""}, callback)
-end
-
--- nzSQL:RowExists("nz_maps", "map_name", "gm_flatgrass", function(value) if value then // flatgrass exists! end end)
-function nzSQL:RowExists(table_name, column_name, value, callback)
-    local query = string.format("SELECT EXISTS(SELECT %s FROM %s)", nzSQL:Equals(column_name, value), SQLStr(table_name))
-    nzSQL:Query(query, {"Error checking existence of row for table:", table_name}, callback)
 end
 
 -- nzSQL:SelectExists("nz_maps", "*", function(value) if value then // nz_maps table exists! end end)
@@ -249,4 +289,11 @@ end
 -- nzSQL.Q:Or({ nzSQL.Q:Equals("name", "gm_flatgrass"), nzSQL.Q:Equals("name", "gm_construct") })
 function nzSQL.Q:Or(condition_table)
     return get_condition_string("OR", condition_table)
+end
+
+-- Load the subclass files:
+local path = "nzombies/gamemode/sql/subclasses/"
+local files,_ = file.Find(path .. "*.lua", "LUA")
+for _,file in pairs(files) do
+    include(path .. file)
 end

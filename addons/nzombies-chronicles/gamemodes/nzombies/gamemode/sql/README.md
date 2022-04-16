@@ -3,7 +3,7 @@ Refer to the [wiki](https://github.com/Ethorbit/nZombies-Chronicles/wiki/Saving-
 if you want everything to save/load from a remote database instead of the SQLite sv.db file.
 
 
-TLDR: you can override functions from the sql/sv_sql.lua or instead sql/ .lua files' getter/setters in your own thirdparty server addon and then the gamemode will use that.
+TLDR: you can override functions from the sql/sv_sql.lua or instead sql/subclasses/ .lua files' getter/setters in your own thirdparty server addon and then the gamemode will use that.
 
 
 ## Q/A
