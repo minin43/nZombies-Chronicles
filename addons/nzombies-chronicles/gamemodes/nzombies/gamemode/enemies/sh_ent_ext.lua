@@ -34,7 +34,9 @@ end
 
 function meta:SetDefaultTargetPriority()
 	if self:IsPlayer() then
-		if (self:IsInCreative() or (self:GetNotDowned() and self:IsPlaying())) then
+		if self:Team() == TEAM_SPECTATOR then
+			self:SetTargetPriority(TARGET_PRIORITY_NONE)
+		elseif (self:IsInCreative() or (self:GetNotDowned() and self:IsPlaying())) then
 			self:SetTargetPriority(TARGET_PRIORITY_PLAYER)
 		else
 			self:SetTargetPriority(TARGET_PRIORITY_NONE)
@@ -75,7 +77,7 @@ if SERVER then
 		end
 
 		if block then return end
-		
+
 		local e = EffectData()
 		e:SetMagnitude(1.5)
 		e:SetScale(time) -- The time the effect lasts
@@ -126,12 +128,12 @@ local base = "nz_zombiebase"
 	local bclass = scripted_ents.get(base)
 	local tclass = scripted_ents.get(class)
 	if not tclass or not bclass then return end
-	
+
 	local old = tclass.RunBehaviour
 	tclass.RunBehaviour = function(self)
-		
+
 	end
-	
+
 	scripted_ents.Register(tclass, class)
 end]]
 
@@ -142,7 +144,7 @@ if SERVER then
 	--local update = Path.Update
 	--function Path:Update(bot)
 	--	update(self, bot)
-		
+
 	--end
 
 	-- Overwrite Compute so that it computes with nZombies pathfinding if a custom func is not given
@@ -166,7 +168,7 @@ if SERVER then
 						end
 					elseif nzNav.Locks[area:GetID()].locked then
 					return -1 end
-	
+
 					if !nzNav.Locks[area:GetID()] then
 					end
 				end
