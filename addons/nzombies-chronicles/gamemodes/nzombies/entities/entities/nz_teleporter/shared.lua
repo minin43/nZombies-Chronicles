@@ -12,6 +12,7 @@ ENT.NZEntity = true
 
 ENT.WireMat = Material( "cable/cable" ) -- The wire texture that appears in Creative Mode for seeing what's linked
 ENT.LockedPlayers = {} -- Players locked by us, travelling to their destination
+ENT.TeleportingPlayers = {} -- Players we are teleporting
 
 ENT.GifTextures = { -- Give it all the same order as in sh_tools_teleporter
 	[1] = {mat = "nzr/tp/codtele", title = "Der Riese"},
@@ -80,7 +81,7 @@ function ENT:EnableModelCollisions(bool)
 		self:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 	else
 		self:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
-	end	
+	end
 end
 
 function ENT:Reset()
@@ -88,12 +89,14 @@ function ENT:Reset()
 	timer.Destroy("NZRTeleporterDisableCooldown" .. self:EntIndex())
 	timer.Destroy("NZRTeleporterTPBack" .. self:EntIndex())
 	timer.Destroy("NZRTeleporterTPBackLock" .. self:EntIndex())
-	
-	for _,ply in pairs(self.LockedPlayers) do 
+
+	self.TeleportingPlayers = {}
+
+	for _,ply in pairs(self.LockedPlayers) do
 		if IsValid(ply) then
 			self:UnlockPlayer(ply)
 		end
-	end	
+	end
 
 	self:SetBeingUsed(false)
 	self:SetOnCooldown(false)
@@ -105,7 +108,7 @@ function ENT:Initialize()
 		self:DrawShadow( false )
 		self:SetUseType( SIMPLE_USE )
 		self:SetBeingUsed(false)
-		self:SetOnCooldown(false)		
+		self:SetOnCooldown(false)
 		self:AddEFlags(EFL_FORCE_CHECK_TRANSMIT)
 	end
 
@@ -129,6 +132,25 @@ function ENT:Initialize()
 				if (v == LocalPlayer():GetTeleporterEntity()) then
 					DrawMaterialOverlay(v:GetGif(), 0.03)
 				end
+			end
+		end
+	end)
+
+	hook.Add("PlayerDeath", "TeleporterUnlockDeadPlayers", function(ply)
+		for _,v in pairs(ents.FindByClass("nz_teleporter")) do
+			local isTping = table.HasValue(v.TeleportingPlayers, ply)
+			local isLocked = table.HasValue(v.LockedPlayers, ply)
+
+			if isTping then
+				v:RemoveTeleportingPlayer(ply)
+			end
+
+			if isLocked  then
+				v:UnlockPlayer(ply)
+			end
+
+			if isLocked or isTping then
+				print("Player died, no longer locked by Teleporter")
 			end
 		end
 	end)
@@ -185,8 +207,9 @@ function ENT:GetDestinationsUnlocked()
 end
 
 function ENT:LockPlayer(ply) -- Player stood in the Teleporter long enough, now they're locked in until they arrive at their destination.
+	if ply:Team() == TEAM_SPECTATOR then return end
 	ply:SetTargetPriority(TARGET_PRIORITY_NONE)
-	
+
 	if SERVER then
 		if ply.SetTeleporterEntity then
 			ply:SetTeleporterEntity(self)
@@ -216,6 +239,8 @@ function ENT:UnlockPlayer(ply)
 
 	ply:SetRenderMode(RENDERMODE_NORMAL)
 	table.RemoveByValue(self.LockedPlayers, ply)
+
+	ply:StopSound("nzr/teleport.mp3")
 end
 
 function ENT:TurnOn()
@@ -244,7 +269,7 @@ function ENT:Update()
 			--else
 			--self:SetModel(KINOOFF)
 			--end
-		--end	
+		--end
 end
 
 
@@ -257,6 +282,7 @@ function ENT:GetGif()
 end
 
 function ENT:SetPlayerPos(ply, pos)
+	if ply:Team() == TEAM_SPECTATOR then return end
 	ply:SetPos(pos)
 	ply:SetVelocity(-ply:GetVelocity()) -- Sometimes they fling away when they are TP'd, so just make them have no speed
 end
@@ -270,26 +296,40 @@ function ENT:EnableDefenses(bool) -- Enable/Disable traps that are tied to us
 				ent:Activation(nil, ent:GetDuration(), ent:GetCooldown(), true)
 			else
 				ent:Deactivation(true)
-			end	
+			end
 		end
 	end
 end
 
+function ENT:AddTeleportingPlayer(ply)
+	if !IsValid(ply) then return end
+	self.TeleportingPlayers[#self.TeleportingPlayers + 1] = ply
+end
+
+function ENT:RemoveTeleportingPlayer(ply)
+	if !IsValid(ply) then return end
+	table.RemoveByValue(self.TeleportingPlayers, ply)
+end
+
+function ENT:GetTeleportingPlayers()
+	return self.TeleportingPlayers
+end
+
 function ENT:Teleport() -- Start the teleportation procedure
-	local plys_tping = {}
-	for k, v in pairs ( ents.FindInSphere( self:GetPos(), 90 ) ) do 
+	self.TeleportingPlayers = {}
+	for k, v in pairs ( ents.FindInSphere( self:GetPos(), 90 ) ) do
 		if IsValid(v) and v:IsPlayer() and (!v:IsSpectating() or v:IsInCreative()) and v:Alive() then
-			plys_tping[#plys_tping + 1] = v
+			self:AddTeleportingPlayer(v)
 		end
 	end
 
-	local anyPlys = #plys_tping > 0
+	local anyPlys = #self.TeleportingPlayers > 0
 
 	self:SetTransitioning(true)
 
 	local rand = util.SharedRandom("TeleporterDest" .. self:EntIndex(), 1, #self:GetDestinations())
 	local tp_destination = self:GetDestinations()[rand]
-	
+
 	------ We COULD just pick the first teleporter that either isn't
 	------ tied to a door or is tied to a door that's open, but it's
 	------ probably better to just not work and let the HUD text to its job
@@ -306,7 +346,7 @@ function ENT:Teleport() -- Start the teleportation procedure
 	if !IsValid(tp_destination) then return end
 
 	-- Lock any players on us in, they are being sent to their destination
-	for _,ply in pairs(plys_tping) do
+	for _,ply in pairs(self:GetTeleportingPlayers()) do
 		self:LockPlayer(ply)
 		ply.TeleportNextAllowedDamage = CurTime() + 4
 		ply:SendLua([[surface.PlaySound("nzr/teleport.mp3")]])
@@ -325,7 +365,7 @@ function ENT:Teleport() -- Start the teleportation procedure
 			self:SetTransitioning(false)
 
 			-- Send players to the destination and then unlock them so they can move again
-			for _,ply in pairs(plys_tping) do
+			for _,ply in pairs(self:GetTeleportingPlayers()) do
 				if IsValid(ply) then
 					self:SetPlayerPos(ply, tp_destination:GetPos() + Vector(0, 0, 21))
 					self:UnlockPlayer(ply)
@@ -358,7 +398,7 @@ function ENT:Teleport() -- Start the teleportation procedure
 
 			-- If there's no teleporting back then we're done and can unregister everything as being Used
 			if !anyPlys or !self:GetTPBack() then
-				self:SetBeingUsed(false)	
+				self:SetBeingUsed(false)
 
 				for _,dest in pairs(self:GetDestinations()) do
 					dest:SetBeingUsed(false)
@@ -375,9 +415,9 @@ function ENT:Teleport() -- Start the teleportation procedure
 						effectData:SetMagnitude( 2 )
 						effectData:SetEntity(nil)
 						util.Effect("lightning_prespawn", effectData)
-	
-						for _,ply in pairs(plys_tping) do
-							if IsValid(ply) then
+
+						for _,ply in pairs(self:GetTeleportingPlayers()) do
+							if IsValid(ply) and ply:Team() != TEAM_SPECTATOR then
 								local effectData = EffectData()
 								effectData:SetOrigin(ply:GetPos() + Vector(0, 0, 100))
 								effectData:SetMagnitude( 2 )
@@ -393,8 +433,8 @@ function ENT:Teleport() -- Start the teleportation procedure
 					if IsValid(self) then
 						self:SetTransitioning(true)
 
-						for _,ply in pairs(plys_tping) do
-							if IsValid(ply) then
+						for _,ply in pairs(self:GetTeleportingPlayers()) do
+							if IsValid(ply) and ply:Team() != TEAM_SPECTATOR then
 								ply:SendLua([[surface.PlaySound("nzr/teleport.mp3")]])
 								self:LockPlayer(ply)
 							end
@@ -402,35 +442,37 @@ function ENT:Teleport() -- Start the teleportation procedure
 					end
 				end)
 
-				self:EnableDefenses(false)	
+				self:EnableDefenses(false)
 
 				-- Send them back to the destination
 				timer.Create("NZRTeleporterTPBack" .. self:EntIndex(), self:GetTPBackDelay() + 3, 1, function()
 					if IsValid(self) then
-						for _,ply in pairs(plys_tping) do
+						for _,ply in pairs(self:GetTeleportingPlayers()) do
 							if IsValid(ply) then
-								local effectData = EffectData()
-								effectData:SetStart( ply:GetPos() + Vector(0, 0, 1000) )
-								effectData:SetOrigin( ply:GetPos() )
-								effectData:SetMagnitude( 1 )
-								util.Effect("lightning_strike", effectData)
-	
+								if ply:Team() != TEAM_SPECTATOR then
+									local effectData = EffectData()
+									effectData:SetStart( ply:GetPos() + Vector(0, 0, 1000) )
+									effectData:SetOrigin( ply:GetPos() )
+									effectData:SetMagnitude( 1 )
+									util.Effect("lightning_strike", effectData)
+								end
+
 								self:SetPlayerPos(ply, self:GetPos() +  Vector(0, 0, 21))
 								self:UnlockPlayer(ply)
 							end
 						end
 
 						self:SetTransitioning(false)
-						
+
 						-- NOW we're done
 						self:SetBeingUsed(false)
-	
+
 						for _,dest in pairs(self:GetDestinations()) do
 							dest:SetBeingUsed(false)
 						end
 					end
 				end)
-			end	
+			end
 		end
 	end)
 end
@@ -441,7 +483,7 @@ function ENT:Use(activator, caller)
 		if self:GetBeingUsed() then return end
 		if !activator:GetNotDowned() or #self:GetDestinationsUnlocked() <= 0 then return end
 	end
-	
+
 	if (IsValid(activator) and (activator:IsPlayer() and (nzElec:IsOn() or activator:IsInCreative()))) then
 		local price = self:GetPrice()
 		if (activator:IsInCreative() or (activator:GetPoints() >= price and !self:GetOnCooldown())) then
@@ -464,8 +506,8 @@ function ENT:Use(activator, caller)
 
 			-- If they have enough money
 			activator:TakePoints(price)
-				
-			timer.Simple(self:GetTeleporterTime(), function() 
+
+			timer.Simple(self:GetTeleporterTime(), function()
 				if IsValid(self) then
 					self:Teleport()
 				end
@@ -474,11 +516,11 @@ function ENT:Use(activator, caller)
 	end
 end
 
-if CLIENT then		
+if CLIENT then
 	function ENT:Draw()
-		if ConVarExists("nz_creative_preview") and !GetConVar("nz_creative_preview"):GetBool() and nzRound:InState( ROUND_CREATE ) then		
+		if ConVarExists("nz_creative_preview") and !GetConVar("nz_creative_preview"):GetBool() and nzRound:InState( ROUND_CREATE ) then
 			self:DrawModel()
-			
+
 			-- draw "wires" in creative this is very resource intensive
 			for _, lEnt in pairs(self:GetDestinations()) do
 				if IsValid(lEnt) then
