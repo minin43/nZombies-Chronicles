@@ -27,14 +27,16 @@ end)
 
 local entMeta = FindMetaTable("Entity")
 
--- TakeDamageInfo crash fix by Ethorbit as I have gotten really
--- fucking annoyed by thirdparty code (even some gamemode code) causing it.
-local oldTakeDamageInfo = entMeta.TakeDamageInfo
-function entMeta:TakeDamageInfo(dmginfo)
-	if self.Health and isfunction(self.Health) and self:Health() <= 0 then return end -- JUST STOP!
+if SERVER then
+	-- TakeDamageInfo crash fix by Ethorbit as I have gotten really
+	-- fucking annoyed by thirdparty code (even some gamemode code) causing it.
+	local oldTakeDamageInfo = entMeta.TakeDamageInfo
+	function entMeta:TakeDamageInfo(dmginfo)
+		if self.Health and isfunction(self.Health) and self:Health() <= 0 then return end -- JUST STOP!
 
-	oldTakeDamageInfo(self, dmginfo)
-end
+		oldTakeDamageInfo(self, dmginfo)
+	end
+end 
 
 local playerMeta = FindMetaTable("Player")
 local wepMeta = FindMetaTable("Weapon")
