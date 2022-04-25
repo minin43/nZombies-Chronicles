@@ -67,6 +67,8 @@ if SERVER then
 	util.AddNetworkString("nzChatCommand")
 	net.Receive("nzChatCommand", function(len, ply)
 		if !IsValid(ply) then return end
+		if ply.NextAllowedChatCommand and CurTime() < ply.NextAllowedChatCommand then return end -- No one should be executing commands this fast /Ethorbit
+		ply.NextAllowedChatCommand = CurTime() + 0.5
 		local command = net.ReadString()
 		print("Got command", command)
 		commandListenerSV(ply, command)

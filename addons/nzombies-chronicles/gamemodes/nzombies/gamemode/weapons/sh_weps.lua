@@ -1,15 +1,15 @@
 -- Auto Reload and FOV is in function_override/sh_meta.lua /Ethorbit
 local wepMeta = FindMetaTable("Weapon")
 
-function wepMeta:NZMaxAmmo() -- Replaced TFA's version with Chtidino's
-
-	local ammo_type = self:GetPrimaryAmmoType() or self.Primary.Ammo
-
-    if SERVER then
-        self.Owner:SetAmmo( self.Primary.MaxAmmo, ammo_type )
-		self:SetClip1( self.Primary.ClipSize )
-    end
-end
+-- function wepMeta:NZMaxAmmo() -- Replaced TFA's version with Chtidino's
+--
+-- 	local ammo_type = self:GetPrimaryAmmoType() or self.Primary.Ammo
+--
+--     if SERVER then
+--         self.Owner:SetAmmo( self.Primary.MaxAmmo, ammo_type )
+-- 		self:SetClip1( self.Primary.ClipSize )
+--     end
+-- end
 
 function wepMeta:GetPaP() -- Moved from TFA Base here, as this is where it actually belongs /Ethorbit
 	return ( self.HasNZModifier and self:HasNZModifier("pap") ) or self.pap or false

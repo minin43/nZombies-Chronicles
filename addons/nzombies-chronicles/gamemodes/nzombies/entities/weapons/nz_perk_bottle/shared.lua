@@ -137,7 +137,9 @@ function PerkBlurScreen()
 	hook.Add( "RenderScreenspaceEffects", "PaintPerkBlur", blurhook )
 	timer.Simple(0.7,function() hook.Remove( "RenderScreenspaceEffects", "PaintPerkBlur" ) end)
 end
-net.Receive("perk_blur_screen", PerkBlurScreen)
+if CLIENT then -- Added by Ethorbit since this is clearly clientside visual FX
+	net.Receive("perk_blur_screen", PerkBlurScreen)
+end
 
 function SWEP:Holster()
 	--return false
