@@ -246,30 +246,37 @@ local function get_like(first, second, type)
 end
 
 -- nzSQL.Q:Contains("name", "nz_ra")
+-- Unmodified: "name LIKE '%nz_ra%'"
 function nzSQL.Q:Contains(column, text)
     return get_like(column, text)
 end
 
 -- nzSQL.Q:BeginsWith("name", "nz_")
+-- Unmodified: "name LIKE 'nz_%'"
 function nzSQL.Q:BeginsWith(column, text)
     return get_like(column, text, "beginswith")
 end
 
 -- nzSQL.Q:EndsWith("name", "_ravine")
+-- Unmodified: "name LIKE '%_ravine'"
 function nzSQL.Q:EndsWith(column, text)
     return get_like(column, text, "endswith")
 end
 
 -- nzSQL.Q:Where( nzSQL.Q:Equals("name", "nz_ravine") )
+-- Unmodified: "WHERE name = 'nz_ravine'"
 function nzSQL.Q:Where(strOrNil)
     return "WHERE" .. (strOrNil and " " .. strOrNil or "")
 end
 
+-- Helper function that chains AND, OR, etc between conditionals in the conditional_table
+-- condition_type - what to separate the conditionals with
 local function get_condition_string(condition_type, condition_table)
     local return_string = ""
 
     for i = 1, #condition_table do
         local condition = condition_table[i]
+        if !condition then return end -- So nil values are ignored, to make complex queries easier to do inside of function conditionals (onlyWhitelisted and nzSQL.Q:Equals("whitelisted", "1") or nil)
 
         return_string = return_string .. condition
 
@@ -281,16 +288,19 @@ local function get_condition_string(condition_type, condition_table)
     return return_string
 end
 
--- nzSQL.Q:Where( nzSQL.Q:And({ nzSQL.Q:Contains("name", "ttt_"), nzSQL.Q:Contains("name", "gm_") }) )
+-- nzSQL.Q:And({ nzSQL.Q:Equals("name", "gm_flatgrass"), nzSQL.Q:Equals("whitelisted", "1") })
+-- Unmodified: "name = 'gm_flatgrass' AND whitelisted = '1'"
 function nzSQL.Q:And(condition_table)
     return get_condition_string("AND", condition_table)
 end
 
--- nzSQL.Q:Or({ nzSQL.Q:Equals("name", "gm_flatgrass"), nzSQL.Q:Equals("name", "gm_construct") })
+-- nzSQL.Q:Or({ nzSQL.Q:Contains("name", "ttt_"), nzSQL.Q:Contains("name", "gm_") })
+-- Unmodified: "name LIKE '%ttt_%' OR name LIKE '%gm_%'"
 function nzSQL.Q:Or(condition_table)
     return get_condition_string("OR", condition_table)
 end
 
+-----------------------------------------------------------------
 -- Load the subclass files:
 local path = "nzombies/gamemode/sql/subclasses/"
 local files,_ = file.Find(path .. "*.lua", "LUA")

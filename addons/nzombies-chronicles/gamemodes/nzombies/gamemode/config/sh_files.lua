@@ -117,7 +117,7 @@ if CLIENT then
 
         local data_mapdata_length = net.ReadInt(32)
         local data_mapdata = util.Decompress(net.ReadData(data_mapdata_length))
-        
+
         nzConfig.FileData = util.JSONToTable(data_filedata)
         nzConfig.MapData = util.JSONToTable(data_mapdata)
         nzConfig.Maps = net.ReadTable()
@@ -132,7 +132,28 @@ function nzConfig.UpdateData(is_first_time) -- Add the filenames and FileData fo
         nzConfig.FileData = {}
         nzConfig.Maps = {}
         local added_maps = {}
+        local added_config_maps = {}
 
+        -- Add map data
+        local map_names,_ = file.Find("maps/*.bsp", "GAME")
+        for _,map_name in pairs(map_names) do
+            if (hook.Run("NZConfig.ShouldAddMap", map_name) == false) then continue end
+
+            local map_name_no_bsp = string.sub(map_name, 1, string.find(map_name, ".bsp") - 1)
+
+            if !added_maps[map_name_no_bsp] then
+                local map_bsp_path = "maps/" .. map_name
+                local map_size = file.Size(map_bsp_path, "GAME") / 1000
+
+                nzConfig.MapData[map_name_no_bsp] = {
+                    ["map_size"] = map_size
+                }
+
+                added_maps[map_name_no_bsp] = true
+            end
+        end
+
+        -- Add config data
         for _,fileData in pairs({
             {path = "nz/", pattern = "*.txt", type = "DATA"},
             {path = "nz/", pattern = "*.lua", type = "LUA"},
@@ -154,17 +175,9 @@ function nzConfig.UpdateData(is_first_time) -- Add the filenames and FileData fo
                 nzConfig.FileData = nzConfig.FileData or {}
                 nzConfig.FileData[props.map] = nzConfig.FileData[props.map] or {}
 
-                if !added_maps[props.map] then
+                if !added_config_maps[props.map] then
                     nzConfig.Maps[#nzConfig.Maps + 1] = props.map
-
-                    local map_bsp = props.map .. ".bsp"
-                    local map_bsp_path = "maps/" .. map_bsp
-                    local map_size = file.Size(map_bsp_path, "GAME") / 1000
-                    nzConfig.MapData[props.map] = {
-                        ["map_size"] = map_size
-                    }
-
-                    added_maps[props.map] = true
+                    added_config_maps[props.map] = true
                 end
 
                 local file_size = file.Size(full_path, "GAME") / 1000
