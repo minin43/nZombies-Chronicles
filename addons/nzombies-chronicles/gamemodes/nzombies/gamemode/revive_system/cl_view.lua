@@ -249,11 +249,23 @@ end
 
 CreateClientConVar("nz_bloodoverlay", 1, true, false)
 
+-- Remove annoying ass Source blood effects:
+local hide = {
+	["CHudDamageIndicator"] = true
+}
+
+hook.Add("HUDShouldDraw", "RemoveBloodScreen", function(name)
+	if hide[name] then
+	  	return false
+	end
+end)
+
+-- ^^^ Replace it with something that's ACTUALLY good.
 local blood_overlay = Material("materials/overlay_low_health.png", "unlitgeneric smooth")
 local bloodpulse = true --if true, going up
 local pulse = 0
 local function DrawDamagedOverlay()
-	if GetConVar("cl_lvl_blood_flashing") and GetConVar("cl_lvl_blood_flashing"):GetBool() and LocalPlayer():Alive() then --GetConVar("nz_bloodoverlay"):GetBool()
+	if GetConVar("nz_bloodoverlay"):GetBool() and LocalPlayer():Alive() then
 		local fade = (math.Clamp(LocalPlayer():Health()/LocalPlayer():GetMaxHealth(), 0.3, 0.7)-0.3)/0.4
 		local fade2 = 1 - math.Clamp(LocalPlayer():Health()/LocalPlayer():GetMaxHealth(), 0, 0.7)/0.7
 
