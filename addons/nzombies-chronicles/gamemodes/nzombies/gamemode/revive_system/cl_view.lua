@@ -265,9 +265,11 @@ local blood_overlay = Material("materials/overlay_low_health.png", "unlitgeneric
 local bloodpulse = true --if true, going up
 local pulse = 0
 local function DrawDamagedOverlay()
-	if GetConVar("nz_bloodoverlay"):GetBool() and LocalPlayer():Alive() then
-		local fade = (math.Clamp(LocalPlayer():Health()/LocalPlayer():GetMaxHealth(), 0.3, 0.7)-0.3)/0.4
-		local fade2 = 1 - math.Clamp(LocalPlayer():Health()/LocalPlayer():GetMaxHealth(), 0, 0.7)/0.7
+	local player = nzDisplay:GetPlayer(OBS_MODE_IN_EYE)
+
+	if GetConVar("nz_bloodoverlay"):GetBool() and player:Alive() then
+		local fade = (math.Clamp(player:Health()/player:GetMaxHealth(), 0.3, 0.7)-0.3)/0.4
+		local fade2 = 1 - math.Clamp(player:Health()/player:GetMaxHealth(), 0, 0.7)/0.7
 
 		surface.SetMaterial(blood_overlay)
 		surface.SetDrawColor(255,255,255,180-fade*255)
