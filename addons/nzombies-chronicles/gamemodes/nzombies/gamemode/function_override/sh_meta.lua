@@ -36,7 +36,7 @@ if SERVER then
 
 		oldTakeDamageInfo(self, dmginfo)
 	end
-end 
+end
 
 local playerMeta = FindMetaTable("Player")
 local wepMeta = FindMetaTable("Weapon")
@@ -422,10 +422,12 @@ else
 	local Default_FOV = GetConVar("default_fov")
 
 	local view = {origin = vector_origin, angles = angle_zero, fov=0, zdraw=-1}
-	function GM:CalcView( ply, origin, angles, fov )
+	function GM:CalcView( ply, origin, angles, fov, znear, zfar )
 	   view.origin = origin
 	   view.angles = angles
 	   view.fov    = fov
+	   view.znear  = znear
+	   view.zfar   = zfar
 
    		-- first person ragdolling
 	   if ply:Team() == TEAM_SPEC and ply:GetObserverMode() == OBS_MODE_IN_EYE then
@@ -457,9 +459,11 @@ else
 			   local newFov = math.Clamp(ply:GetFOV() + CustomFOV:GetFloat() - Default_FOV:GetFloat(), 0, CustomFOV:GetFloat())
 			   view.fov = CustomFOV != nil and newFov or fov
 		   end
+	   end
 
-		   -- Custom Draw Distance
-		   view.zfar = (DrawDistance != nil and DrawDistance:GetFloat() > 0.0) and DrawDistance:GetFloat() or view.zfar
+	   local new_zfar = (DrawDistance != nil and DrawDistance:GetFloat() > 0.0) and DrawDistance:GetFloat() or view.zfar
+	   if new_zfar < view.zfar then
+		   view.zfar = new_zfar
 	   end
 
 	   return view
