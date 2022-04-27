@@ -54,7 +54,9 @@ function nzSQL:Query(query, messagesOnError, callback)
         nzSQL:ShowError(messagesOnError)
     end
 
-    print("[nZombies Database] " .. query)
+    if GetConVar("nz_log_sql_queries"):GetBool() then
+        print("[nZombies Database] " .. query)
+    end
 
     if isfunction(callback) then
         callback(val)
@@ -125,7 +127,7 @@ function nzSQL:CreateTable(table_name, columns, callback)
         end
 
         if !primary_key_defined then -- There should always be a primary key.
-            query = string.format("%s id %s,", query, nzSQL.Q:PrimaryKey())
+            query = string.format("%s id %s %s %s %s,", query, nzSQL.Q:Number(), nzSQL.Q:PrimaryKey(), nzSQL.Q:AutoIncrement(), nzSQL.Q:NotNull())
         end
 
         for i = 1, #columns do
@@ -213,12 +215,16 @@ function nzSQL.Q:PrimaryKey()
     return "PRIMARY KEY"
 end
 
+function nzSQL.Q:AutoIncrement()
+    return "AUTOINCREMENT"
+end
+
 function nzSQL.Q:Default(value)
     return string.format("DEFAULT %s", SQLStr(value))
 end
 
 function nzSQL.Q:Number()
-    return "INT"
+    return "INTEGER"
 end
 
 function nzSQL.Q:String(max_length)

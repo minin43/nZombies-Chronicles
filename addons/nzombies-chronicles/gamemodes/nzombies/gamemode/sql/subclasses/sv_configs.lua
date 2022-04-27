@@ -158,15 +158,36 @@ end
 hook.Add("nzConfig.UpdatedConfigFileData", "NZ_UpdateConfigDatabase", function()
     -- Add any currently existing configs not in the database yet
     for map_name,tbl in pairs(nzConfig.FileData) do
-        for _,map_tbl in pairs(tbl) do
-            nzSQL.Configs:ConfigExists(map_name, map_tbl.config_name, function(exists)
+        for _,config_tbl in pairs(tbl) do
+            nzSQL.Configs:ConfigExists(map_name, config_tbl.config_name, function(exists)
                 if !exists then
-                    nzSQL:InsertIntoTable(nzSQL.Configs.TableName, {nzSQL.Configs.ColumnNames.Map, nzSQL.Configs.ColumnNames.Name}, {map_name, map_tbl.config_name})
-                else -- Update the data that can change outside of the database
-                    -- Config size
-                    update_value(map_name, map_tbl.config_name, nzSQL.Configs.ColumnNames.Size, map_tbl.config_size)
+                    nzSQL:InsertIntoTable(nzSQL.Configs.TableName, {nzSQL.Configs.ColumnNames.Map, nzSQL.Configs.ColumnNames.Name}, {map_name, config_tbl.config_name})
                 end
             end)
         end
     end
+
+    -- Update the data that can change outside of the database
+    nzSQL.Configs:GetAll(function(configs)
+        for _,config_tbl in pairs(configs) do
+            if !config_tbl.map then return end
+
+            local configsFromMap = nzConfig.FileData[config_tbl.map]
+            local mountedConfigTbl
+            for _,config_tbl_mounted in pairs(configsFromMap) do
+                if config_tbl_mounted.config_name == config_tbl.name then
+                    mountedConfigTbl = config_tbl_mounted
+                    break
+                end
+            end
+
+            -- Mounted status
+            update_value(config_tbl.map, config_tbl.name, nzSQL.Configs.ColumnNames.IsMounted, mountedConfigTbl and "1" or "0")
+
+            -- Size
+            if mountedConfigTbl then
+                update_value(config_tbl.map, config_tbl.name, nzSQL.Configs.ColumnNames.Size, mountedConfigTbl.config_size)
+            end
+        end
+    end)
 end)

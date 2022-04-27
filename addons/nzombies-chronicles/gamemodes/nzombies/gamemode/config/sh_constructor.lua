@@ -65,6 +65,8 @@ nzConfig.DefineVar("nz_spawnpoint_update_rate", 4, {FCVAR_SERVER_CAN_EXECUTE, FC
 nzConfig.DefineVar("nz_maxragdolls", 10, {FCVAR_ARCHIVE}, "Max amount of ragdolls allowed to exist at any time.", 0, 8000)
 nzConfig.DefineVar("nz_ragdollremovetime", 1, {FCVAR_ARCHIVE}, "How many seconds it takes to fade and remove ragdolls that are over the maxragdoll limit.", 0, 30)
 
+nzConfig.DefineVar("nz_log_sql_queries", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Logs all successful nZombies SQL queries. You can use this to see what's saving/loading from the database.")
+
 local mapvoteFlags = {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}
 nzConfig.DefineVar("nz_mapvote_item_limit", 30, mapvoteFlags, "Max amount of items that can show in the Map Vote")
 nzConfig.DefineVar("nz_mapvote_time_limit", 30, mapvoteFlags, "The time everyone has to choose a map")

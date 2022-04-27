@@ -159,13 +159,13 @@ function nzConfig.UpdateData(is_first_time) -- Add the filenames and FileData fo
             {path = "nz/", pattern = "*.lua", type = "LUA"},
             {path = "gamemodes/nzombies/officialconfigs/", pattern = "*.lua", type = "GAME"}
         }) do
-            local directory = type == "GAME" and "" or string.lower(fileData.type) .. "/"
+            local directory = type != "DATA" and "" or string.lower(fileData.type) .. "/"
             local filenames = file.Find(fileData.path .. fileData.pattern, fileData.type)
 
             for _,filename in pairs(filenames) do
                 if (hook.Run("NZConfig.ShouldAddFilename", filename) == false) then continue end
 
-                local full_path = directory .. fileData.path .. filename
+                local full_path = fileData.path .. filename
                 local props = nzConfig.GetFilenameProperties(filename)
                 if !props.config_name then continue end
 
@@ -180,7 +180,7 @@ function nzConfig.UpdateData(is_first_time) -- Add the filenames and FileData fo
                     added_config_maps[props.map] = true
                 end
 
-                local file_size = file.Size(full_path, "GAME") / 1000
+                local file_size = file.Size(full_path, fileData.type) / 1000
 
                 table.insert(nzConfig.FileData[props.map], { -- We won't store big data here, rather we make functions for that above to save on memory/network bandwidth
                     ["config_path"] = full_path,
@@ -188,8 +188,8 @@ function nzConfig.UpdateData(is_first_time) -- Add the filenames and FileData fo
                     ["config_directory"] = fileData.path,
                     ["config_pathtype"] = fileData.type,
                     ["config_name"] = props.config_name,
-                    ["config_size"] = file_size
-                    --["workshop_id"] = props.workshop_id
+                    ["config_size"] = file_size,
+                    ["workshop_id"] = props.workshop_id
                 })
             end
         end
