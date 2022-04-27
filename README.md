@@ -47,7 +47,9 @@ ___
 
 ## Thirdparty Content
 The following addons have compatibility added in the gamemode, you'll have to download them from the Workshop if you want the extra functionality.
+* [Enhanced Playermodel Selector](https://steamcommunity.com/workshop/filedetails/?id=504945881)
 * [XP-Tools Leveling System](https://steamcommunity.com/sharedfiles/filedetails/?id=557366206)
+* [aTags](https://steamcommunity.com/sharedfiles/filedetails/?id=1314177388)
 
 ## Workshop Conflicts
 These addons are already in the gamemode, you need to uninstall them from the Workshop to play without problems:
