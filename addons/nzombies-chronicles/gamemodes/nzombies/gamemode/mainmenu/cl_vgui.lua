@@ -234,48 +234,154 @@ local MenuSettingsPanel = {}
 local white = Color(255,255,255,255)
 local green = Color(230,255,230,255)
 
-local function MenuSettingsListInit(self)
+local function MenuSettingsListInit(self) -- Heavily modified by Ethorbit to separate Administrator and (new) Client functionality
 	self:SetWide( 256 )
-	local btnMode = self:AddButton( "< Toggle Creative Mode ...", "nz_chatcommand", "/create" )
-	function btnMode:Think()
-		if self:IsHovered() or IsValid(self.ExtendedList) and (self.ExtendedList:IsHovered() or self.ExtendedList:IsChildHovered()) then
-			if !IsValid(self.ExtendedList) then
-				self.ExtendedList = vgui.Create("DScrollPanel", self:GetParent():GetParent():GetParent():GetParent())
-				function self.ExtendedList:Paint( w, h )
+	local topParent = self:GetParent():GetParent():GetParent()
+
+	local clientMode = self:AddButton("< Personal")
+
+	function clientMode:Think()
+		if self:IsHovered() or IsValid(self.ClientList) and (self.ClientList:IsHovered() or self.ClientList:IsChildHovered()) then
+			if !IsValid(self.ClientList) then
+				self.ClientList = vgui.Create("NZMainMenuSettingsList", topParent)
+
+				function self.ClientList:Paint( w, h )
 					draw.RoundedBox( 0, 0, 0, w, h, white )
 				end
 
-				self.ExtendedList:SetPos( ScrW() - 512, 80 )
-				self.ExtendedList:SetSize( 256, math.Clamp(#player.GetAll() * 42, 0, 1024) )
-				self.ExtendedList.PlayerList = vgui.Create("NZMainMenuSettingsList", self.ExtendedList)
-				self.ExtendedList.PlayerList:SetWide( 256 )
+				self.ClientList:SetPos( ScrW() - 512, 80 )
+				self.ClientList:SetSize( 256, 256 )
 
-				for k,v in pairs(player.GetAll()) do
-					local plybtn = self.ExtendedList.PlayerList:AddButton( v:Nick(), "nz_chatcommand", "/create "..v:Nick())
-					function plybtn:Paint( w, h )
-						draw.RoundedBox( 0, 0, 1, w, h-1, v:IsInCreative() and green or white )
-					end
-				end
+				hook.Run("NZMainMenuSettingsClientList_PreButtonInit", self)
+				self.ClientList:AddButton("Settings", "nz_chatcommand", "/clientsettings")
+				self.ClientList:AddButton("Playermodel", function() nzPlayers:PlayerModelEditor() end)
+				self.ClientList:AddButton("Name & Score Color", function() end)
+				self.ClientList:AddButton("Pack-a-punch Camo", function() end)
+				self.ClientList:AddButton("HUD Icons", function() end)
+				self.ClientList:AddButton("FOV", function() end)
+				hook.Run("NZMainMenuSettingsClientList_PostButtonInit", self)
 			end
 		else
-			if IsValid(self.ExtendedList) then
-				self.ExtendedList:Remove()
+			if IsValid(self.ClientList) then
+				self.ClientList:Remove()
 			end
 		end
 	end
 
-	hook.Run("NZ.MenuSettingsList_PreButtonInit", self)
-	self:AddButton( "Load Map config", "nz_chatcommand", "/load" )
-	self:AddButton( "Save Map config", "nz_chatcommand", "/save" )
-	self:AddButton( "Player Model Editor", function() nzPlayers:PlayerModelEditor() end)
-	self:AddButton( "Generate Navmesh", "nz_chatcommand", "/generate" )
-	self:AddButton( "Cheats (Beta)", "nz_chatcommand", "/cheats" )
-	hook.Run("NZ.MenuSettingsList_PostButtonInit", self)
+	local adminMode = self:AddButton("< Admin")
+	adminMode.CreativeChildHovered = false
+
+	function adminMode:Think() -- New Admin extension list, containing all the individual admin buttons that previously existed here /Ethorbit
+		if adminMode.CreativeChildHovered or (self:IsHovered() or IsValid(self.AdminList) and (self.AdminList:IsHovered() or self.AdminList:IsChildHovered()))  then
+			if !IsValid(self.AdminList) then
+				self.AdminList = vgui.Create("NZMainMenuSettingsList", topParent)
+
+				function self.AdminList:Paint( w, h )
+					draw.RoundedBox( 0, 0, 0, w, h, white )
+				end
+
+				self.AdminList:SetPos( ScrW() - 512, 120 )
+				self.AdminList:SetSize( 256, 256 )
+
+				hook.Run("NZMainMenuSettingsAdminList_PreButtonInit", self)
+				self.AdminList:AddButton("Settings", "nz_chatcommand", "/adminsettings")
+				local creativeMode = self.AdminList:AddButton("< Toggle Creative Mode ...", "nz_chatcommand", "/create")
+
+				function creativeMode:Think()
+					if self:IsHovered() or IsValid(self.CreativeList) and (self.CreativeList:IsHovered() or self.CreativeList:IsChildHovered()) then
+						adminMode.CreativeChildHovered = true
+
+						if !IsValid(self.CreativeList) then
+							self.CreativeList = vgui.Create("DScrollPanel", topParent)
+
+							function self.CreativeList:Paint( w, h )
+								draw.RoundedBox( 0, 0, 0, w, h, white )
+							end
+
+							self.CreativeList:SetPos( ScrW() - 768, 160 )
+							self.CreativeList:SetSize( 256, math.Clamp(#player.GetAll() * 42, 0, 1024) )
+							self.CreativeList.PlayerList = vgui.Create("NZMainMenuSettingsList", self.CreativeList)
+							self.CreativeList.PlayerList:SetWide( 256 )
+
+							for k,v in pairs(player.GetAll()) do
+								local plybtn = self.CreativeList.PlayerList:AddButton( v:Nick(), "nz_chatcommand", "/create "..v:Nick())
+								function plybtn:Paint( w, h )
+									draw.RoundedBox( 0, 0, 1, w, h-1, v:IsInCreative() and green or white )
+								end
+							end
+						end
+					else
+						adminMode.CreativeChildHovered = false
+
+						if IsValid(self.CreativeList) then
+							self.CreativeList:Remove()
+						end
+					end
+				end
+
+				self.AdminList:AddButton("Load Map config", "nz_chatcommand", "/load")
+				self.AdminList:AddButton("Save Map config", "nz_chatcommand", "/save")
+				self.AdminList:AddButton("Generate Navmesh", "nz_chatcommand", "/generate")
+				self.AdminList:AddButton("Cheats (Beta)", "nz_chatcommand", "/cheats")
+				hook.Run("NZMainMenuSettingsAdminList_PostButtonInit", self)
+			end
+		else
+			if IsValid(self.AdminList) then
+				self.AdminList:Remove()
+			end
+		end
+	end
+
+
+
+	-- function adminMode:Think()
+	-- 	if self:IsHovered() or IsValid(self.ExtendedList) and (self.ExtendedList:IsHovered() or self.ExtendedList:IsChildHovered()) then
+	--
+	-- 	end
+	-- end
+
+	--local btnMode = adminMode:AddButton( "< Toggle Creative Mode ...", "nz_chatcommand", "/create" )
+	--function btnMode:Think()
+		-- if self:IsHovered() or IsValid(self.ExtendedList) and (self.ExtendedList:IsHovered() or self.ExtendedList:IsChildHovered()) then
+		-- 	if !IsValid(self.ExtendedList) then
+		-- 		self.ExtendedList = vgui.Create("DScrollPanel", self:GetParent():GetParent():GetParent():GetParent())
+		-- 		function self.ExtendedList:Paint( w, h )
+		-- 			draw.RoundedBox( 0, 0, 0, w, h, white )
+		-- 		end
+		--
+		-- 		self.ExtendedList:SetPos( ScrW() - 512, 80 )
+		-- 		self.ExtendedList:SetSize( 256, math.Clamp(#player.GetAll() * 42, 0, 1024) )
+		-- 		self.ExtendedList.PlayerList = vgui.Create("NZMainMenuSettingsList", self.ExtendedList)
+		-- 		self.ExtendedList.PlayerList:SetWide( 256 )
+		--
+		-- 		for k,v in pairs(player.GetAll()) do
+		-- 			local plybtn = self.ExtendedList.PlayerList:AddButton( v:Nick(), "nz_chatcommand", "/create "..v:Nick())
+		-- 			function plybtn:Paint( w, h )
+		-- 				draw.RoundedBox( 0, 0, 1, w, h-1, v:IsInCreative() and green or white )
+		-- 			end
+		-- 		end
+		-- 	end
+		-- else
+		-- 	if IsValid(self.ExtendedList) then
+		-- 		self.ExtendedList:Remove()
+		-- 	end
+		-- end
+	--end
+
+
+
+	-- hook.Run("NZ.MenuSettingsList_PreButtonInit", self)
+	-- self:AddButton( "Load Map config", "nz_chatcommand", "/load" )
+	-- self:AddButton( "Save Map config", "nz_chatcommand", "/save" )
+	-- self:AddButton( "Player Model Editor", function() nzPlayers:PlayerModelEditor() end)
+	-- self:AddButton( "Generate Navmesh", "nz_chatcommand", "/generate" )
+	-- self:AddButton( "Cheats (Beta)", "nz_chatcommand", "/cheats" )
+	-- hook.Run("NZ.MenuSettingsList_PostButtonInit", self)
 end
 
 function MenuSettingsPanel:Init()
 	self:SetPos( ScrW() - 256, 80 )
-	self:SetSize( 256, 256)
+	self:SetSize( 256, 90)
 	self.List = vgui.Create( "NZMainMenuSettingsList", self )
 	MenuSettingsListInit(self.List)
 end
