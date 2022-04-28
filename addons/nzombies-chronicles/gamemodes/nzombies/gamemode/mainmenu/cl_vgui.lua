@@ -122,7 +122,7 @@ function MenuToolBar:Init()
 	self:AddEntry( "Press F1 to toggle this menu", "small", function() RunConsoleCommand("nz_settings") end )
 
 	--Settings Button / Close button
-	if ( LocalPlayer():IsNZAdmin() ) then
+	--if ( LocalPlayer():IsNZAdmin() ) then -- Commented by Ethorbit now that I've added a Personal section to Settings
 		self.SettingsButton = vgui.Create( "DImageButton", self )
 		self.SettingsButton:SetImage( "icon_settings.png" )
 		self.SettingsButton:SetPos( ScrW() - 60, 20 )
@@ -146,18 +146,18 @@ function MenuToolBar:Init()
 			end
 		end
 
-	else
-		--Show close icon if user not superadmin
-		self.CloseButton = vgui.Create( "DImageButton", self )
-		self.CloseButton:SetImage( "icon_close.png" )
-		self.CloseButton:SetPos( ScrW() - 60, 20 )
-		self.CloseButton:SetSize( 40, 40 )
-		self.CloseButton:SetContentAlignment( 5 )
-		self.CloseButton:SetConsoleCommand( "nz_settings" )
-		function self.CloseButton:Paint( w, h )
-
-		end
-	end
+	--else
+		-- --Show close icon if user not superadmin
+		-- self.CloseButton = vgui.Create( "DImageButton", self )
+		-- self.CloseButton:SetImage( "icon_close.png" )
+		-- self.CloseButton:SetPos( ScrW() - 60, 20 )
+		-- self.CloseButton:SetSize( 40, 40 )
+		-- self.CloseButton:SetContentAlignment( 5 )
+		-- self.CloseButton:SetConsoleCommand( "nz_settings" )
+		-- function self.CloseButton:Paint( w, h )
+		--
+		-- end
+	--end
 
 end
 
@@ -255,10 +255,10 @@ local function MenuSettingsListInit(self) -- Heavily modified by Ethorbit to sep
 				hook.Run("NZMainMenuSettingsClientList_PreButtonInit", self)
 				self.ClientList:AddButton("Settings", "nz_chatcommand", "/clientsettings")
 				self.ClientList:AddButton("Playermodel", function() nzPlayers:PlayerModelEditor() end)
-				self.ClientList:AddButton("Name & Score Color", function() end)
-				self.ClientList:AddButton("Pack-a-punch Camo", function() end)
-				self.ClientList:AddButton("HUD Icons", function() end)
-				self.ClientList:AddButton("FOV", function() end)
+				self.ClientList:AddButton("Name & Score Color", "nz_chatcommand", "/namescorecolors")
+				self.ClientList:AddButton("Pack-a-punch Camo", "nz_chatcommand", "/papcamos")
+				self.ClientList:AddButton("HUD Icons", "nz_chatcommand", "/hudicons")
+				self.ClientList:AddButton("FOV", "nz_chatcommand", "/fov")
 				hook.Run("NZMainMenuSettingsClientList_PostButtonInit", self)
 			end
 		else
@@ -331,52 +331,6 @@ local function MenuSettingsListInit(self) -- Heavily modified by Ethorbit to sep
 			end
 		end
 	end
-
-
-
-	-- function adminMode:Think()
-	-- 	if self:IsHovered() or IsValid(self.ExtendedList) and (self.ExtendedList:IsHovered() or self.ExtendedList:IsChildHovered()) then
-	--
-	-- 	end
-	-- end
-
-	--local btnMode = adminMode:AddButton( "< Toggle Creative Mode ...", "nz_chatcommand", "/create" )
-	--function btnMode:Think()
-		-- if self:IsHovered() or IsValid(self.ExtendedList) and (self.ExtendedList:IsHovered() or self.ExtendedList:IsChildHovered()) then
-		-- 	if !IsValid(self.ExtendedList) then
-		-- 		self.ExtendedList = vgui.Create("DScrollPanel", self:GetParent():GetParent():GetParent():GetParent())
-		-- 		function self.ExtendedList:Paint( w, h )
-		-- 			draw.RoundedBox( 0, 0, 0, w, h, white )
-		-- 		end
-		--
-		-- 		self.ExtendedList:SetPos( ScrW() - 512, 80 )
-		-- 		self.ExtendedList:SetSize( 256, math.Clamp(#player.GetAll() * 42, 0, 1024) )
-		-- 		self.ExtendedList.PlayerList = vgui.Create("NZMainMenuSettingsList", self.ExtendedList)
-		-- 		self.ExtendedList.PlayerList:SetWide( 256 )
-		--
-		-- 		for k,v in pairs(player.GetAll()) do
-		-- 			local plybtn = self.ExtendedList.PlayerList:AddButton( v:Nick(), "nz_chatcommand", "/create "..v:Nick())
-		-- 			function plybtn:Paint( w, h )
-		-- 				draw.RoundedBox( 0, 0, 1, w, h-1, v:IsInCreative() and green or white )
-		-- 			end
-		-- 		end
-		-- 	end
-		-- else
-		-- 	if IsValid(self.ExtendedList) then
-		-- 		self.ExtendedList:Remove()
-		-- 	end
-		-- end
-	--end
-
-
-
-	-- hook.Run("NZ.MenuSettingsList_PreButtonInit", self)
-	-- self:AddButton( "Load Map config", "nz_chatcommand", "/load" )
-	-- self:AddButton( "Save Map config", "nz_chatcommand", "/save" )
-	-- self:AddButton( "Player Model Editor", function() nzPlayers:PlayerModelEditor() end)
-	-- self:AddButton( "Generate Navmesh", "nz_chatcommand", "/generate" )
-	-- self:AddButton( "Cheats (Beta)", "nz_chatcommand", "/cheats" )
-	-- hook.Run("NZ.MenuSettingsList_PostButtonInit", self)
 end
 
 function MenuSettingsPanel:Init()

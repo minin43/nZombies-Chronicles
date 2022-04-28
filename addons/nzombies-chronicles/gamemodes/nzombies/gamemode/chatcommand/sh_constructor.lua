@@ -1,158 +1,80 @@
 -- Chat Commands module
+
+-- Recoded by Ethorbit because the
+-- previous implementation was retarded and
+-- required all commands to be defined serverside
+-- to function properly.
+
+-- Now, commands will be executed in the realm they were defined in.
+-- Shared realm commands are also possible now.
+
+-- WARNING!:
+-- Chat commands are hidden by the CLIENTSIDE only (due to serverside blocking the clientside's command listener)
+-- This means if your command requires sensitive info (like passwords) cheaters will be able to
+-- see that info typed by other players (even if the command is defined on the server only)
+-- If you really need to do this, I recommend creating a serverside chat command manually
+
+
 nzChatCommand = nzChatCommand or AddNZModule("chatcommand")
+
+nzChatCommand.maxAllowedCommands   = 5000 -- Increase if this is an issue.
+nzChatCommand.maxLength 		   = 120
+nzChatCommand.maxUsageLength 	   = 250
+
+nzChatCommand.addedCommands = nzChatCommand.addedCommands or 0
 nzChatCommand.commands = nzChatCommand.commands or {}
 nzChatCommand.prefixes = nzChatCommand.prefixes or {} -- added by Ethorbit to both continue the optimization and allow more than just "/"
 
-if CLIENT then
-	nzChatCommand.servercommands = nzChatCommand.servercommands or {} -- For autocomplete
-end
-
--- Functions
---[[ 	nzChatCommand.Add
+--[[ nzChatCommand.Add
 	text [string]: The text you put in chat to trigger this command
-	realm [realm]: The realm this command will work in (SERVER/CLIENT)
 	func [function]: The function to run when the command is issued. It runs the function with the player as the first argument, then all arguments in the chat seperated by space
 	allowAll [boolean]: If set to true, will allow even non-admins to run this command
-	--]]
+--]]
+function nzChatCommand.Add(text, func, allowAll, usageHelp)
+	if !text then return end
 
---TODO add more descriptive table indices.
-function nzChatCommand.Add(text, realm, func, allowAll, usageHelp)
+	if (nzChatCommand.addedCommands + 1 >= nzChatCommand.maxAllowedCommands) then
+		ServerLog("[nZombies Command Error] The maximum amount of commands has been hit! (" .. nzChatCommand.maxAllowedCommands .. ") Increase nzChatCommand.maxAllowedCommands if this is too low for you.")
+	return end
+
+	text = string.sub(text, 1, nzChatCommand.maxLength)
+
+	if usageHelp then
+		usageHelp = string.sub(usageHelp, 1, nzChatCommand.maxUsageLength)
+	end
+
 	nzChatCommand.prefixes[text[1]] = true -- We're assuming the first character is a command prefix (/), it's no big deal if this is incorrect.
 
-	if realm or SERVER then -- Always server
-		if usageHelp then
-			table.insert(nzChatCommand.commands, {text, func, allowAll and true or false, usageHelp})
-		else
-			table.insert(nzChatCommand.commands, {text, func, allowAll and true or false})
-		end
-	elseif CLIENT then
-		table.insert(nzChatCommand.servercommands, {text, allowAll and true or false, usageHelp})
-	end
-end
+	local new_value = {["text"] = text, ["func"] = func, ["allowAll"] = allowAll and true or false, ["usageHelp"] = usageHelp or ""}
+	nzChatCommand.commands[text] = new_value -- This is much better than table.insert..
+	nzChatCommand.addedCommands = nzChatCommand.addedCommands + 1
 
--- Hooks
-if SERVER then
-	local function commandListenerSV( ply, text, public )
-		--if text[1] == "/" then -- WTF is this code?
-		if nzChatCommand.prefixes[text[1]] then -- This makes more sense, if optimization is the goal
-			text = string.lower(text)
-			for k,v in pairs(nzChatCommand.commands) do
-				if (string.sub(text, 1, string.len(v[1])) == v[1]) then
-					if (!v[3] and !ply:IsNZAdmin()) then
-						ply:ChatPrint("NZ This command can only be used by administrators.")
-						return false
-					end
+	local networkTbl = table.Copy(new_value)
+	networkTbl.func = nil -- They wouldn't be able to call that correctly lol
 
-					local args = nzChatCommand.splitCommand(text)
-					-- Check if quotionmark usage was valid
-					if args then
-						-- Remove first arguement (command name) and then call function with the reamianing args
-						table.remove(args, 1)
-						local block = v[2](ply, args) or false
-						print("NZ " .. tostring(ply) .. " used command " .. v[1] .. " with arguments:\n" .. table.ToString(args))
-						return block
-					else
-						ply:ChatPrint("NZ Invalid command usage (check for missing quotes).")
-						return false
-					end
-				end
-			end
-			ply:ChatPrint("NZ No valid command exists with this name, try '/help' for a list of commands.")
-		end
-		--end
-	end
-	hook.Add("PlayerSay", "nzChatCommand", commandListenerSV)
+	net.Start("nzUpdateChatCommand")
+	net.WriteString(text)
+	net.WriteTable(networkTbl)
 
-	-- Receiving net messages from console command nz_chatcommand instead (in case another addon blocks the hook)
-	util.AddNetworkString("nzChatCommand")
-	net.Receive("nzChatCommand", function(len, ply)
-		if !IsValid(ply) then return end
-		if ply.NextAllowedChatCommand and CurTime() < ply.NextAllowedChatCommand then return end -- No one should be executing commands this fast /Ethorbit
-		ply.NextAllowedChatCommand = CurTime() + 0.5
-		local command = net.ReadString()
-		print("Got command", command)
-		commandListenerSV(ply, command)
-	end)
-end
-
-if CLIENT then
-	local function commandListenerCL( ply, text, public, dead )
-		--if text[1] == "/" then -- WTF is this code?
-		if nzChatCommand.prefixes[text[1]] then -- This makes more sense, if optimization is the goal
-			text = string.lower(text)
-			for k,v in pairs(nzChatCommand.commands) do
-				if (string.sub(text, 1, string.len(v[1])) == v[1]) then
-					if v[3] and !ply:IsSuperAdmin() then
-						return true
-					end
-					if ply == LocalPlayer() then
-						local args = nzChatCommand.splitCommand(text)
-						-- Check if quotionmark usage was valid
-						if args then
-							-- Remove first arguement (command name) and then call function with the reamianing args
-							table.remove(args, 1)
-							local block = v[2](ply, args) or false
-							return block
-						else
-							ply:ChatPrint("NZ Invalid command usage (check for missing quotes).")
-							return false
-						end
-					end
-					return true
-				end
-			end
-		end
-		--end
-	end
-	hook.Add("OnPlayerChat", "nzChatCommandClient", commandListenerCL)
-
-	-- Console command nz_chatcommand in case another addon blocks the hooks (works just like chat, "nz_chatcommand [chat commands]")
-	local function nz_chatcommand(ply, cmd, args, argstr)
-		if !argstr then return end
-		argstr = string.Trim(argstr, " ") -- Trim spaces
-		if string.sub(argstr, 1, 1) == "\"" and string.sub(argstr, #argstr, #argstr) == "\"" then
-			argstr = string.sub(argstr, 2, #argstr-1) -- Trim quotation marks but only if they are around the WHOLE string
-			-- As to avoid trimming in commmands like /revive "Some Name with Spaces"
-		end
-		net.Start("nzChatCommand")
-			net.WriteString(argstr)
+	if SERVER then
+		net.Broadcast()
+	else
 		net.SendToServer()
-		commandListenerCL(LocalPlayer(), argstr)
 	end
-	-- Even comes with autocomplete :D
-	local function nz_chatcommand_autocomplete(cmd, argstr)
-		argstr = string.Trim( argstr )
-		argstr = string.lower( argstr )
+end
 
-		local tbl = {}
+function nzChatCommand.Remove(text)
+	nzChatCommand.commands[text] = nil
+	nzChatCommand.addedCommands = nzChatCommand.addedCommands - 1
 
-		for _, cmd in pairs(nzChatCommand.servercommands) do
-			local cmdText = cmd[1]
-			if string.find(cmdText, argstr) then
-				if cmd[2] or (!cmd[2] and LocalPlayer():IsSuperAdmin()) then
-					local text = "nz_chatcommand ".. cmdText
-					if !table.HasValue(tbl, text) then
-						table.insert(tbl, text)
-					end
-				end
-			end
-		end
+	net.Start("nzUpdateChatCommand")
+	net.WriteString(text)
 
-		for _, cmd in pairs(nzChatCommand.commands) do
-			local cmdText = cmd[1]
-			if string.find(cmdText, argstr) then
-				if cmd[3] or (!cmd[3] and LocalPlayer():IsSuperAdmin()) then
-					local text = "nz_chatcommand ".. cmdText
-					if !table.HasValue(tbl, text) then
-						table.insert(tbl, text)
-					end
-				end
-			end
-		end
-
-		return tbl
+	if SERVER then
+		net.Broadcast()
+	else
+		net.SendToServer()
 	end
-	concommand.Add("nz_chatcommand", nz_chatcommand, nz_chatcommand_autocomplete, "Executes a chatcommand without the use of chat, in case chatcommands don't work.")
 end
 
 function nzChatCommand.splitCommand(command)
@@ -173,4 +95,192 @@ function nzChatCommand.splitCommand(command)
 	end
 	if buf then return nil end
 	return result
+end
+
+local function commandListener(ply, text)
+	if nzChatCommand.prefixes[text[1]] then -- This makes more sense, if optimization is the goal
+		text = string.lower(text)
+
+		local commandWasDenied = false
+		for k,v in pairs(nzChatCommand.commands) do
+			if (string.sub(text, 1, string.len(v.text)) == v.text) then
+				if (!v.allowAll and !ply:IsNZAdmin()) then
+					ply:ChatPrint("NZ This command can only be used by administrators.")
+					commandWasDenied = true
+				else
+					if v.func then
+						-- Check if quotionmark usage was valid
+						local args = nzChatCommand.splitCommand(text)
+
+						if args then
+							-- Remove first arguement (command name) and then call function with the reamianing args
+							args[1] = nil
+							v.func(ply, args)
+							print("NZ " .. tostring(ply) .. " used command " .. v.text .. " with arguments:\n" .. table.ToString(args))
+
+							if CLIENT then return true end
+						else
+							ply:ChatPrint("NZ Invalid command usage (check for missing quotes).")
+
+							if CLIENT then return true end
+						end
+					end
+				end
+			end
+		end
+
+		if !commandWasDenied then
+			local exists_in_current_realm = nzChatCommand.commands[text]
+			local command_exists_in_other_realm = CLIENT and nzChatCommand.serverCommands[text] or nzChatCommand.clientCommands and nzChatCommand.clientCommands[ply][text]
+			if !command_exists_in_other_realm and !exists_in_current_realm then
+				if CLIENT then
+					ply:ChatPrint("NZ No valid command exists with this name, try '/help' for a list of commands.")
+				end
+			end
+		end
+
+		if CLIENT then return true end
+	end
+end
+
+if SERVER then
+	hook.Add("PlayerSay", "nzChatCommandListenerServer", commandListener)
+else
+	hook.Add("OnPlayerChat", "nzChatCommandListenerClient", commandListener)
+end
+
+
+-- Console command nz_chatcommand in case another addon blocks the hooks (works just like chat, "nz_chatcommand [chat commands]")
+local function nz_chatcommand(ply, cmd, args, argstr)
+	if !argstr then return end
+	argstr = string.Trim(argstr, " ") -- Trim spaces
+	if string.sub(argstr, 1, 1) == "\"" and string.sub(argstr, #argstr, #argstr) == "\"" then
+		argstr = string.sub(argstr, 2, #argstr-1) -- Trim quotation marks but only if they are around the WHOLE string
+		-- As to avoid trimming in commmands like /revive "Some Name with Spaces"
+	end
+	net.Start("nzChatCommand")
+		net.WriteString(argstr)
+	net.SendToServer()
+	commandListener(LocalPlayer(), argstr)
+end
+
+if SERVER then
+	util.AddNetworkString("nzUpdateChatCommand")
+	util.AddNetworkString("INeedTheServerNZChatCommands")
+	util.AddNetworkString("HereIsTheServerNZChatCommands")
+
+	-- Since we cannot trust a client to truthfully provide us client commands
+	-- we will store a separate client command table per player and make
+	-- sure to only use it for harmless comparisons
+	nzChatCommand.clientCommands = nzChatCommand.clientCommands or {}
+	nzChatCommand.networkMaxLengthAllowed = 3000 + ((nzChatCommand.maxLength + nzChatCommand.maxUsageLength) * 8)
+	local excluded_plys = {}
+	net.Receive("nzUpdateChatCommand", function(len, ply)
+		if excluded_plys[ply] then return end
+
+		if len >= nzChatCommand.networkMaxLengthAllowed then -- Piss off, spammer
+			ply:Kick("Spamming NZ Command Creation")
+		return end
+
+		local key = net.ReadString()
+		local val = net.ReadTable()
+
+		if !nzChatCommand.clientCommands[ply] then
+			nzChatCommand.clientCommands[ply] = {}
+		end
+
+		-- Stop it..
+		if table.Count(nzChatCommand.clientCommands[ply]) >= nzChatCommand.maxAllowedCommands then
+			excluded_plys[ply] = true
+		return end
+
+		nzChatCommand.clientCommands[ply][key] = val
+	end)
+
+	-- Receiving server-defined commands (for printing to /help and things)
+	net.Receive("INeedTheServerNZChatCommands", function(len, ply)
+		if ply.NextAllowedNZChatCommandUpdate and CurTime() < ply.NextAllowedNZChatCommandUpdate then return end
+		ply.NextAllowedNZChatCommandUpdate = CurTime() + 3
+
+		local netTbl = table.Copy(nzChatCommand.commands)
+		for _,cmdTbl in pairs(netTbl) do
+			cmdTbl.func = nil
+		end
+
+		net.Start("HereIsTheServerNZChatCommands")
+		net.WriteTable(netTbl)
+		net.Send(ply)
+	end)
+
+	-- Receiving net messages from console command nz_chatcommand instead (in case another addon blocks the hook)
+	util.AddNetworkString("nzChatCommand")
+	net.Receive("nzChatCommand", function(len, ply)
+		if !IsValid(ply) then return end
+		if ply.NextAllowedChatCommand and CurTime() < ply.NextAllowedChatCommand then return end -- No one should be executing commands this fast /Ethorbit
+		ply.NextAllowedChatCommand = CurTime() + 0.5
+		local command = net.ReadString()
+		print("Got command", command)
+		commandListener(ply, command)
+	end)
+end
+
+if CLIENT then
+	nzChatCommand.serverCommands = nzChatCommand.serverCommands or {}
+
+	hook.Add("InitPostEntity", "NZ_RetrieveAllServerChatCommands", function()
+		net.Start("INeedTheServerNZChatCommands")
+		net.SendToServer()
+	end)
+
+	net.Receive("HereIsTheServerNZChatCommands", function()
+		local tbl = net.ReadTable()
+
+		--for key,cmdTbl in pairs(tbl) do
+			--local oldFunc = nzChatCommand.commands[key] != nil and nzChatCommand.commands[key].func or nil
+			--cmdTbl.func = oldFunc -- Preserve the clientside function
+			--nzChatCommand.Add(cmdTbl.text, cmdTbl.func, cmdTbl.allowAll, cmdTbl.usageHelp)
+		--end
+
+		nzChatCommand.serverCommands = tbl
+	end)
+
+	net.Receive("nzUpdateChatCommand", function()
+		local key = net.ReadString()
+		local tbl = net.ReadTable()
+
+		if !table.IsEmpty(tbl) then
+			--local oldFunc = nzChatCommand.commands[key] != nil and nzChatCommand.commands[key].func or nil
+			--tbl.func = oldFunc -- Preserve the clientside function
+			--nzChatCommand.Add(tbl.text, tbl.func, tbl.allowAll, tbl.usageHelp)
+			nzChatCommand.serverCommands[key] = tbl
+		else
+			nzChatCommand.serverCommands[key] = nil
+			-- We don't remove the client version of the command here,
+			-- because it can be removed with a clientside call to
+			--  nzChatCommand.Remove
+		end
+	end)
+
+	-- Even comes with autocomplete :D
+	local function nz_chatcommand_autocomplete(cmd, argstr)
+		argstr = string.Trim( argstr )
+		argstr = string.lower( argstr )
+
+		local tbl = {}
+
+		for _, cmd in pairs(nzChatCommand.commands) do
+			local cmdText = cmd.text
+			if string.find(cmdText, argstr) then
+				if cmd.allowAll or (!cmd.allowAll and LocalPlayer():IsNZAdmin()) then
+					local text = "nz_chatcommand ".. cmdText
+					if !table.HasValue(tbl, text) then
+						table.insert(tbl, text)
+					end
+				end
+			end
+		end
+
+		return tbl
+	end
+	concommand.Add("nz_chatcommand", nz_chatcommand, nz_chatcommand_autocomplete, "Executes a chatcommand without the use of chat, in case chatcommands don't work.")
 end

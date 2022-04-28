@@ -97,11 +97,11 @@ end
 
 concommand.Add("rtv_start", RTV.StartVote)
 
-hook.Add("PlayerSay", "RTV Chat Commands", function(ply, text)
-
-    if table.HasValue(RTV.ChatCommands, string.lower(text)) then
-        RTV.StartVote(ply)
-        return ""
-    end
-
-end)
+-- hook.Add("PlayerSay", "RTV Chat Commands", function(ply, text)
+--
+--     if RTV and table.HasValue(RTV.ChatCommands, string.lower(text)) then
+--         RTV.StartVote(ply)
+--         return ""
+--     end
+--
+-- end)
