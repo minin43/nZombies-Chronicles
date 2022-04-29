@@ -24,9 +24,10 @@ if CLIENT then
 		end
 
 		for _,cmd in pairs(nzChatCommand.serverCommands) do
-			if printedMsgs[cmd.text] then return end
-			printedMsgs[cmd.text] = true
-			printCmd(cmd)
+			if !printedMsgs[cmd.text] then
+				printedMsgs[cmd.text] = true
+				printCmd(cmd)
+			end
 		end
 
 		ply:PrintMessage( HUD_PRINTTALK, "-----" )
