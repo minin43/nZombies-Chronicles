@@ -2,7 +2,7 @@
 -- existing in the glua API and creating repetitive code
 nzMisc = nzMisc or {}
 
-function nzMisc:GetClosestEntityToPosition(pos, boolFunc, maxSearchDist)
+function nzMisc:SortEntityByDistance(closest, pos, boolFunc, maxSearchDist)
     local lastDist
     local lastEnt
 
@@ -10,7 +10,7 @@ function nzMisc:GetClosestEntityToPosition(pos, boolFunc, maxSearchDist)
         if !isfunction(boolFunc) or boolFunc(ent) then
             local dist = lastDist and pos:DistToSqr(ent:GetPos()) or nil
 
-            if !lastDist or dist < lastDist then
+            if !lastDist or (closest and dist < lastDist or dist > lastDist) then
                 lastDist = dist
                 lastEnt = ent
             end
@@ -18,4 +18,12 @@ function nzMisc:GetClosestEntityToPosition(pos, boolFunc, maxSearchDist)
     end
 
     return lastEnt
+end
+
+function nzMisc:GetClosestEntityToPosition(...) -- Parameters above ^^
+    nzMisc:SortEntityByDistance(true, ...)
+end
+
+function nzMisc:GetFarthestEntityToPosition(...) -- Parameters above    ^^
+    nzMisc:SortEntityByDistance(false, ...)
 end
