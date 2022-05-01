@@ -65,6 +65,9 @@ function nzChatCommand.Add(text, func, allowAll, usageHelp)
 	end
 end
 
+-- Remove a command.
+-- This is not really recommended as commands were designed
+-- to be static, but do this if you must.
 function nzChatCommand.Remove(text)
 	nzChatCommand.commands[text] = nil
 	nzChatCommand.addedCommands = nzChatCommand.addedCommands - 1
@@ -134,7 +137,7 @@ function nzChatCommand.splitCommand(command)
 end
 
 local function commandListener(ply, text)
-	if nzChatCommand.prefixes[text[1]] then -- This makes more sense, if optimization is the goal
+	if nzChatCommand.prefixes[text[1]] then -- This will allow more than just '/'
 		text = string.lower(text)
 
 		local commandWasDenied = false
