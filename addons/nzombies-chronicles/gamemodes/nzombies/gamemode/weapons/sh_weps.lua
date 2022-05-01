@@ -1,3 +1,15 @@
+-- Added by Ethorbit to make playing PaP shoot sounds easier
+-- PaP Sound chooser will override this upon selection and
+-- weapons will play this through Sound("NZ_PaP_Shoot_Sound")
+sound.Add({
+	name = "NZ_PaP_Shoot_Sound",
+	channel = CHAN_WEAPON,
+	volume = 0.6,
+	level = 60,
+	pitch = {80, 110},
+	sound = "nzr/effects/pap_laser_shot_0.wav"
+})
+
 -- Auto Reload and FOV is in function_override/sh_meta.lua /Ethorbit
 local wepMeta = FindMetaTable("Weapon")
 
