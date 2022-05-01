@@ -269,13 +269,6 @@ if CLIENT then
 
 	net.Receive("HereIsTheServerNZChatCommands", function()
 		local tbl = net.ReadTable()
-
-		--for key,cmdTbl in pairs(tbl) do
-			--local oldFunc = nzChatCommand.commands[key] != nil and nzChatCommand.commands[key].func or nil
-			--cmdTbl.func = oldFunc -- Preserve the clientside function
-			--nzChatCommand.Add(cmdTbl.text, cmdTbl.func, cmdTbl.allowAll, cmdTbl.usageHelp)
-		--end
-
 		nzChatCommand.serverCommands = tbl
 	end)
 
@@ -284,15 +277,9 @@ if CLIENT then
 		local tbl = net.ReadTable()
 
 		if !table.IsEmpty(tbl) then
-			--local oldFunc = nzChatCommand.commands[key] != nil and nzChatCommand.commands[key].func or nil
-			--tbl.func = oldFunc -- Preserve the clientside function
-			--nzChatCommand.Add(tbl.text, tbl.func, tbl.allowAll, tbl.usageHelp)
 			nzChatCommand.serverCommands[key] = tbl
 		else
 			nzChatCommand.serverCommands[key] = nil
-			-- We don't remove the client version of the command here,
-			-- because it can be removed with a clientside call to
-			--  nzChatCommand.Remove
 		end
 	end)
 
