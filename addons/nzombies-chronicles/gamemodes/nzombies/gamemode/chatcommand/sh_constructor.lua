@@ -8,8 +8,10 @@
 -- Now, commands will be executed in the realm they were defined in.
 -- Shared realm commands are also possible now.
 
+-- All existing chat commands can be retreived regardless of the realm.
+
 -- WARNING!:
--- Chat commands are hidden by the CLIENTSIDE only (due to serverside blocking the clientside's command listener)
+-- Chat commands entered are hidden on the CLIENTSIDE only (due to serverside blocking the clientside's command listener)
 -- This means if your command requires sensitive info (like passwords) cheaters will be able to
 -- see that info typed by other players (even if the command is defined on the server only)
 -- If you really need to do this, I recommend creating a serverside chat command manually
@@ -77,6 +79,40 @@ function nzChatCommand.Remove(text)
 	end
 end
 
+-- Get all commands, does not matter what realm it's ran in, output is synchronized.
+function nzChatCommand.GetCommands()
+	local current_realm_commands = nzChatCommand.commands
+	local other_realm_commands = CLIENT and nzChatCommand.serverCommands or nzChatCommand.clientCommands and nzChatCommand.clientCommands[ply]
+	local commands = {}
+	local current_added = {}
+
+	for _,current in pairs(current_realm_commands) do
+		if current.text then
+			current_added[current.text] = true
+			commands[current.text] = current
+		end
+	end
+
+	for _,other in pairs(other_realm_commands) do
+		if other.text and !current_added[other.text] then
+			commands[other.text] = other
+		end
+	end
+
+	return commands
+end
+
+-- Check if a command exists, does not matter what realm it's ran in, output is synchronized.
+function nzChatCommand.Exists(text)
+	local exists_in_current_realm = nzChatCommand.commands[text]
+	if exists_in_current_realm then
+		return true
+	end
+
+	local exists_in_other_realm = CLIENT and nzChatCommand.serverCommands[text] or nzChatCommand.clientCommands and nzChatCommand.clientCommands[ply] and nzChatCommand.clientCommands[ply][text]
+	return exists_in_other_realm
+end
+
 function nzChatCommand.splitCommand(command)
 	local spat, epat, buf, quoted = [=[^(['"])]=], [=[(['"])$]=]
 	local result = {}
@@ -130,12 +166,8 @@ local function commandListener(ply, text)
 		end
 
 		if !commandWasDenied then
-			local exists_in_current_realm = nzChatCommand.commands[text]
-			local command_exists_in_other_realm = CLIENT and nzChatCommand.serverCommands[text] or nzChatCommand.clientCommands and nzChatCommand.clientCommands[ply] and nzChatCommand.clientCommands[ply][text]
-			if !command_exists_in_other_realm and !exists_in_current_realm then
-				if CLIENT then
-					ply:ChatPrint("NZ No valid command exists with this name, try '/help' for a list of commands.")
-				end
+			if CLIENT and !nzChatCommand.Exists(text) then
+				ply:ChatPrint("NZ No valid command exists with this name, try '/help' for a list of commands.")
 			end
 		end
 
@@ -268,7 +300,7 @@ if CLIENT then
 
 		local tbl = {}
 
-		for _, cmd in pairs(nzChatCommand.commands) do
+		for _, cmd in pairs(nzChatCommand.GetCommands()) do
 			local cmdText = cmd.text
 			if string.find(cmdText, argstr) then
 				if cmd.allowAll or (!cmd.allowAll and LocalPlayer():IsNZAdmin()) then
