@@ -1,5 +1,6 @@
 -- Admin Settings menu created by Ethorbit,
 -- based on my Chronicles server's "nZombies Settings Menu"
+-- except for administrators instead
 
 if SERVER then
     util.AddNetworkString("NZ_AdminSettings_NeedMaps")
@@ -15,6 +16,24 @@ if SERVER then
                 net.Start("NZ_AdminSettings_HereIsMaps")
                 net.WriteUInt(compressedSqlSize, 32)
                 net.WriteData(compressedSqlMaps, compressedSqlSize)
+                net.Send(ply)
+            end
+        end)
+    end)
+
+    util.AddNetworkString("NZ_AdminSettings_NeedConfigs")
+    util.AddNetworkString("NZ_AdminSettings_HereIsConfigs")
+
+    net.Receive("NZ_AdminSettings_NeedConfigs", function(len, ply)
+        if !ply:IsNZAdmin() then return end
+
+        nzSQL.Configs:GetAll(function(configs)
+            if IsValid(ply) and ply:IsNZAdmin() then
+                local compressedSqlConfigs = util.Compress(util.TableToJSON(configs))
+                local compressedSqlSize = #compressedSqlConfigs
+                net.Start("NZ_AdminSettings_HereIsConfigs")
+                net.WriteUInt(compressedSqlSize, 32)
+                net.WriteData(compressedSqlConfigs, compressedSqlSize)
                 net.Send(ply)
             end
         end)
@@ -70,22 +89,28 @@ if CLIENT then
         local function switch_to_configs_or_maps()
             filter_list:Clear()
 
-            whitelisted_map_or_config_column:SetWidth(120)
-            blacklisted_map_or_config_column:SetWidth(120)
-
             if isEditingMaps then
+                whitelisted_map_or_config_column:SetFixedWidth(90)
+                blacklisted_map_or_config_column:SetFixedWidth(90)
+
                 configOrMapButton:SetText("Edit Configs")
                 unlisted_config_column:SetWidth(0)
                 unlisted_config_column:SetMaxWidth(0)
+                unlisted_map_column:SetWidth(100)
 
                 net.Start("NZ_AdminSettings_NeedMaps")
                 net.SendToServer()
             else
-                unlisted_config_column:SetWidth(90)
-                unlisted_map_column:SetWidth(90)
+                whitelisted_map_or_config_column:SetFixedWidth(70)
+                blacklisted_map_or_config_column:SetFixedWidth(70)
+
+                unlisted_config_column:SetWidth(100)
+                unlisted_map_column:SetWidth(100)
                 unlisted_config_column:SetMaxWidth(1000)
-                filter_list:Refresh()
                 configOrMapButton:SetText("Edit Maps")
+
+                net.Start("NZ_AdminSettings_NeedConfigs")
+                net.SendToServer()
             end
         end
         switch_to_configs_or_maps()
@@ -100,6 +125,32 @@ if CLIENT then
                 filter_list:AddLine(map.is_whitelisted == "1" and "yes" or nil, map.name, nil, map.is_blacklisted == "1" and "yes" or nil)
             end
         end)
+
+        net.Receive("NZ_AdminSettings_HereIsConfigs", function()
+            local config_sql_len = net.ReadUInt(32)
+            local config_sql_data = net.ReadData(config_sql_len)
+            local config_sql_json = util.Decompress(config_sql_data)
+            if !config_sql_json then print("Got nothing for some reason") return end
+            local config_sql_tbl = util.JSONToTable(config_sql_json)
+            for _,config in pairs(config_sql_tbl) do
+                filter_list:AddLine(config.is_whitelisted == "1" and "yes" or nil, config.map, config.name, config.is_blacklisted == "1" and "yes" or nil)
+            end
+        end)
+
+        filter_list.OnRowRightClick = function(lineID, line)
+            local mapOrConfig = filter_list:GetLine(line):GetColumnText(1)
+            local subMenu = DermaMenu()
+
+            subMenu:AddOption("Add to Whitelist", function()
+
+            end)
+
+            subMenu:AddOption("Add to Blacklist", function()
+
+            end)
+
+            subMenu:Open()
+        end
 
         configOrMapButton.DoClick = function()
             isEditingMaps = !isEditingMaps
