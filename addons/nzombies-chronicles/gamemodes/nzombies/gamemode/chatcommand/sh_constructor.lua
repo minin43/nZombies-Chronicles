@@ -131,7 +131,7 @@ local function commandListener(ply, text)
 
 		if !commandWasDenied then
 			local exists_in_current_realm = nzChatCommand.commands[text]
-			local command_exists_in_other_realm = CLIENT and nzChatCommand.serverCommands[text] or nzChatCommand.clientCommands and nzChatCommand.clientCommands[ply][text]
+			local command_exists_in_other_realm = CLIENT and nzChatCommand.serverCommands[text] or nzChatCommand.clientCommands and nzChatCommand.clientCommands[ply] and nzChatCommand.clientCommands[ply][text]
 			if !command_exists_in_other_realm and !exists_in_current_realm then
 				if CLIENT then
 					ply:ChatPrint("NZ No valid command exists with this name, try '/help' for a list of commands.")
