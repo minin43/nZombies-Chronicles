@@ -80,7 +80,7 @@ function nzChatCommand.Remove(text)
 end
 
 -- Get all commands, does not matter what realm it's ran in, output is synchronized.
-function nzChatCommand.GetCommands()
+function nzChatCommand.GetAll()
 	local current_realm_commands = nzChatCommand.commands
 	local other_realm_commands = CLIENT and nzChatCommand.serverCommands or nzChatCommand.clientCommands and nzChatCommand.clientCommands[ply]
 	local commands = {}
@@ -300,7 +300,7 @@ if CLIENT then
 
 		local tbl = {}
 
-		for _, cmd in pairs(nzChatCommand.GetCommands()) do
+		for _, cmd in pairs(nzChatCommand.GetAll()) do
 			local cmdText = cmd.text
 			if string.find(cmdText, argstr) then
 				if cmd.allowAll or (!cmd.allowAll and LocalPlayer():IsNZAdmin()) then

@@ -17,7 +17,7 @@ if CLIENT then
 		ply:PrintMessage( HUD_PRINTTALK, "[nZ] Available commands:" )
 		ply:PrintMessage( HUD_PRINTTALK, "Arguments in [] are optional." )
 
-		for _,cmd in pairs(nzChatCommand.GetCommands()) do
+		for _,cmd in pairs(nzChatCommand.GetAll()) do
 			printCmd(cmd)
 		end
 
