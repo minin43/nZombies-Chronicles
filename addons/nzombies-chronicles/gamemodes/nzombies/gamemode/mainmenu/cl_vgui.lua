@@ -18,6 +18,10 @@ surface.CreateFont( "pier_small", {
 
 local MenuFrame = {}
 
+function GetNZMenuFrame()
+	return MenuFrame
+end
+
 AccessorFunc( MenuFrame, "fLastSpawnSwitch", "LastSpawnSwitch", FORCE_NUMBER )
 
 function MenuFrame:Init()

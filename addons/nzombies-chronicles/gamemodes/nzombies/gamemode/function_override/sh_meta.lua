@@ -561,7 +561,7 @@ function GM:EntityFireBullets(ent, data)
 		if ent:IsPlayer() then
 			local wep = ent:GetActiveWeapon()
 			if IsValid(wep) and wep:HasNZModifier("pap") and !wep.NZOverridePaPFireSound and !wep.IsMelee and !wep.IsKnife then
-				ent:EmitSound("NZ_PaP_Shoot_Sound", 60, math.random(80, 110), 0.6)
+				ent:EmitSound("NZ_PaP_Shoot_Sound")
 			end
 		end
 	end

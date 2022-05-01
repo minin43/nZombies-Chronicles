@@ -2,6 +2,13 @@
 -- taken from my Chronicles server's "nZombies Settings Menu"
 
 local PANEL = FindMetaTable("Panel")
+
+function DFrame:ApplynZombiesTheme()
+    self.Paint = function()
+    	draw.RoundedBox( 8, 0, 0, self:GetWide(), self:GetTall(), Color(130, 45, 45, 255))
+    end
+end
+
 function PANEL:AddResetButton(convar, reset) -- Add a button to set a convar back to its default value
     if (convar) then
         local option = self

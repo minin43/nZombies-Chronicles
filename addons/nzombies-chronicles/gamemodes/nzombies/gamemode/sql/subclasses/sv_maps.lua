@@ -66,6 +66,10 @@ function nzSQL.Maps:MapExists(map_name, callback)
     end)
 end
 
+function nzSQL.Maps:GetAll(callback, includeMounted)
+    nzSQL:SelectRow(nzSQL.Maps.TableName, "*", !includeUnmounted and nzSQL.Q:Where( nzSQL.Q:Equals(nzSQL.Maps.ColumnNames.IsMounted, "1")) or nil, callback)
+end
+
 function nzSQL.Maps:GetAllNames(callback, includeUnmounted)
     nzSQL:SelectRow(nzSQL.Maps.TableName, nzSQL.Maps.ColumnNames.Name, !includeUnmounted and nzSQL.Q:Where( nzSQL.Q:Equals(nzSQL.Maps.ColumnNames.IsMounted, "1")) or nil, callback)
 end
