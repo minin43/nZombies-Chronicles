@@ -271,8 +271,12 @@ local function MenuSettingsListInit(self) -- Heavily modified by Ethorbit to sep
 	local adminMode = self:AddButton("< Admin")
 	adminMode.CreativeChildHovered = false
 
+	if !LocalPlayer():IsNZAdmin() then
+		adminMode:SetDisabled(true)
+	end
+
 	function adminMode:Think() -- New Admin extension list, containing all the individual admin buttons that previously existed here /Ethorbit
-		if adminMode.CreativeChildHovered or (self:IsHovered() or IsValid(self.AdminList) and (self.AdminList:IsHovered() or self.AdminList:IsChildHovered()))  then
+		if LocalPlayer():IsNZAdmin() and (adminMode.CreativeChildHovered or (self:IsHovered() or IsValid(self.AdminList) and (self.AdminList:IsHovered() or self.AdminList:IsChildHovered()))) then
 			if !IsValid(self.AdminList) then
 				self.AdminList = vgui.Create("NZMainMenuSettingsList", topParent)
 
@@ -288,7 +292,7 @@ local function MenuSettingsListInit(self) -- Heavily modified by Ethorbit to sep
 				local creativeMode = self.AdminList:AddButton("< Toggle Creative Mode ...", "nz_chatcommand", "/create")
 
 				function creativeMode:Think()
-					if self:IsHovered() or IsValid(self.CreativeList) and (self.CreativeList:IsHovered() or self.CreativeList:IsChildHovered()) then
+					if LocalPlayer():IsNZAdmin() and (self:IsHovered() or IsValid(self.CreativeList) and (self.CreativeList:IsHovered() or self.CreativeList:IsChildHovered())) then
 						adminMode.CreativeChildHovered = true
 
 						if !IsValid(self.CreativeList) then
