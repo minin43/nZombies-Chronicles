@@ -1,6 +1,7 @@
 -- Admin Settings menu created by Ethorbit,
--- based on my Chronicles server's "nZombies Settings Menu"
--- except for administrators instead
+-- created because I needed to merge my
+-- Chronicles admin settings into the gamemode
+-- itself.
 
 if SERVER then
     util.AddNetworkString("NZ_AdminSettings_NeedMaps")
@@ -38,6 +39,42 @@ if SERVER then
             end
         end)
     end)
+
+    util.AddNetworkString("NZ_AdminSettings_UpdateMap")
+    util.AddNetworkString("NZ_AdminSettings_UpdateConfig")
+
+    net.Receive("NZ_AdminSettings_UpdateMap", function(len, ply)
+        if !ply:IsNZAdmin() then return end
+
+        local map_name = net.ReadString()
+        local is_whitelisted = net.ReadBool()
+        local is_blacklisted = net.ReadBool()
+        if is_whitelisted then is_blacklisted = false end
+        if is_blacklisted then is_whitelisted = false end
+
+        if is_whitelisted then
+
+        else
+
+        end
+    end)
+
+    net.Receive("NZ_AdminSettings_UpdateConfig", function(len, ply)
+        if !ply:IsNZAdmin() then return end
+
+        local map_name = net.ReadString()
+        local config_name = net.ReadString()
+        local is_whitelisted = net.ReadBool()
+        local is_blacklisted = net.ReadBool()
+        if is_whitelisted then is_blacklisted = false end
+        if is_blacklisted then is_whitelisted = false end
+
+        if is_whitelisted then
+
+        else
+
+        end
+    end)
 end
 
 if CLIENT then
@@ -72,11 +109,38 @@ if CLIENT then
         mapSheet:AddSheet("Filters", mapFilterPanel, "icon16/map.png", false, false, "Configure the blacklist/whitelist for maps and configs.")
 
         local isEditingMaps = true
-        local configOrMapButton = vgui.Create("DButton", mapFilterPanel)
-        configOrMapButton:Dock(TOP)
+
+        local controlPanel = vgui.Create("DPanel", mapFilterPanel)
+        controlPanel:Dock(TOP)
+        controlPanel:SetHeight(30)
+
+        local controlPanelSpacer = vgui.Create("DPanel", mapFilterPanel)
+        controlPanelSpacer:Dock(TOP)
+        controlPanelSpacer:SetHeight(5)
+
+        local whiteListAllButton = vgui.Create("DButton", controlPanel)
+        whiteListAllButton:Dock(LEFT)
+        whiteListAllButton:SetWide(90)
+        whiteListAllButton:SetText("Whitelist All")
+        whiteListAllButton.DoClick = function()
+
+        end
+
+        local configOrMapButton = vgui.Create("DButton", controlPanel)
+        configOrMapButton:Dock(FILL)
+
+        local blackListAllButton = vgui.Create("DButton", controlPanel)
+        blackListAllButton:Dock(RIGHT)
+        blackListAllButton:SetWide(90)
+        blackListAllButton:SetText("Blacklist All")
+        blackListAllButton.DoClick = function()
+
+        end
 
         local filter_list = vgui.Create("DListView", mapFilterPanel)
         filter_list:Dock(FILL)
+        filter_list:SetMultiSelect(false)
+
         local whitelisted_map_or_config_column = filter_list:AddColumn("Whitelisted")
         local unlisted_map_column = filter_list:AddColumn("Map")
         local unlisted_config_column = filter_list:AddColumn("Config")
@@ -85,6 +149,8 @@ if CLIENT then
         unlisted_map_column:SetMinWidth(90)
         unlisted_config_column:SetMinWidth(90)
         blacklisted_map_or_config_column:SetMinWidth(90)
+
+        local filter_applied_text = "yes" -- What to show under the Whitelisted/Blacklisted category when said filter is set
 
         local function switch_to_configs_or_maps()
             filter_list:Clear()
@@ -122,7 +188,7 @@ if CLIENT then
             if !map_sql_json then print("Got nothing for some reason") return end
             local map_sql_tbl = util.JSONToTable(map_sql_json)
             for _,map in pairs(map_sql_tbl) do
-                filter_list:AddLine(map.is_whitelisted == "1" and "yes" or nil, map.name, nil, map.is_blacklisted == "1" and "yes" or nil)
+                filter_list:AddLine(map.is_whitelisted == "1" and filter_applied_text or nil, map.name, nil, map.is_blacklisted == "1" and filter_applied_text or nil)
             end
         end)
 
@@ -133,24 +199,53 @@ if CLIENT then
             if !config_sql_json then print("Got nothing for some reason") return end
             local config_sql_tbl = util.JSONToTable(config_sql_json)
             for _,config in pairs(config_sql_tbl) do
-                filter_list:AddLine(config.is_whitelisted == "1" and "yes" or nil, config.map, config.name, config.is_blacklisted == "1" and "yes" or nil)
+                filter_list:AddLine(config.is_whitelisted == "1" and filter_applied_text or nil, config.map, config.name, config.is_blacklisted == "1" and filter_applied_text or nil)
             end
         end)
 
         filter_list.OnRowRightClick = function(lineID, line)
-            local mapOrConfig = filter_list:GetLine(line):GetColumnText(1)
+            local filter_line = filter_list:GetLine(line)
+            local is_whitelisted = filter_line:GetColumnText(1) == filter_applied_text
+            -- local map_name = filter_line:GetColumnText(2)
+            -- local config_name = !isEditingMaps and filter_line:GetColumnText(3) or nil
+            local is_blacklisted = filter_line:GetColumnText(isEditingMaps and 3 or 4) == filter_applied_text
+
             local subMenu = DermaMenu()
 
-            subMenu:AddOption("Add to Whitelist", function()
+            if !is_whitelisted then
+                subMenu:AddOption("Add to Whitelist", function()
+                    filter_line:SetColumnText(1, filter_applied_text)
+                end)
+            else
+                subMenu:AddOption("Remove from Whitelist", function()
+                    filter_line:SetColumnText(1, "")
+                end)
+            end
 
-            end)
-
-            subMenu:AddOption("Add to Blacklist", function()
-
-            end)
+            if !is_blacklisted then
+                subMenu:AddOption("Add to Blacklist", function()
+                    filter_line:SetColumnText(isEditingMaps and 3 or 4, filter_applied_text)
+                end)
+            else
+                subMenu:AddOption("Remove from Blacklist", function()
+                    filter_line:SetColumnText(isEditingMaps and 3 or 4, "")
+                end)
+            end
 
             subMenu:Open()
         end
+
+        local saveButton = vgui.Create("DButton", mapFilterPanel)
+        saveButton:Dock(BOTTOM)
+        saveButton:SetText("Save Changes")
+        saveButton:SetHeight(30)
+        saveButton.DoClick = function()
+            LocalPlayer():ChatPrint("[nZ] Successfully saved map filter changes.")
+        end
+
+        local controlPanelBottomSpacer = vgui.Create("DPanel", mapFilterPanel)
+        controlPanelBottomSpacer:Dock(BOTTOM)
+        controlPanelBottomSpacer:SetHeight(5)
 
         configOrMapButton.DoClick = function()
             isEditingMaps = !isEditingMaps
