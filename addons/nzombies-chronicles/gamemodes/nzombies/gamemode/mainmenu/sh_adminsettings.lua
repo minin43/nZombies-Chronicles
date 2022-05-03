@@ -112,6 +112,7 @@ if CLIENT then
         local unsavedChanges = false
         local whitelistedCount = 0
         local blacklistedCount = 0
+        local filter_applied_text = "yes" -- What to show under the Whitelisted/Blacklisted category when said filter is set
 
         local oldClose = nzAdminSettingsFrame.Close
         nzAdminSettingsFrame.Close = function()
@@ -207,6 +208,51 @@ if CLIENT then
         filter_list:Dock(FILL)
         filter_list:SetMultiSelect(false)
 
+        local function whitelist_current_line()
+            if blacklistedCount > 0 then return end
+            local selected_line = filter_list:GetSelectedLine()
+            if selected_line then
+                selected_line = filter_list:GetLine(selected_line)
+                local is_whitelisted = selected_line:GetColumnText(1) == filter_applied_text
+                if !is_whitelisted then
+                    selected_line:SetColumnText(1, filter_applied_text)
+                    whitelistedCount = whitelistedCount + 1
+                else
+                    selected_line:SetColumnText(1, "")
+                    whitelistedCount = whitelistedCount - 1
+                end
+
+                unsavedChanges = true
+            end
+        end
+
+        local function blacklist_current_line()
+            if whitelistedCount > 0 then return end
+            local selected_line = filter_list:GetSelectedLine()
+            if selected_line then
+                selected_line = filter_list:GetLine(selected_line)
+                local is_blacklisted = selected_line:GetColumnText(4) == filter_applied_text
+
+                if !is_blacklisted then
+                    selected_line:SetColumnText(4, filter_applied_text)
+                    blacklistedCount = blacklistedCount + 1
+                else
+                    selected_line:SetColumnText(4, "")
+                    blacklistedCount = blacklistedCount - 1
+                end
+
+                unsavedChanges = true
+            end
+        end
+
+        filter_list.DoDoubleClick = function()
+            if whitelistedCount > 0 then
+                whitelist_current_line()
+            elseif blacklistedCount > 0 then
+                blacklist_current_line()
+            end
+        end
+
         local whitelisted_map_or_config_column = filter_list:AddColumn("Whitelisted")
         local unlisted_map_column = filter_list:AddColumn("Map")
         local unlisted_config_column = filter_list:AddColumn("Config")
@@ -239,8 +285,6 @@ if CLIENT then
                 unlisted_map_column:SetWidth(100)
             end
         end
-
-        local filter_applied_text = "yes" -- What to show under the Whitelisted/Blacklisted category when said filter is set
 
         local function switch_to_configs_or_maps(skipWarning)
             local function go_on()
@@ -361,23 +405,41 @@ if CLIENT then
         end
 
         whiteListAllButton.DoClick = function()
+            if blacklistedCount > 0 then return end
             mapFilterPanel:ShowConfirmationMenu("Whitelist All?", "Are you sure you want to whitelist ALL items?", function(val)
                 if val then
                     unsavedChanges = true
-                    --whitelistedCount = 0
+                    whitelistedCount = 0
 
-                    --for _,line in pairs()
+                    for _,line in pairs(filter_list:GetLines()) do
+                        line:SetColumnText(1, filter_applied_text)
+                        whitelistedCount = whitelistedCount + 1
+                    end
                 end
             end)
         end
 
         blackListAllButton.DoClick = function()
+            if whitelistedCount > 0 then return end
             mapFilterPanel:ShowConfirmationMenu("Blacklist All?", "Are you sure you want to blacklist ALL items?", function(val)
                 if val then
                     unsavedChanges = true
-                    --blacklistedCount = 0
+                    blacklistedCount = 0
+
+                    for _,line in pairs(filter_list:GetLines()) do
+                        line:SetColumnText(4, filter_applied_text)
+                        blacklistedCount = blacklistedCount + 1
+                    end
                 end
             end)
+        end
+
+        whiteListButton.DoClick = function()
+            whitelist_current_line()
+        end
+
+        blackListButton.DoClick = function()
+            blacklist_current_line()
         end
 
         resetButton.DoClick = function()
