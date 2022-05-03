@@ -109,6 +109,22 @@ if CLIENT then
         mapSheet:AddSheet("Filters", mapFilterPanel, "icon16/map.png", false, false, "Configure the blacklist/whitelist for maps and configs.")
 
         local isEditingMaps = true
+        local unsavedChanges = false
+        local whitelistedCount = 0
+        local blacklistedCount = 0
+
+        local oldClose = nzAdminSettingsFrame.Close
+        nzAdminSettingsFrame.Close = function()
+            if unsavedChanges then
+                mapFilterPanel:ShowConfirmationMenu("Close?", "You have unsaved changes, are you sure you want to discard them and close?", function(val)
+                    if val then
+                        oldClose(nzAdminSettingsFrame)
+                    end
+                end)
+            else
+                oldClose(nzAdminSettingsFrame)
+            end
+        end
 
         local controlPanel = vgui.Create("DPanel", mapFilterPanel)
         controlPanel:Dock(TOP)
@@ -153,30 +169,45 @@ if CLIENT then
         local filter_applied_text = "yes" -- What to show under the Whitelisted/Blacklisted category when said filter is set
 
         local function switch_to_configs_or_maps()
-            filter_list:Clear()
+            local function go_on()
+                filter_list:Clear()
+                unsavedChanges = false
+                whitelistedCount = 0
+                blacklistedCount = 0
 
-            if isEditingMaps then
-                whitelisted_map_or_config_column:SetFixedWidth(90)
-                blacklisted_map_or_config_column:SetFixedWidth(90)
+                if isEditingMaps then
+                    whitelisted_map_or_config_column:SetFixedWidth(90)
+                    blacklisted_map_or_config_column:SetFixedWidth(90)
 
-                configOrMapButton:SetText("Edit Configs")
-                unlisted_config_column:SetWidth(0)
-                unlisted_config_column:SetMaxWidth(0)
-                unlisted_map_column:SetWidth(100)
+                    configOrMapButton:SetText("Edit Configs")
+                    unlisted_config_column:SetWidth(0)
+                    unlisted_config_column:SetMaxWidth(0)
+                    unlisted_map_column:SetWidth(100)
 
-                net.Start("NZ_AdminSettings_NeedMaps")
-                net.SendToServer()
+                    net.Start("NZ_AdminSettings_NeedMaps")
+                    net.SendToServer()
+                else
+                    whitelisted_map_or_config_column:SetFixedWidth(70)
+                    blacklisted_map_or_config_column:SetFixedWidth(70)
+
+                    unlisted_config_column:SetWidth(100)
+                    unlisted_map_column:SetWidth(100)
+                    unlisted_config_column:SetMaxWidth(1000)
+                    configOrMapButton:SetText("Edit Maps")
+
+                    net.Start("NZ_AdminSettings_NeedConfigs")
+                    net.SendToServer()
+                end
+            end
+
+            if unsavedChanges then
+                mapFilterPanel:ShowConfirmationMenu("Switch editor?", "You have unsaved changes, are you sure you want to discard them?", function(val)
+                    if val then
+                        go_on()
+                    end
+                end)
             else
-                whitelisted_map_or_config_column:SetFixedWidth(70)
-                blacklisted_map_or_config_column:SetFixedWidth(70)
-
-                unlisted_config_column:SetWidth(100)
-                unlisted_map_column:SetWidth(100)
-                unlisted_config_column:SetMaxWidth(1000)
-                configOrMapButton:SetText("Edit Maps")
-
-                net.Start("NZ_AdminSettings_NeedConfigs")
-                net.SendToServer()
+                go_on()
             end
         end
         switch_to_configs_or_maps()
@@ -188,6 +219,8 @@ if CLIENT then
             if !map_sql_json then print("Got nothing for some reason") return end
             local map_sql_tbl = util.JSONToTable(map_sql_json)
             for _,map in pairs(map_sql_tbl) do
+                whitelistedCount = map.is_whitelisted == "1" and whitelistedCount + 1 or whitelistedCount
+                blacklistedCount = map.is_blacklisted == "1" and blacklistedCount + 1 or blacklistedCount
                 filter_list:AddLine(map.is_whitelisted == "1" and filter_applied_text or nil, map.name, nil, map.is_blacklisted == "1" and filter_applied_text or nil)
             end
         end)
@@ -199,6 +232,8 @@ if CLIENT then
             if !config_sql_json then print("Got nothing for some reason") return end
             local config_sql_tbl = util.JSONToTable(config_sql_json)
             for _,config in pairs(config_sql_tbl) do
+                whitelistedCount = config.is_whitelisted == "1" and whitelistedCount + 1 or whitelistedCount
+                blacklistedCount = config.is_blacklisted == "1" and blacklistedCount + 1 or blacklistedCount
                 filter_list:AddLine(config.is_whitelisted == "1" and filter_applied_text or nil, config.map, config.name, config.is_blacklisted == "1" and filter_applied_text or nil)
             end
         end)
@@ -208,27 +243,43 @@ if CLIENT then
             local is_whitelisted = filter_line:GetColumnText(1) == filter_applied_text
             -- local map_name = filter_line:GetColumnText(2)
             -- local config_name = !isEditingMaps and filter_line:GetColumnText(3) or nil
-            local is_blacklisted = filter_line:GetColumnText(isEditingMaps and 3 or 4) == filter_applied_text
+            local is_blacklisted = filter_line:GetColumnText(4) == filter_applied_text
 
             local subMenu = DermaMenu()
 
             if !is_whitelisted then
-                subMenu:AddOption("Add to Whitelist", function()
+                local pnl = subMenu:AddOption("Add to Whitelist", function()
                     filter_line:SetColumnText(1, filter_applied_text)
+                    unsavedChanges = true
+                    whitelistedCount = whitelistedCount + 1
                 end)
+
+                if blacklistedCount > 0 then
+                    pnl:SetDisabled(true)
+                end
             else
                 subMenu:AddOption("Remove from Whitelist", function()
                     filter_line:SetColumnText(1, "")
+                    unsavedChanges = true
+                    whitelistedCount = whitelistedCount - 1
                 end)
             end
 
             if !is_blacklisted then
-                subMenu:AddOption("Add to Blacklist", function()
-                    filter_line:SetColumnText(isEditingMaps and 3 or 4, filter_applied_text)
+                local pnl = subMenu:AddOption("Add to Blacklist", function()
+                    filter_line:SetColumnText(4, filter_applied_text)
+                    unsavedChanges = true
+                    blacklistedCount = blacklistedCount + 1
                 end)
+
+                if whitelistedCount > 0 then
+                    pnl:SetDisabled(true)
+                end
             else
                 subMenu:AddOption("Remove from Blacklist", function()
-                    filter_line:SetColumnText(isEditingMaps and 3 or 4, "")
+                    filter_line:SetColumnText(4, "")
+                    unsavedChanges = true
+                    blacklistedCount = blacklistedCount - 1
                 end)
             end
 
@@ -237,21 +288,29 @@ if CLIENT then
 
         whiteListAllButton.DoClick = function()
             mapFilterPanel:ShowConfirmationMenu("Whitelist All?", "Are you sure you want to whitelist ALL items?", function(val)
-                print(val)
-            end)
+                if val then
+                    unsavedChanges = true
+                    whitelistedCount = 0
 
-            --for _,line in pairs()
+                    --for _,line in pairs()
+                end
+            end)
         end
 
         blackListAllButton.DoClick = function()
             mapFilterPanel:ShowConfirmationMenu("Blacklist All?", "Are you sure you want to blacklist ALL items?", function(val)
-                print(val)
+                if val then
+                    unsavedChanges = true
+                    blacklistedCount = 0
+                end
             end)
         end
 
         resetButton.DoClick = function()
             mapFilterPanel:ShowConfirmationMenu("Clear Filters?", "Are you sure?\n\nThis will remove ALL whitelist or blacklist filters EVER applied.", function(val)
-                print(val)
+                if val then
+                    unsavedChanges = true
+                end
             end)
         end
 
@@ -262,6 +321,7 @@ if CLIENT then
         saveButton.DoClick = function()
             mapFilterPanel:ShowConfirmationMenu("Save Settings?", "Are you sure you want to override the map filters with these new settings?", function(val)
                 if val then
+                    unsavedChanges = false
                     LocalPlayer():ChatPrint("[nZ] Successfully saved map filter changes.")
                 end
             end)
