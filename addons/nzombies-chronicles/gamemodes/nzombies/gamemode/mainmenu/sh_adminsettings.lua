@@ -118,24 +118,24 @@ if CLIENT then
         controlPanelSpacer:Dock(TOP)
         controlPanelSpacer:SetHeight(5)
 
+        local configOrMapButton = vgui.Create("DButton", controlPanel)
+        configOrMapButton:Dock(LEFT)
+        configOrMapButton:SetWide(178)
+
         local whiteListAllButton = vgui.Create("DButton", controlPanel)
         whiteListAllButton:Dock(LEFT)
         whiteListAllButton:SetWide(90)
         whiteListAllButton:SetText("Whitelist All")
-        whiteListAllButton.DoClick = function()
-
-        end
-
-        local configOrMapButton = vgui.Create("DButton", controlPanel)
-        configOrMapButton:Dock(FILL)
 
         local blackListAllButton = vgui.Create("DButton", controlPanel)
-        blackListAllButton:Dock(RIGHT)
+        blackListAllButton:Dock(LEFT)
         blackListAllButton:SetWide(90)
         blackListAllButton:SetText("Blacklist All")
-        blackListAllButton.DoClick = function()
 
-        end
+        local resetButton = vgui.Create("DButton", controlPanel)
+        resetButton:Dock(LEFT)
+        resetButton:SetWide(90)
+        resetButton:SetText("Clear")
 
         local filter_list = vgui.Create("DListView", mapFilterPanel)
         filter_list:Dock(FILL)
@@ -235,12 +235,36 @@ if CLIENT then
             subMenu:Open()
         end
 
+        whiteListAllButton.DoClick = function()
+            mapFilterPanel:ShowConfirmationMenu("Whitelist All?", "Are you sure you want to whitelist ALL items?", function(val)
+                print(val)
+            end)
+
+            --for _,line in pairs()
+        end
+
+        blackListAllButton.DoClick = function()
+            mapFilterPanel:ShowConfirmationMenu("Blacklist All?", "Are you sure you want to blacklist ALL items?", function(val)
+                print(val)
+            end)
+        end
+
+        resetButton.DoClick = function()
+            mapFilterPanel:ShowConfirmationMenu("Clear Filters?", "Are you sure?\n\nThis will remove ALL whitelist or blacklist filters EVER applied.", function(val)
+                print(val)
+            end)
+        end
+
         local saveButton = vgui.Create("DButton", mapFilterPanel)
         saveButton:Dock(BOTTOM)
         saveButton:SetText("Save Changes")
         saveButton:SetHeight(30)
         saveButton.DoClick = function()
-            LocalPlayer():ChatPrint("[nZ] Successfully saved map filter changes.")
+            mapFilterPanel:ShowConfirmationMenu("Save Settings?", "Are you sure you want to override the map filters with these new settings?", function(val)
+                if val then
+                    LocalPlayer():ChatPrint("[nZ] Successfully saved map filter changes.")
+                end
+            end)
         end
 
         local controlPanelBottomSpacer = vgui.Create("DPanel", mapFilterPanel)
