@@ -44,13 +44,13 @@ local physMeta = FindMetaTable("PhysObj")
 
 -- "Speed hack" bug fix by Ethorbit (after months of trying to figure out the cause)
 -- Turns out, the game sets the player's speed to 0 sometimes, and 0 causes "speed hack"
-local oldSetRunSpeed = oldSetRunSpeed == nil and playerMeta.SetRunSpeed or oldSetRunSpeed
+local oldSetRunSpeed = playerMeta.SetRunSpeed
 function playerMeta:SetRunSpeed(speed, ...)
 	if speed <= 0 then return end -- Fuck you
 	oldSetRunSpeed(self, speed, ...)
 end
 
-local oldSetWalkSpeed = oldSetWalkSpeed == nil and playerMeta.SetWalkSpeed or oldSetWalkSpeed
+local oldSetWalkSpeed = playerMeta.SetWalkSpeed
 function playerMeta:SetWalkSpeed(speed, ...)
 	if speed <= 0 then return end -- Fuck you
 	oldSetWalkSpeed(self, speed, ...)
@@ -59,7 +59,7 @@ end
 
 if SERVER then
 	-- Added by Ethorbit, nullify physics functions as this fucks up and physically pushes stuff like the Mystery Box
-	local oldApplyForceCenter = oldApplyForceCenter == nil and physMeta.ApplyForceCenter or oldApplyForceCenter
+	local oldApplyForceCenter = physMeta.ApplyForceCenter
 	function physMeta:ApplyForceCenter( force )
 		if (IsValid(self) and self.GetEntity and IsValid(self:GetEntity()) and !self:GetEntity().NZEntity) then
 			return oldApplyForceCenter(self, force)
@@ -67,14 +67,14 @@ if SERVER then
 	end
 
 	-- Override physics functions that fuck up when looking at a prop and then pausing in Singleplayer (they would end up falling through the map)
-	local oldPhysWake = oldPhysWake == nil and physMeta.Wake or oldPhysWake
+	local oldPhysWake = physMeta.Wake
 	function physMeta:Wake()
 		local ent = self.GetEntity and self:GetEntity() or nil
 		if (ent and ent.NZEntity) then return end
 		return oldPhysWake(self)
 	end
 
-	local oldEnableMotion = oldEnableMotion == nil and physMeta.EnableMotion or oldEnableMotion
+	local oldEnableMotion = physMeta.EnableMotion
 	function physMeta:EnableMotion(bool)
 		local ent = self.GetEntity and self:GetEntity() or nil
 		if (ent and bool and ent.NZEntity) then return end
@@ -196,29 +196,29 @@ if SERVER then
 	end
 	hook.Add("WeaponEquip", "nzModifyWeaponNextFires", ReplacePrimaryFireCooldown)]]
 
-	function ReplaceAimDownSight(wep)
-		local oldfire = wep.SecondaryAttack
-		if !oldfire then return end
-
-		--print("Weapon fire modified")
-
-		-- wep.SecondaryAttack = function(...)
-		-- 	oldfire(wep, ...)
-		-- 	-- With deadshot, aim at the head of the entity aimed at
-		-- 	if wep.Owner:HasPerk("deadshot") then
-		-- 		local tr = wep.Owner:GetEyeTrace()
-		-- 		local ent = tr.Entity
-		-- 		if IsValid(ent) and nzConfig.ValidEnemies[ent:GetClass()] then
-		-- 			local head = ent:LookupBone("ValveBiped.Bip01_Neck1")
-		-- 			if head and isnumber(wep.Owner.lastHeadTime) and CurTime() - 3 > wep.Owner.lastHeadTime then
-		-- 				local headpos,headang = ent:GetBonePosition(head)
-		-- 				wep.Owner:SetEyeAngles((headpos - wep.Owner:GetShootPos()):Angle())
-		-- 			end
-		-- 		end
-		-- 	end
-		-- end
-	end
-	hook.Add("WeaponEquip", "nzModifyAimDownSights", ReplaceAimDownSight)
+	-- function ReplaceAimDownSight(wep)
+	-- 	local oldfire = wep.SecondaryAttack
+	-- 	if !oldfire then return end
+	--
+	-- 	--print("Weapon fire modified")
+	--
+	-- 	-- wep.SecondaryAttack = function(...)
+	-- 	-- 	oldfire(wep, ...)
+	-- 	-- 	-- With deadshot, aim at the head of the entity aimed at
+	-- 	-- 	if wep.Owner:HasPerk("deadshot") then
+	-- 	-- 		local tr = wep.Owner:GetEyeTrace()
+	-- 	-- 		local ent = tr.Entity
+	-- 	-- 		if IsValid(ent) and nzConfig.ValidEnemies[ent:GetClass()] then
+	-- 	-- 			local head = ent:LookupBone("ValveBiped.Bip01_Neck1")
+	-- 	-- 			if head and isnumber(wep.Owner.lastHeadTime) and CurTime() - 3 > wep.Owner.lastHeadTime then
+	-- 	-- 				local headpos,headang = ent:GetBonePosition(head)
+	-- 	-- 				wep.Owner:SetEyeAngles((headpos - wep.Owner:GetShootPos()):Angle())
+	-- 	-- 			end
+	-- 	-- 		end
+	-- 	-- 	end
+	-- 	-- end
+	-- end
+	-- hook.Add("WeaponEquip", "nzModifyAimDownSights", ReplaceAimDownSight)
 
 	hook.Add("KeyPress", "nzReloadCherry", function(ply, key) -- Improved Electric Cherry by: Ethorbit
 		if key == IN_RELOAD then
