@@ -127,7 +127,7 @@ function nzSQL.Configs:GetByMap(map_name, callback)
 end
 
 function nzSQL.Configs:SetWhitelisted(map_name, config_name, is_whitelisted, callback)
-    update_value(map_name, config_name, nzSQL.Configs.ColumnNames.IsWhitelisted, is_whitelisted)
+    update_value(map_name, config_name, nzSQL.Configs.ColumnNames.IsWhitelisted, is_whitelisted and "1" or "0")
 end
 
 function nzSQL.Configs:GetWhitelisted(map_name, config_name, callback)
@@ -135,7 +135,7 @@ function nzSQL.Configs:GetWhitelisted(map_name, config_name, callback)
 end
 
 function nzSQL.Configs:SetBlacklisted(map_name, config_name, is_blacklisted, callback)
-    update_value(map_name, config_name, nzSQL.Configs.ColumnNames.IsBlacklisted, is_blacklisted)
+    update_value(map_name, config_name, nzSQL.Configs.ColumnNames.IsBlacklisted, is_blacklisted and "1" or "0")
 end
 
 function nzSQL.Configs:GetBlacklisted(map_name, config_name, callback)

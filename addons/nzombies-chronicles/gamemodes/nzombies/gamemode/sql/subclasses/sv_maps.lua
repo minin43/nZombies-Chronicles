@@ -83,7 +83,7 @@ function nzSQL.Maps:GetAllBlacklisted(callback, includeUnmounted)
 end
 
 function nzSQL.Maps:SetWhitelisted(map_name, is_whitelisted, callback)
-    nzSQL:UpdateRow(nzSQL.Maps.TableName, "is_whitelisted", is_whitelisted, nzSQL.Q:Where(nzSQL.Q:Equals(nzSQL.Maps.ColumnNames.Name, map_name)), callback)
+    nzSQL:UpdateRow(nzSQL.Maps.TableName, nzSQL.Maps.ColumnNames.IsWhitelisted, is_whitelisted and "1" or "0", nzSQL.Q:Where(nzSQL.Q:Equals(nzSQL.Maps.ColumnNames.Name, map_name)), callback)
 end
 
 function nzSQL.Maps:GetWhitelisted(map_name, callback)
@@ -91,7 +91,7 @@ function nzSQL.Maps:GetWhitelisted(map_name, callback)
 end
 
 function nzSQL.Maps:SetBlacklisted(map_name, is_blacklisted, callback)
-    nzSQL:UpdateRow(nzSQL.Maps.TableName, "is_blacklisted", is_blacklisted, nzSQL.Q:Where(nzSQL.Q:Equals(nzSQL.Maps.ColumnNames.Name, map_name)), callback)
+    nzSQL:UpdateRow(nzSQL.Maps.TableName, nzSQL.Maps.ColumnNames.IsBlacklisted, is_blacklisted and "1" or "0", nzSQL.Q:Where(nzSQL.Q:Equals(nzSQL.Maps.ColumnNames.Name, map_name)), callback)
 end
 
 function nzSQL.Maps:GetBlacklisted(map_name, callback)
