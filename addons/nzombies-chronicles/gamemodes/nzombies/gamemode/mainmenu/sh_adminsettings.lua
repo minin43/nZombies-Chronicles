@@ -51,8 +51,15 @@ if SERVER then
         if !updated_maps_json then print("Got nothing for some reason") return end
         local updated_maps_tbl = util.JSONToTable(updated_maps_json)
 
-        print("IT WORKED!")
-        PrintTable(updated_maps_tbl)
+        for k,updated_tbl in pairs(updated_maps_tbl) do
+            if !updated_tbl.config_name then -- It's an updated map, not config
+                nzSQL.Maps:SetWhitelisted(updated_tbl.map_name, updated_tbl.is_whitelisted)
+                nzSQL.Maps:SetBlacklisted(updated_tbl.map_name, updated_tbl.is_blacklisted)
+            else
+                nzSQL.Configs:SetWhitelisted(updated_tbl.map_name, updated_tbl.config_name, updated_tbl.is_whitelisted)
+                nzSQL.Configs:SetBlacklisted(updated_tbl.map_name, updated_tbl.config_name, updated_tbl.is_blacklisted)
+            end
+        end
 
         net.Start("NZ_AdminSettings_MapOrConfigUpdateCompleted")
         net.Send(ply)
@@ -67,7 +74,7 @@ if CLIENT then
     nzChatCommand.Add("/adminsettings", function(ply, text)
         if nzAdminSettingsFrame and nzAdminSettingsFrame:IsValid() then nzAdminSettingsFrame:Close() end
         nzAdminSettingsFrame = vgui.Create("DFrame")
-        nzAdminSettingsFrame:SetSize(500, 500)
+        nzAdminSettingsFrame:SetSize(600, 500)
         nzAdminSettingsFrame:SetTitle("nZombies Administrator Settings")
         nzAdminSettingsFrame:Center()
         nzAdminSettingsFrame:MakePopup()
@@ -75,7 +82,7 @@ if CLIENT then
         nzAdminSettingsFrame:ApplynZombiesTheme()
 
         nzAdminSettingsPropertySheet = vgui.Create("DPropertySheet", nzAdminSettingsFrame)
-        nzAdminSettingsPropertySheet:SetSize( 480, 460 )
+        nzAdminSettingsPropertySheet:SetSize( 580, 460 )
         nzAdminSettingsPropertySheet:SetPos( 10, 30 )
 
         local DProperties = vgui.Create("DProperties", nzAdminSettingsPropertySheet)
@@ -88,7 +95,7 @@ if CLIENT then
         mapSheet:Dock(FILL)
 
         local mapFilterPanel = vgui.Create("DPanel", mapSheet)
-        mapSheet:AddSheet("Filters", mapFilterPanel, "icon16/map.png", false, false, "Configure the blacklist/whitelist for maps and configs.")
+        local mapSheetTab = mapSheet:AddSheet("Filters", mapFilterPanel, "icon16/map.png", false, false, "Configure the blacklist/whitelist for maps and configs.").Tab
 
         local isEditingMaps = true
         local unsavedChanges = {}
@@ -105,18 +112,20 @@ if CLIENT then
             }
         end
 
-        local oldClose = nzAdminSettingsFrame.Close
-        nzAdminSettingsFrame.Close = function()
-            if unsavedChanges then
-                mapFilterPanel:ShowConfirmationMenu("Close?", "You have unsaved changes, are you sure you want to discard them and close?", function(val)
-                    if val then
-                        oldClose(nzAdminSettingsFrame)
-                    end
-                end)
-            else
-                oldClose(nzAdminSettingsFrame)
-            end
-        end
+        -- Adding a confirmation close menu for every tab is way too fucking sophisticated
+        -- Just don't accidentally close it when editing stuff and you're fine...
+        -- local oldClose = nzAdminSettingsFrame.Close
+        -- nzAdminSettingsFrame.Close = function()
+        --     if unsavedChanges then
+        --         mapFilterPanel:ShowConfirmationMenu("Close?", "You have unsaved changes, are you sure you want to discard them and close?", function(val)
+        --             if val then
+        --                 oldClose(nzAdminSettingsFrame)
+        --             end
+        --         end)
+        --     else
+        --         oldClose(nzAdminSettingsFrame)
+        --     end
+        -- end
 
         local controlPanel = vgui.Create("DPanel", mapFilterPanel)
         controlPanel:Dock(TOP)
@@ -127,7 +136,7 @@ if CLIENT then
 
         local controlPanelRight = vgui.Create("DPanel", controlPanel)
         controlPanelRight:Dock(RIGHT)
-        controlPanelRight:SetWide(300)
+        controlPanelRight:SetWide(400)
 
         local controlPanelRightScroller = vgui.Create("DHorizontalScroller", controlPanelRight)
         controlPanelRightScroller:Dock(FILL)
