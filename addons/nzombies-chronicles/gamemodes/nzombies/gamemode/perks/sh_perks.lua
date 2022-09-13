@@ -465,7 +465,7 @@ nzPerks:NewPerk("deadshot", {
 	icon = Material("perk_icons/deadshot.png", "smooth unlitgeneric"),
 	color = Color(150, 200, 150),
 	func = function(self, ply, machine)
-		ply:ChatPrint("[Deadshot 2.0] Headshot chances: 40% snipers, 20% everything else.") -- , 25% (projectiles)
+		ply:ChatPrint("[Deadshot 2.0] Increased headshot chance, decreased weapon spread.")
 	end,
 	lostfunc = function(self, ply)
 	end,
